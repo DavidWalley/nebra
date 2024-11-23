@@ -77,9 +77,8 @@
 class ToolChain_lunascope ///////////////////////////////////////////////////////////////////////////////> For a stellarium script:
 {/////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
-  var                   _sPathStellarium  :String     ="/home/dave/Desktop/";                           //> ???Hard-coded? Root directory of stellarium script - "source code"
-//var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/hey_diddle/lunascope/";  //> ???Hard-coded? Money code directory.
-  var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/"; //> ???Hard-coded? Money code directory.
+  var                   _sPathStellarium  :String      ="/home/dave/Desktop/";                          //> ???Hard-coded? Root directory of stellarium script - "source code"
+  var                   _sPathMoney       :String      ="/home/dave/Desktop/AAA/hey_diddle/lunascope/"; //> ???Hard-coded? Money code directory.
 
 
  function               new_ToProject(////////////////////////////////////////////////////////////////////> Create source from $ code, replacing macros.

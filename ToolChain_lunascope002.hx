@@ -5,17 +5,12 @@
 
 // Start stellarium
 // In a UBUNTU terminal (ctrl+alt+T):
-// cd ~/Desktop/AAA/hey_diddle/code/nebra                                                               # Where I keep this file.
+// cd ~/Desktop/AAA/hey_diddle/lunascope                                                                # Where I keep this file.
 // #      Language (neko for local execution bodge code)                                                #
 // #      |    Intermediate file                                                                        #
 // #      |    |            Main code class                                                             #
 // #      V    V             V                                                                          #
-// haxe --neko TEMP_neko.n --main ToolChain_lunascope && neko TEMP_neko.n TOpROJECT && sleep 1 && wmctrl -a 'Stellarium 24.3'
-
-// && sleep 0.2 && xdotool key F12 && sleep 0.2 && xdotool key Return
-
-// && sleep 0.2 && xdotool type --delay 50 "/home/dave/Desktop/lunascope.ssc"
-
+// haxe --neko TEMP_neko.n --main ToolChain_lunascope && neko TEMP_neko.n TOpROJECT
 // haxe --neko TEMP_neko.n --main ToolChain_lunascope && neko TEMP_neko.n SUMMARIZE  # <-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<- DANGER WILL ROBINSON <-<-<- WILL OVER-WRITE $-CODE <-<-<-
 
 // MACROS: Custom tool chain (ToolChain_lunascope.hx) does some custom preprocessing (mostly search and replace, and file splitting/splicing)
@@ -77,22 +72,19 @@
 class ToolChain_lunascope ///////////////////////////////////////////////////////////////////////////////> For a stellarium script:
 {/////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
-  var                   _sPathStellarium  :String     ="/home/dave/Desktop/";                           //> ???Hard-coded? Root directory of stellarium script - "source code"
-//var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/hey_diddle/lunascope/";  //> ???Hard-coded? Money code directory.
-  var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/"; //> ???Hard-coded? Money code directory.
+  var                   _sPathStellarium  :String      ="/home/dave/Desktop/";                          //> ???Hard-coded? Root directory of stellarium script - "source code"
+  var                   _sPathMoney       :String      ="/home/dave/Desktop/AAA/hey_diddle/lunascope/"; //> ???Hard-coded? Money code directory.
 
 
  function               new_ToProject(////////////////////////////////////////////////////////////////////> Create source from $ code, replacing macros.
  ){                     //////////////////////////////////////////////////////////////////////////////////>
-  var                   content         :String = sys.io.File.getContent(_sPathMoney +'lunascope.ssc'); //> Copy from money source directory
-  try{                                                                                                  //> to
-   sys.io.File.saveContent(                                        _sPathStellarium  +'lunascope.ssc'   //> a directory slightly easier to reload from within Stellarium
-   ,                    content                                                                         //> "
-   );                                                                                                   //> .
-  }catch( e:haxe.Exception ){                                                                           //> If there is a problem, then
-   trace(e.message);                                                                                    //> report it
-   trace(e.stack);                                                                                      //> "
-  }//try                                                                                                //> .
+  var                   content         :String = sys.io.File.getContent(_sPathMoney +'lunascope.ssc'); //>
+  try{
+   sys.io.File.saveContent(_sPathStellarium  +'lunascope.ssc' ,content);                                 //>
+  }catch( e:haxe.Exception ){
+   trace(e.message);
+   trace(e.stack);
+  }
  }//new_ToProject/////////////////////////////////////////////////////////////////////////////////////////>
 
 
@@ -110,10 +102,10 @@ class ToolChain_lunascope //////////////////////////////////////////////////////
   #if sys                                                                                               //> Just check.
    trace("file system can be accessed");                                                                //>
   #end                                                                                                  //>
-  new ToolChain_lunascope();                                                                            //> Create and run and instance of main code.
+  new ToolChain_lunascope();                                                                           //> Create and run and instance of main code.
  }//main//////////////////////////////////////////////////////////////////////////////////////////////////>
 
-}//class ToolChain_lunascope//////////////////////////////////////////////////////////////////////////////>
+}//class ToolChain_lunascope/////////////////////////////////////////////////////////////////////////////>
 //////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
 

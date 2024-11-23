@@ -1,74 +1,20 @@
-// lunascope.ssc - Stellarium script for checking Nebra calendar and generating sky disc views.
+// lunascope_001.ssc - Stellarium script for generating sky disc views.
 // Name: Lunascope
 // License: (c)2024 David C. Walley
 // Author: David C. Walley
 // Version: 0.1
 // Description: Daily Lunar Horoscope
 
-// Run in Stellarium.
-// cd /home/dave/Desktop/AAA/hey_diddle/lunascope/screens/ && ls -l
-// ffmpeg -f image2 -r 25 -pattern_type glob -i './scr_*.png' -vcodec libx264 -crf 22 a_001.mp4
-//             -rtsp_transport tcp
+ // Run in Stellarium.
+ // cd /home/dave/Desktop/AAA/hey_diddle/lunascope/screens/ && ls -l
+ // ffmpeg -f image2 -r 25 -pattern_type glob -i './scr_*.png' -vcodec libx264 -crf 22 a_001.mp4
+ //             -rtsp_transport tcp
 
 
-//Greg Miller (gmiller@gregmiller.net) 2021
-//Released as public domain     http://www.celestialprogramming.com/    https://astrogreg.com/convert_ra_dec_to_alt_az.html
-function                                earthRotationAngle(///////////////////////////////////////////////>
-                                        a_When_jdutc                                                    //>
-){                                      //////////////////////////////////////////////////////////////////>
-  const                                 t                       = a_When_jdutc- 2451545.0;              //> IERS Technical Note No. 32
-  const                                 f                       = a_When_jdutc%1.0;                     //>
-  let                                   theta  = 2*Math.PI*(f +0.7790572732640 +0.00273781191135448*t); //> eq 14
-  theta %= 2*Math.PI;                                                                                   //>
-  if( theta < 0 ){ theta += 2*Math.PI; }                                                                //>
-return theta;                                                                                           //>
-}/////////////////////////////////////////////////////////////////////////////////////////////////////////>
-function                                greenwichMeanSiderealTime(////////////////////////////////////////>
-                                        a_When_jdutc                                                    //>
-){                                      //////////////////////////////////////////////////////////////////>
-  const                                 t               = (a_When_jdutc - 2451545.0)/36525.0;           //> "Expressions for IAU 2000 precession quantities" N. Capitaine1,P.T.Wallace2, and J. Chapront
-  let                                   gmst            =  earthRotationAngle(a_When_jdutc)             //>
-                                                          +(     0.014506                               //>
-                                                            + 4612.156534    *t                         //>
-                                                            +    1.3915817   *t*t                       //>
-                                                            -    0.00000044  *t*t*t                     //>
-                                                            -    0.000029956 *t*t*t*t                   //>
-                                                            -    0.0000000368*t*t*t*t*t                 //>
-                                                           )                            * Math.PI/180.0 //>
-                                                                                        / 60.0/60.0;    //> eq 42
-  gmst %= 2*Math.PI;                                                                                    //>
-  if( gmst < 0 ){ gmst += 2*Math.PI; }                                                                  //>
-return gmst;                                                                                            //>
-}/////////////////////////////////////////////////////////////////////////////////////////////////////////>
-function                                raDecToAltAz(/////////////////////////////////////////////////////>
-                                        a_Ra_rad                                                        //>
-,                                       a_Dec_rad                                                       //>
-,                                       a_Lat_rad                                                       //>
-,                                       a_Long_rad                                                      //>
-,                                       a_When_jdutc                                                    //> jd is Julian Date in UTC
-){                                      //////////////////////////////////////////////////////////////////>
-  const                                 gmst                 = greenwichMeanSiderealTime(a_When_jdutc); //> Meeus 13.5 and 13.6, modified so West longitudes are negative and 0 is North
-  let                                   localSiderealTime    = (gmst+a_Long_rad)%(2*Math.PI);           //>
-  let                                   H                    = (localSiderealTime - a_Ra_rad);          //>
-  if(       H < 0 ){ H += 2*Math.PI; }                                                                  //>
-  if( Math.PI < H ){ H -= 2*Math.PI; }                                                                  //>
-  let                              az = Math.atan2( Math.sin( H       )                                 //>
-                                        ,           Math.cos( H       )*Math.sin(a_Lat_rad)             //>
-                                                  - Math.tan(a_Dec_rad)*Math.cos(a_Lat_rad)             //>
-                                        );                                                              //>
-  let                              a  = Math.asin(  Math.sin(a_Lat_rad)*Math.sin(a_Dec_rad)             //>
-                                                  + Math.cos(a_Lat_rad)*Math.cos(a_Dec_rad)*Math.cos(H) //>
-                                        );                                                              //>
-  az -= Math.PI;                                                                                        //>
-  if( az < 0 ){ az += 2*Math.PI; }                                                                      //>
-return [az,a, localSiderealTime,H];                                                                     //>
-}//raDecToAltAz///////////////////////////////////////////////////////////////////////////////////////////>
+function                                NAP(){ core.wait(0.025); }                                      //> Short pause. Delay to allow for asynchronous updates in Stellarium.
 
-
-function                                NAP(){ core.wait(0.25); }                                       //> Short pause. Delay to allow for asynchronous updates in Stellarium.
-
-
-function                                Look(/////////////////////////////////////////////////////////////# Aim view at given point, with given zoom.
+ 
+function                                Look(/////////////////////////////////////////////////////////////# Look at given point, with given zoom.
                                         a_Alt                                                           //>
 ,                                       a_Azi                                                           //>
 ,                                       a_Fov                                                           //>
@@ -80,15 +26,7 @@ function                                Look(///////////////////////////////////
 }//Look///////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
-function                                mapSelect(////////////////////////////////////////////////////////# Select a celestial object and report map of info about it.
-                                        a_sObject                                                       //> Object e.g. "Moon"
-){                                      //////////////////////////////////////////////////////////////////>
- core.selectObjectByName(a_sObject ,false);                                                      NAP(); //>
-return core.getSelectedObjectInfo();                                                                    //>
-}//mapSelect//////////////////////////////////////////////////////////////////////////////////////////////>
-
-
-function                                sDMS(/////////////////////////////////////////////////////////////# Convert number to text degrees-minutes-seconds. Used in LabelMgr.labelEquatorial
+function                                sDMS(/////////////////////////////////////////////////////////////# Convert number to text degrees-minutes-seconds
                                         a_d                                                             //>
 ){                                      //////////////////////////////////////////////////////////////////>
  let                                    d                       = +a_d;                                 //>
@@ -100,43 +38,30 @@ return r_s;                                                                     
 }//sDMS///////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
-function                                Mark(/////////////////////////////////////////////////////////////# Place a mark on the celestial sphere.
+function                                mapSelect(////////////////////////////////////////////////////////>
+                                        a_sObject                                                       //> Object e.g. "Moon"
+){                                      //////////////////////////////////////////////////////////////////>
+ core.selectObjectByName(a_sObject ,false);                                                      NAP(); //>
+return core.getSelectedObjectInfo();                                                                    //>
+}//mapSelect//////////////////////////////////////////////////////////////////////////////////////////////>
+
+
+function                                Mark(/////////////////////////////////////////////////////////////#
                                         a_sObject                                                       //> Object e.g. Moon
 ,                                       a_sMarker                                                       //> Marker e.g. cross
 ,                                       a_sRgb                                                          //> color  e.g. "#ffffff"
 ,                                       a_dSize                                                         //>
 ){                                      //////////////////////////////////////////////////////////////////>
- let                                    m                       = mapSelect(a_sObject);                 //>
+ let                                    m                       = mapSelect(a_sObject);
  let                                    s                       = ""+ a_sMarker;                        //>
  switch( s ){                                                                                           //>
- case "cross" : case "circle": case "disk": case "circled-cross": case "gear":                          //> Type of marker - as expected.
- case "square":                                                                                         //> rounded unfilled square
- case "target":                                                                                         //> filled square
-                       MarkerMgr.markerEquatorial(                                                      //>   https://stellarium.org/doc/24.0/classMarkerMgr.html#a86e2b962c9df54a77a7d568d931bfcbc
-                                                   m.raJ2000                                            //> const QString &         RA,
-                       ,                           m.decJ2000                                           //> const QString &         Dec,
-                       ,                           true                                                 //> bool                    j2000epoch = true,
-                       ,                           true                                                 //> bool                    visible = true,
-                       ,                           s                                                    //> const QString &         mtype = "cross",
-                       ,                           a_sRgb                                               //> const QString &         color = "#ffff66",
-                       ,                           a_dSize                                              //> const float             size = 6.f,
-                                                                                                        //> bool                    autoDelete = false,
-                                                                                                        //> int                     autoDeleteTimeoutMs = 0,
-                                                                                                        //> bool                    withAberration = true
-                       );                                                                               //> Returns a unique ID which can be used to refer to the marker. returns -1 if the marker could not be created (e.g. object not found)
- break;default      :  LabelMgr.labelEquatorial(                                                        //> https://stellarium.org/doc/head/classLabelMgr.html#aa3db5e65c8f240b265565b996df7bbf3
-                                                   '           '+s                                      //> text                the text to display
-                       ,                           sDMS(m.raJ2000)                                      //> RA                  right ascension (e.g. 5h10m31s)
-                       ,                           sDMS(m.decJ2000)                                     //> Dec                 declination (e.g. 25d30m30s)
-                       ,                           true                                                 //> visible             if true, the label starts displayed, else it starts hidden
-                       ,                           a_dSize                                              //> fontSize            size of the font to use
-                       ,                           a_sRgb                                               //> fontColor           either HTML-like color spec, e.g. "#ffff00", or 3-part float vector like Vec3f(1.0f,1.0f,0.0f) for yellow
-                       ,                           ""                                                   //> side                where the label appears in relation to coordinates: "N" = above object on screen,"S","E","W","NE", "NW", "SE", "SW"
-                       ,                           0                                                    //> labelDistance
-                       ,                           false                                                //> autoDelete          the label will be automatically deleted after it is displayed once
-                       ,                           0                                                    //> autoDeleteTimeoutMs if not zero, the label will be automatically deleted after autoDeleteTimeoutMs ms
-                       ,                           true                                                 //> j2000epoch          if true, the label starts displayed in equatorial coordinates for epoch J2000.0
-                       );                                                                               //>
+ case       "cross" : MarkerMgr.markerEquatorial(                   m.raJ2000 ,     m.decJ2000 ,true,true ,s ,a_sRgb    ,a_dSize               );//> https://stellarium.org/doc/24.0/classMarkerMgr.html#a86e2b962c9df54a77a7d568d931bfcbc
+ break;case "circle": MarkerMgr.markerEquatorial(                   m.raJ2000 ,     m.decJ2000 ,true,true ,s ,a_sRgb    ,a_dSize               );//>
+ break;case "disk"  : MarkerMgr.markerEquatorial(                   m.raJ2000 ,     m.decJ2000 ,true,true ,s ,a_sRgb    ,a_dSize               );//>
+ break;case "star"  : LabelMgr.labelEquatorial(   "☆"         ,sDMS(m.raJ2000),sDMS(m.decJ2000),true,a_dSize ,"#FFFF00" ,""  ,0.1 ,false,0,true);//> https://stellarium.org/doc/24.0/classLabelMgr.html
+                 //   LabelMgr.labelEquatorial(   "☆"         ,sDMS(m.raJ2000),sDMS(m.decJ2000),true,a_dSize ,"#00ccFF" ,"C" ,0.1 ,false,0,true);//> https://stellarium.org/doc/24.0/classLabelMgr.html
+                 //   LabelMgr.labelEquatorial(   "☆"         ,sDMS(m.raJ2000),sDMS(m.decJ2000),true,a_dSize ,"#cc00FF" ,"E" ,0.1 ,false,0,true);//> https://stellarium.org/doc/24.0/classLabelMgr.html
+ break;default      : LabelMgr.labelEquatorial('           '+s,sDMS(m.raJ2000),sDMS(m.decJ2000),true,a_dSize ,a_sRgb    ,""  ,0   ,false,0,true);//>
  }//switch                                                                                              //>
 }//Mark///////////////////////////////////////////////////////////////////////////////////////////////////>
 
@@ -149,44 +74,44 @@ function                                MarkStars(//////////////////////////////
  const                                  sRED                    = "#ff0000";                            //>
  const                                  sBLU                    = "#0088ff";                            //>
  const                                  sGRN                    = "#00ff00";                            //>
- Mark( "Polaris"      ,"circled-cross",sBLU ,10 );   Mark( "Polaris" ,"Polaris" ,sBLU ,28);              //> North star
- Mark( "Dubhe"        ,"disk"         ,sGRN , 7 );   Mark( "Dubhe"   ,"Dubhe"   ,sGRN ,28);              //> Star at end of Big Dipper, points to Polaris.
- Mark( "Merak"        ,"disk"         ,sYEL , 7 );   Mark( "Merak"   ,"Merak"   ,sYEL ,28);              //> Season marker star? Star at end of Big Dipper, points to Polaris.
- Mark( "Vega"         ,"circle"       ,sYEL ,10 );   Mark( "Vega"    ,"Vega"    ,sYEL ,28);              //> Season marker star? On edge of circumpolar stars from Nebra. Kisses horizon near midnight near winter solstice.
- Mark( "Capella"      ,"circle"       ,sYEL ,10 );   Mark( "Capella" ,"Capella" ,sYEL ,28);              //> Season marker star?
- Mark( "Caph"         ,"circle"       ,sYEL ,10 );   Mark( "Caph"    ,"Caph"    ,sYEL ,28);              //> Season marker star in Casseopia
-                                                                                                        //>
- Mark( "Procyon"      ,"circle"       ,sYEL ,10 );   Mark( "Procyon" ,"Procyon" ,sYEL ,28);             //> Brightest star in Canis Minor.
- Mark( "Gomeisa"      ,"circle"       ,sYEL ,10 );   Mark( "Gomeisa" ,"Gomeisa" ,sYEL ,28);             //> Star in Canis Minor, defines line dividing Gemini from Taurus, horizontal before setting in West.
- Mark( "Pollux"       ,"circle"       ,sBLU ,10 );   Mark( "Pollux"  ,"Pollux"  ,sBLU ,28);             //> Gemini. Suspect it may be missing due to edge damage? Bright star, one of the twin stars.
- Mark( "Castor"       ,"circle"       ,sBLU ,10 );   Mark( "Castor"  ,"Castor"  ,sBLU ,28);             //> Gemini. Maybe moved away from edge damage?
- Mark( "Maia"         ,"disk" ,sGRN ,6);             Mark( "Maia"    ,"Pleiades",sGRN ,28);             //> Central star in the Pleiades star cluster//
- Mark("Atlas"         ,"disk" ,sGRN ,6);    //. Mark( "Atlas"        ,24,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
- Mark("Pleione"       ,"disk" ,sGRN ,6);    //. Mark( "Pleione"      ,25,sORA ,24);                      //> Missing 7th sister? Double duty as Castor's elbow on Nebra Sky Disk.
- Mark("Alcyone"       ,"disk" ,sGRN ,6);    //. Mark( "Alcyone"      ,26,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
- Mark("Merope"        ,"disk" ,sGRN ,6);    //. Mark( "Merope"       ,27,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
- Mark("Electra"       ,"disk" ,sGRN ,6);    //. Mark( "Electra"      ,28,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
- Mark("Taygeta"       ,"disk" ,sGRN ,6);    //. Mark( "Taygeta"      ,29,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
+ Mark( "Polaris"      ,"circle",sBLU ,11);                                                              //> North star
+ Mark( "Dubhe"        ,"circle",sGRN ,11);                                                              //> Star at end of Big Dipper, points to Polaris.
+ Mark( "Merak"        ,"circle",sYEL ,11);                                                              //> Season marker star? Star at end of Big Dipper, points to Polaris. 
+ Mark( "Vega"         ,"circle",sYEL ,11);                                                              //> Season marker star? On edge of circumpolar stars from Nebra. Kisses horizon near midnight near winter solstice.
+ Mark( "Capella"      ,"circle",sYEL ,11);                                                              //> Season marker star?
+ Mark( "Caph"         ,"circle",sYEL ,11);                                                              //> Season marker star in Casseopia
+
+ Mark( "Procyon"      ,"circle",sYEL ,11);                                                              //> Brightest star in Canis Minor.
+ Mark( "Gomeisa"      ,"circle",sYEL ,11);                        // 0                                  //> Star in Canis Minor, defines line dividing Gemini from Taurus, horizontal before setting in West.
+ Mark( "Pollux"       ,"circle",sBLU ,11);  //  Mark(  "Pollux"       ,1 ,sORA ,24);                      //> Gemini. Suspect it may be missing due to edge damage? Bright star, one of the twin stars.
+ Mark( "Castor"       ,"circle",sBLU ,11);  //  Mark(  "Castor"       ,2 ,sORA ,24);                      //> Gemini. Maybe moved away from edge damage?
 // Mark( "77 Gem"       ,"cross" ,sBLU ,18);    Mark(  "77 Gem"       ,3 ,sORA ,24);                      //> Pollux's right shoulder.
 // Mark( "69 Gem"       ,"cross" ,sBLU ,18);    Mark(  "69 Gem"       ,4 ,sORA ,24);                      //> Gemini. On highest possible path of the Moon.
 // Mark( "46 Gem"       ,"cross" ,sBLU ,18);    Mark(  "46 Gem"       ,5 ,sORA ,24);                      //> Gemini. Castor's left shoulder.
 // Mark( "34 Gem"       ,"cross" ,sBLU ,18);    Mark(  "34 Gem"       ,6 ,sORA ,24);                      //> Gemini. Castor's left elbow. Does double duty, as 7th Pleiades sister?
 // Mark( "55 Gem"       ,"cross" ,sBLU ,18);    Mark(  "55 Gem"       ,7 ,sORA ,24);                      //> Gemini. Pollux.
-// Mark( "54 Gem"       ,"cross" ,sBLU ,18);    Mark(  "54 Gem"       ,8 ,sORA ,24);                      //> Gemini. Pollux's right knee. Evidence of having been moved.
+// Mark( "54 Gem"       ,"cross" ,sBLU ,18);    Mark(  "54 Gem"       ,8 ,sORA ,24);                      //> Gemini. Pollux's right knee. Evidence of having been moved. 
 // Mark( "41 Gem"       ,"cross" ,sRED ,18);    Mark(  "41 Gem"       ,9 ,sORA ,24);                      //> Dimmer star of Pollux's calf. Significant because it is on the line of (off-disk) Canis Minor's stare, and near lowest possible path of the moon.
 // Mark( "31 Gem"       ,"cross" ,sBLU ,18);    Mark(  "31 Gem"       ,10,sORA ,24);                      //> Gemini. Pollux's right foot.
 // Mark( "Alhena"       ,"cross" ,sBLU ,18);    Mark(  "Alhena"       ,11,sORA ,24);     // 24 Gem        //> Gemini. Pollux's left foot
-// Mark( "Propus"       ,"cross" ,sBLU ,18);    Mark(  "Propus"       ,12,sORA ,24);                      //> Gemini. Castor's left foot.
+// Mark( "Propus"       ,"cross" ,sBLU ,18);    Mark(  "Propus"       ,12,sORA ,24);                      //> Gemini. Castor's left foot. 
 // Mark( "HIP 28500"    ,"cross" ,sRED ,18);    Mark(  "HIP 28500"    ,13,sORA ,24);                      //> Not a bright star, but at a significant point in sky - highest possible Moon position in all of sky all year (but moves over centuries). Form's equilateral triangle with horns of Taurus. On line of Canis Minor's stare. Close to line from 15 to North star. On modern boundary between Taurus and Gemini.
 // Mark( "69 Ori"       ,"cross" ,sBLU ,18);    Mark(  "69 Ori"       ,14,sORA ,24);                      //> Orion's right hand.
 // Mark( "HIP 28348"    ,"cross" ,sRED ,18);    Mark(  "HIP 28348"    ,15,sORA ,24);                      //> Orion's club. On lowest possible path of the moon. On center line of disk.
 // Mark( "Tianguan"     ,"cross" ,sBLU ,18);    Mark(  "Tianguan"     ,16,sORA ,24);                      //> Horn of Taurus.
 // Mark( "Elnath"       ,"cross" ,sBLU ,18);    Mark(  "Elnath"       ,17,sORA ,24);                      //> Horn of Taurus. On highest possible path of the Moon.
-// Mark( "Aldebaran"    ,"cross" ,sGRN ,18);    Mark(  "Aldebaran"    ,18,sORA ,24);                      //> Taurus's right eye and brightest star in constellation. Mark's center line at top of disk (as defined by side-arcs). Almost exactly on lowest possible path of the Moon resulting in occasional occultations being recorded throughout history. This allowed astronomers to determine that the star's position must have moved since early observations, leading to discovery of the movement of many other stars.
+// Mark( "Aldebaran"    ,"cross" ,sGRN ,18);    Mark(  "Aldebaran"    ,18,sORA ,24);                      //> Taurus's right eye and brightest star in constellation. Mark's center line at top of disk (as defined by side-arcs). Almost exactly on lowest possible path of the Moon resulting in occasional occultations being recorded throughout history. This allowed astronomers to determine that the star's position must have moved since early observations, leading to discovery of the movement of many other stars. 
 // Mark( "Alkalbain III","cross" ,sRED ,18);    Mark(  "Alkalbain III",19,sORA ,24);                      //> Part of line asterism from Taurus's eyes to its ear and beyond, thereby drawing a line across the moon's ecliptic.
-// Mark( "Alkalbain V"  ,"cross" ,sRED ,18);    Mark(  "Alkalbain V"  ,20,sORA ,24);                      //> Part of line asterism from Taurus's eyes to its ear and beyond, thereby drawing a line across the moon's ecliptic.
+// Mark( "Alkalbain V"  ,"cross" ,sRED ,18);    Mark(  "Alkalbain V"  ,20,sORA ,24);                      //> Part of line asterism from Taurus's eyes to its ear and beyond, thereby drawing a line across the moon's ecliptic. 
 // Mark( "45 Per"       ,"cross" ,sGRN ,18);    Mark(  "45 Per"       ,21,sORA ,24);                      //> Star in Perseus
 // Mark( "39 Per"       ,"cross" ,sGRN ,18);    Mark(  "39 Per"       ,22,sORA ,24);                      //> Evidence of having been under disk's side-arc. Star in Perseus. Maybe moved away from edge.
+ Mark( "Maia"         ,"circle",sGRN ,11);   // Mark(  "Maia"         ,23,sORA ,24);                      //> Central star in the Pleiades star cluster//
+// MarkX("Atlas"        ,"cross" ,sGRN ,18);    //. MarkX( "Atlas"        ,24,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
+// MarkX("Pleione"      ,"cross" ,sGRN ,18);    //. MarkX( "Pleione"      ,25,sORA ,24);                      //> Missing 7th sister? Double duty as Castor's elbow on Nebra Sky Disk.
+// MarkX("Alcyone"      ,"cross" ,sGRN ,18);    //. MarkX( "Alcyone"      ,26,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
+// MarkX("Merope"       ,"cross" ,sGRN ,18);    //. MarkX( "Merope"       ,27,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
+// MarkX("Electra"      ,"cross" ,sGRN ,18);    //. MarkX( "Electra"      ,28,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
+// MarkX("Taygeta"      ,"cross" ,sGRN ,18);    //. MarkX( "Taygeta"      ,29,sORA ,24);                      //> Star in the Pleiades (size of cluster exagerated).
 // Mark( "35 Tau"       ,"cross" ,sGRN ,18);    Mark(  "35 Tau"       ,30,sORA ,24);                      //> Taurus's mouth.
 // Mark( "17 Per"       ,"cross" ,sGRN ,18);    Mark(  "17 Per"       ,31,sORA ,24);                      //> Star in Perseus/Medusa's hair.
 // Mark( "Bharani"      ,"cross" ,sGRN ,18);    Mark(  "Bharani"      ,32,sORA ,24);                      //> Aires
@@ -219,49 +144,70 @@ return r_iShot++;                                                               
 //////////////////////////////////////////////////////////////////////////////////////////////////////////> Set up our own default "reset" state:
 
 
-function                                Reset(////////////////////////////////////////////////////////////>
+function                                Reset(///////////////////////////////////////////////////////////////>
 ){                                      //////////////////////////////////////////////////////////////////>
-  core                  .clear("natural");                                                              //> Clear the display options. natural: azimuthal mount, atmosphere, landscape, no lines, labels or markers.   "starchart"   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
-  core                  .setProjectionMode("ProjectionStereographic");                                  //> https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
-  //core                .setProjectionMode("ProjectionMercator"     );                                  //>
-  core                  .setTimeRate(                           0   );                                  //>
-  core                  .setTimezone(                    "UTC-00:00");                                  //>   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
-  ConstellationMgr      .setArtIntensity(                       0.6 );                                  //>
-  ConstellationMgr      .setFlagArt(                           true );                                  //>   https://stellarium.org/doc/23.0/classConstellationMgr.html
-  ConstellationMgr      .setFlagBoundaries(                   false );                                  //> Constellation boundaries lines will not be displayed.
-  ConstellationMgr      .setFlagIsolateSelected(               true );                                  //> Selected constellation displayed alone.
-  ConstellationMgr      .setFlagLabels(                       false );                                  //> Constellation names will not be displayed.
-  ConstellationMgr      .setFlagLines(                         true );                                  //> Constellation lines.
-  ConstellationMgr      .deselectConstellations(                    );                                  //>
-  GridLinesMgr          .setFlagAzimuthalGrid(                false );                                  //> Shows or hides the grid for the horizontal coordinate system.   https://stellarium.org/doc/23.0/classGridLinesMgr.html
-  GridLinesMgr          .setFlagEclipticJ2000Grid(            false );                                  //> Display Ecliptic Grid of J2000.0.
-  GridLinesMgr          .setFlagEclipticGrid(                 false );                                  //> Display Ecliptic Grid of Date.
-  GridLinesMgr          .setFlagEclipticLine(                 false );                                  //> ???
-  GridLinesMgr          .setFlagEquatorGrid(                  false );                                  //> Centered on north pole.
-  GridLinesMgr          .setFlagEquatorJ2000Grid(             false );                                  //> Display Equatorial J2000 Grid.
-  GridLinesMgr          .setFlagFixedEquatorGrid(             false );                                  //> Display the Fixed Equatorial Grid (Hour angle/declination).
-  GridLinesMgr          .setFlagGalacticGrid(                 false );                                  //> Display Galactic Grid.
-  GridLinesMgr          .setFlagMeridianLine(                 false );                                  //> North-south line?
-  GridLinesMgr          .setFlagSupergalacticGrid(            false );                                  //> Display Supergalactic Grid.
-  LabelMgr              .deleteAllLabels(                           );                                  //> Delete text boxes. LabelMgr.labelScreen - adds text to the scene.   https://stellarium.org/doc/0.20/classLabelMgr.html
-  LandscapeMgr          .setFlagAtmosphere(                    true );                                  //> https://stellarium.org/doc/23.0/classLandscapeMgr.html
-  LandscapeMgr          .setFlagCardinalPoints(                true );                                  //>
-  LandscapeMgr          .setFlagFog(                          false );                                  //>
-  LandscapeMgr          .setFlagLandscape(                     true );                                  //> Turn on Landscape,
-  LandscapeMgr          .setFlagLandscapeUseTransparency(      true );                                  //> Determine if a transparency should be used.
-  LandscapeMgr          .setLandscapeTransparency(              0.2 );                                  //> Value of transparency, 1 = fully transparent
-  MarkerMgr             .deleteAllMarkers(                          );                                  //> https://stellarium.org/doc/23.0/classMarkerMgr.html
-  SolarSystem           .setFlagMoonScale(                    false );                                  //> Determines if Earth's moon is scaled or not.
-  SolarSystem           .setMoonScale(                           1  );                                  //> Set the display scaling factor for Earth's moon.
-  SolarSystem           .setFlagDrawMoonHalo(                  true );                                  //> Glare around moon.
-  SporadicMeteorMgr     .setFlagShow(                         false );                                  //> No meteors.   https://stellarium.org/doc/23.0/classSporadicMeteorMgr.html
-  StelSkyDrawer         .setFlagTwinkle(                      false );                                  //> No star twinkle.   https://stellarium.org/doc/23.0/classStelSkyDrawer.html
-  StelSkyDrawer         .setFlagLuminanceAdaptation(          false );                                  //> Set the value of the eye adaptation flag.
+ core                    .clear("natural");                                                              //> Clear the display options. natural: azimuthal mount, atmosphere, landscape, no lines, labels or markers.   "starchart"   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
+ core                    .setProjectionMode("ProjectionStereographic");                                  //> https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
+ //core                  .setProjectionMode("ProjectionMercator"     );                                  //>
+ core                    .setTimeRate(                           0   );                                  //>
+ core                    .setTimezone(                    "UTC-00:00");                                  //>   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
+ ConstellationMgr        .setArtIntensity(                       0.6 );                                  //>
+ ConstellationMgr        .setFlagArt(                           true );                                  //>   https://stellarium.org/doc/23.0/classConstellationMgr.html
+ ConstellationMgr        .setFlagBoundaries(                   false );                                  //> Constellation boundaries lines will not be displayed.
+ ConstellationMgr        .setFlagIsolateSelected(               true );                                  //> Selected constellation displayed alone.
+ ConstellationMgr        .setFlagLabels(                       false );                                  //> Constellation names will not be displayed.
+ ConstellationMgr        .setFlagLines(                         true );                                  //> Constellation lines.
+ ConstellationMgr        .deselectConstellations(                    );                                  //>
+ GridLinesMgr            .setFlagAzimuthalGrid(                false );                                  //> Shows or hides the grid for the horizontal coordinate system.   https://stellarium.org/doc/23.0/classGridLinesMgr.html
+ GridLinesMgr            .setFlagEclipticJ2000Grid(            false );                                  //> Display Ecliptic Grid of J2000.0.
+ GridLinesMgr            .setFlagEclipticGrid(                 false );                                  //> Display Ecliptic Grid of Date.
+ GridLinesMgr            .setFlagEclipticLine(                 false );                                  //> ???
+ GridLinesMgr            .setFlagEquatorGrid(                  false );                                  //> Centered on north pole.
+ GridLinesMgr            .setFlagEquatorJ2000Grid(             false );                                  //> Display Equatorial J2000 Grid.
+ GridLinesMgr            .setFlagFixedEquatorGrid(             false );                                  //> Display the Fixed Equatorial Grid (Hour angle/declination).
+ GridLinesMgr            .setFlagGalacticGrid(                 false );                                  //> Display Galactic Grid.
+ GridLinesMgr            .setFlagMeridianLine(                 false );                                  //> North-south line?
+ GridLinesMgr            .setFlagSupergalacticGrid(            false );                                  //> Display Supergalactic Grid.
+ LabelMgr                .deleteAllLabels(                           );                                  //> Delete text boxes. LabelMgr.labelScreen - adds text to the scene.   https://stellarium.org/doc/0.20/classLabelMgr.html
+ LandscapeMgr            .setFlagAtmosphere(                    true );                                  //> https://stellarium.org/doc/23.0/classLandscapeMgr.html
+ LandscapeMgr            .setFlagCardinalPoints(                true );                                  //>
+ LandscapeMgr            .setFlagFog(                          false );                                  //>
+ LandscapeMgr            .setFlagLandscape(                     true );                                  //> Turn on Landscape,
+ LandscapeMgr            .setFlagLandscapeUseTransparency(      true );                                  //> Determine if a transparency should be used.
+ LandscapeMgr            .setLandscapeTransparency(              0.2 );                                  //> Value of transparency, 1 = fully transparent
+ MarkerMgr               .deleteAllMarkers(                          );                                  //> https://stellarium.org/doc/23.0/classMarkerMgr.html
+ SolarSystem             .setFlagMoonScale(                    false );                                  //> Determines if Earth's moon is scaled or not.
+ SolarSystem             .setMoonScale(                           1  );                                  //> Set the display scaling factor for Earth's moon.
+ SolarSystem             .setFlagDrawMoonHalo(                  true );                                  //> Glare around moon.
+ SporadicMeteorMgr       .setFlagShow(                         false );                                  //> No meteors.   https://stellarium.org/doc/23.0/classSporadicMeteorMgr.html
+ StelSkyDrawer           .setFlagTwinkle(                      false );                                  //> No star twinkle.   https://stellarium.org/doc/23.0/classStelSkyDrawer.html
+ StelSkyDrawer           .setFlagLuminanceAdaptation(          false );                                  //> Set the value of the eye adaptation flag.
 }//Reset/////////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
 //ScreenImageMgr.showImage("img_"+ asIMAGE[0] ,true); //> Set an image's visible status. ID for the image, and visibility state. https://stellarium.org/doc/24.0/classScreenImageMgr.html#abd9a1164bbf7596be7a12e47bce984cf
 //core.wait(u* 1);
+
+
+function                                Mark(/////////////////////////////////////////////////////////////#
+                                        a_sObject                                                       //> Object e.g. "Moon"
+,                                       a_sMarker                                                       //> Marker e.g. "cross"
+,                                       a_sRgb                                                          //> color  e.g. "#ffffff"
+,                                       a_dSize                                                         //>
+){                                      //////////////////////////////////////////////////////////////////>
+ let                                    m                       = mapSelect(a_sObject);                 //>
+ let                                    s                       = ""+ a_sMarker;                        //>
+ switch( s ){                                                                                           //>
+ case       "cross" : MarkerMgr.markerEquatorial(                   m.raJ2000 ,     m.decJ2000 ,true,true ,s ,a_sRgb    ,a_dSize               );//> https://stellarium.org/doc/24.0/classMarkerMgr.html#a86e2b962c9df54a77a7d568d931bfcbc
+ break;case "circle": MarkerMgr.markerEquatorial(                   m.raJ2000 ,     m.decJ2000 ,true,true ,s ,a_sRgb    ,a_dSize               );//>
+ break;case "disk"  : MarkerMgr.markerEquatorial(                   m.raJ2000 ,     m.decJ2000 ,true,true ,s ,a_sRgb    ,a_dSize               );//>
+ break;case "star"  : 
+                      LabelMgr.labelEquatorial(   "☆"         ,sDMS(m.raJ2000),sDMS(m.decJ2000),true,a_dSize ,"#FFFF00" ,""  ,0.1 ,false,0,true);//> https://stellarium.org/doc/24.0/classLabelMgr.html
+                 //   LabelMgr.labelEquatorial(   "☆"         ,sDMS(m.raJ2000),sDMS(m.decJ2000),true,a_dSize ,"#00ccFF" ,"C" ,0.1 ,false,0,true);//> https://stellarium.org/doc/24.0/classLabelMgr.html
+                 //   LabelMgr.labelEquatorial(   "☆"         ,sDMS(m.raJ2000),sDMS(m.decJ2000),true,a_dSize ,"#cc00FF" ,"E" ,0.1 ,false,0,true);//> https://stellarium.org/doc/24.0/classLabelMgr.html
+ break;default      : LabelMgr.labelEquatorial('           '+s,sDMS(m.raJ2000),sDMS(m.decJ2000),true,a_dSize ,a_sRgb ,"",0,false,0,true);//>
+ }//switch                                                                                              //>
+}//Mark///////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
 function                                VegaKiss(/////////////////////////////////////////////////////////> Set Time to time when Vega kisses the horizon.
@@ -272,13 +218,50 @@ function                                VegaKiss(///////////////////////////////
   let                                   dSet_h                  = map["set-dhr" ];                      //>
   let                                   dRise_h                 = map["rise-dhr"];                      //>
   if(  dSet_h < 12   ||   dRise_h < 12 ){                                                               //>
-   core.setJDay( a_nDayI + 1 );                                                                 NAP();  //> Next day:
+   core.setJDay( a_nDayI + 1 );                                                                 NAP();  //> Next day: 
    map = core.getSelectedObjectInfo();                                                                  //>
    if( dSet_h  < 12 ){   dSet_h  = map["set-dhr" ]; if(dSet_h  < 12){dSet_h  += 24;}   }                // r_s +=" S:"+ dSet_h ;   } //>
    if( dRise_h < 12 ){   dRise_h = map["rise-dhr"]; if(dRise_h < 12){dRise_h += 24;}   }                // r_s +=" R:"+ dRise_h;   } //>
   }//if                                                                                                 //>
   core.setJDay(  a_nDayI-0.5+( (dSet_h + dRise_h)/2 - 5/60 )/24   );                                    //> At time of Vega kiss...
-}//VegaKiss///////////////////////////////////////////////////////////////////////////////////////////////>
+}//VegaKiss//////////////////////////////////////////////////////////////////////////////////////////////>
+                                                                                                        
+
+function                                avBasics(/////////////////////////////////////////////////////////> Set Time to time when Vega kisses the horizon.
+                                        a_nDay                                                          //>
+){                                      //////////////////////////////////////////////////////////////////>
+  core.setJDay( a_nDay );                                                                               //> Set the display to the day in question.
+  let                                   dSunSet_h               = -1;                                   //> The time of the sunset.
+  let                                   dSunRise_h              = -1;                                   //> The time of the runrise
+  let                                   r_dMoonRise_h           = -1;                                   //>
+  let                                   r_dMoonSet_h            = -1;                                   //>
+  let                                   sDate                   = core.getDate();                       //> Get ISO representation of the date.
+  mapSun  = mapSelect("Sun" ); dSunSet_h     = mapSun[ "set-dhr" ];                                     //> mapSelect the sun so we can get time of sunset.
+  mapMoon = mapSelect("Moon"); r_dMoonRise_h = mapMoon["rise-dhr"];                                     //> mapSelect the moon so we can get the time of sunrise.
+  if(       isNaN(r_dMoonRise_h)         ){ r_dMoonRise_h = -1;                                         //> If unable to get the moonrise then flag this.
+  }else{                                    r_dMoonSet_h  = mapMoon["set-dhr" ];                        //> If no problem, then get the time of moonset.
+   if(      isNaN(r_dMoonSet_h)          ){ r_dMoonSet_h = -1; }                                        //> If unable to get the moonset then flag this,
+   else if( r_dMoonSet_h < r_dMoonRise_h ){ r_dMoonSet_h = -1; }                                        //> or if the moonset is before the moonrise, then we will want to try again.
+   else if( r_dMoonSet_h < dSunSet_h     ){ r_dMoonSet_h = -1; r_dMoonRise_h = -1; }                    //> If moonset is before sunset, then we will want to try again.
+  }//if                                                                                                 //> .
+                                                                                                        //>
+  core.setJDay( a_nDay + 1 );                                                                           //> Next day: 
+  mapSun  = mapSelect("Sun" ); dSunRise_h  = mapSun[ "rise-dhr"] + 24;                                  //> mapSelect the sun so we can find sunrise, the end of the night.
+  mapMoon = mapSelect("Moon");                                                                          //> mapSelect the moon.
+  if( r_dMoonRise_h < 0 ){                                                                              //> If we still need the moonrise, then 
+   r_dMoonRise_h = mapMoon["rise-dhr"];                                                                 //> get it now.
+   if(   isNaN(r_dMoonRise_h)      ){ r_dMoonRise_h = -1; }                                             //> If there is a problem, then flag it as unavailable.
+   else{                                                                                                //> otherwise,
+    r_dMoonRise_h += 24;                                                                                //> remember we are past midnight.
+    if( dSunRise_h < r_dMoonRise_h ){ r_dMoonRise_h = -1; }                                             //> If the moonrise is after sunrise, then flag it as unavailable.
+  }}//if//if                                                                                            //>
+return [sDate +","+ a_nDay +","+ dSunSet_h    .toFixed(4)                                               //> Output what we have so far.
+                           +","+ dSunRise_h   .toFixed(4)                                               //>
+                           +","+ r_dMoonRise_h.toFixed(4)                                               //>
+       ,r_dMoonSet_h                                                                                    //>
+       ,r_dMoonRise_h                                                                                   //>
+       ];                                                                                               //>
+}//avBasics///////////////////////////////////////////////////////////////////////////////////////////////>
 
 
 function                                TEST_GreatCircle(/////////////////////////////////////////////////> Implement formulae from web, compare to expected results.   https://www.aa.quae.nl/en/reken/grootcirkel.html
@@ -286,19 +269,19 @@ function                                TEST_GreatCircle(///////////////////////
  let                                    a_lat                   = 52.37;                                //> Amsterdam     52 22' N     4 54' E
  let                                    a_long                  =  4.9 ;                                //>
  let                                    long1                   = a_long*Math.PI/180;                   //> Call the polar coordinates (longitude and
- let                                    lat1                    = a_lat *Math.PI/180;                   //> latitude) of the first city
+ let                                    lat1                    = a_lat *Math.PI/180;                   //> latitude) of the first city 
  let                                    x1                      = Math.cos(long1)*Math.cos(lat1);       //>
  let                                    y1                      = Math.sin(long1)*Math.cos(lat1);       //>
  let                                    z1                      =                 Math.sin(lat1);       //>
- core.output( "P1, "+a_lat +", "+a_long +" : "+long1 +", "+ lat1 +"   ("+ x1 +", "+ y1 +", "+ z1 +")"); //>
+ core.output( "P1, "+ a_lat +", " + a_long +" : "+ long1 +", " + lat1 +"   ("+ x1 +", "+ y1 +", "+ z1 +")"); //>
  a_lat                                                          =   37.77;                              //> San Francisco 37 46' N   122 25' W
  a_long                                                         = -122.42;                              //>
  let                                    long2                   = a_long*Math.PI/180;                   //> Call the polar coordinates (longitude and
- let                                    lat2                    = a_lat *Math.PI/180;                   //> latitude) of the first city
+ let                                    lat2                    = a_lat *Math.PI/180;                   //> latitude) of the first city 
  let                                    x2                      = Math.cos(long2)*Math.cos(lat2);       //>
  let                                    y2                      = Math.sin(long2)*Math.cos(lat2);       //>
  let                                    z2                      =                 Math.sin(lat2);       //>
- core.output( "P2, "+a_lat +", "+a_long +" : "+long2 +", "+ lat2 +"   ("+ x2 +", "+ y2 +", "+ z2 +")"); //>
+ core.output( "P2, "+ a_lat +", " + a_long +" : "+ long2 +", " + lat2 +"   ("+ x2 +", "+ y2 +", "+ z2 +")"); //>
 
  let                                    dPsi                    = Math.acos(x1*x2 + y1*y2 + z1*z2);     //> Angular distance between 2 points.
  let                                    x3               = ( x2 - x1*Math.cos(dPsi) ) / Math.sin(dPsi); //>
@@ -307,7 +290,7 @@ function                                TEST_GreatCircle(///////////////////////
  let                                    lat3             = Math.asin(z3);                               //> Back to polar latitude and
  let                                    long3            = Math.atan2(y3 ,x3);                          //> longitude result.
  core.output( "dPsi, "+ dPsi +", " + 180*dPsi/Math.PI );
- core.output( "(,"+x3 +","+y3 +","+z3  +",) long,"+ long3*180/Math.PI +", lat," + (lat3*180/Math.PI) );
+ core.output( "(,"+ x3 +","+ y3 +","+ z3  +",) long,"+ long3*180/Math.PI +", lat," + (lat3*180/Math.PI) );
  for( let dPhi = 0; dPhi < 2; dPhi += 0.1 ){                                                            //> DOTTED LINE
 // for( let dPhi = 8.98335*Math.PI/180; dPhi < 2 *100; dPhi += 0.2 *999999 ){                           //>
   let                                   xD               = x1*Math.cos(dPhi) + x3*Math.sin(dPhi);       //>
@@ -317,29 +300,27 @@ function                                TEST_GreatCircle(///////////////////////
   let                                   longD            = Math.atan2( yD ,xD );                        //> result.
   MarkerMgr.markerEquatorial( longD*180/Math.PI ,latD*180/Math.PI ,true,true ,"cross" ,"#ffff00" ,8);
 
-  core.output( "dPhi: "+dPhi +", long,"+longD*180/Math.PI +", lat,"+(latD*180/Math.PI) 
-                                                                     +",   (,"+xD +","+yD +","+zD +",)" 
-  );                                                                                                    //>
+  core.output( "dPhi: "+ dPhi +", long,"+ longD*180/Math.PI +", lat," + (latD*180/Math.PI) +",   (,"+ xD +","+ yD +","+ zD +",)" ); //>
  }//for dPhi                                                                                            //>
 // What is the distance from an arbitrary point Q to the great circle through P1 and P2, measured along the surface perpendicular to the great circle?
-// The short answer is that that distance d is determined by
+// The short answer is that that distance d is determined by                    
 //        sin(d) =    Q^ . (P1^ x P2^)        where . = dot product, x = cross product, ^ = unit vector
 //                  /   |P1^ x P2^|           where || = length
 // P1, P2 are stars in Canis Minor, Q is moon, WHAT IS SIGN?
 // For example, how far from the great circle through Amsterdam (P₁) and San Francisco (P₂) is the airport of Reykjavik in Iceland (Q, at 64.13° north lattiude and 21.94° west longitude)?
  core.output( "Amsterdam: ("+ x1 +", "+ y1 +", "+ z1 +")");                                             //>
  core.output( "San Fran:  ("+ x2 +", "+ y2 +", "+ z2 +")");                                             //>
- a_lat            =    64.13;                                                                           //> 64.13° north lattiude
+ a_lat            =    64.13;                                                                           //> 64.13° north lattiude 
  a_long           =   -21.94;                                                                           //> 21.94° west longitude)
  let                                    longQ            = a_long*Math.PI/180;                          //> Call the polar coordinates (longitude and
- let                                    latQ             = a_lat *Math.PI/180;                          //> latitude) of the first city
+ let                                    latQ             = a_lat *Math.PI/180;                          //> latitude) of the first city 
  let                                    xQ               = Math.cos(longQ)*Math.cos(latQ);              //>
  let                                    yQ               = Math.sin(longQ)*Math.cos(latQ);              //>
  let                                    zQ               =                 Math.sin(latQ);              //>
- core.output( "Q, "+a_lat +", "+a_long +" : "+longQ +", "+latQ  +"   ("+ xQ +", "+ yQ +", "+ zQ +")");  //>
- let                                    xS                      =  y1*z2 - z1*y2;                       //> a2b3 - a3b2
- let                                    yS                      =  z1*x2 - x1*z2;                       //> a3b1 - a1b3
- let                                    zS                      =  x1*y2 - y1*x2;                       //> a1b2 - a2b1
+ core.output( "Q, "+ a_lat +", " + a_long +" : "+ longQ +", " + latQ +"   ("+ xQ +", "+ yQ +", "+ zQ +")"); //>
+ let                                    xS                      =  y1*z2 - z1*y2;                       //> a2b3 - a3b2   
+ let                                    yS                      =  z1*x2 - x1*z2;                       //> a3b1 - a1b3      
+ let                                    zS                      =  x1*y2 - y1*x2;                       //> a1b2 - a2b1      
  let                                    dS                      = Math.sqrt( xS*xS + yS*yS + zS*zS );   //>
  core.output( "S, "+ xS +", " + yS +", "+ zS +", "+ dS );                                               //>
  let                                    dDotQS                  = xS*xQ + yS*yQ + zS*zQ;                //>
@@ -361,8 +342,8 @@ function                                dOverLine_360(//////////////////////////
 // let                                  xB                      = Math.cos(latB)*Math.cos(longB);       //>
 // let                                  yB                      = Math.cos(latB)*Math.sin(longB);       //>
 // let                                  zB                      = Math.sin(latB)                ;       //>
-// core.output( "dOverLine_360, "+ xA +", "+  yA +", "+  zA );                                          //>
-// core.output( "dOverLine_360, "+ xB +", "+  yB +", "+  zB );                                          //>
+// core.output( "dOverLine_360, "+ xA +", "+  yA +", "+  zA );   
+// core.output( "dOverLine_360, "+ xB +", "+  yB +", "+  zB );   
   const                                 xA                      = -0.41812783213741955;                 //> Pre-calculated values for Procyon
   const                                 yA                      =  0.9038249325942993 ;                 //> "
   const                                 zA                      =  0.09093738072416822;                 //> and
@@ -370,18 +351,18 @@ function                                dOverLine_360(//////////////////////////
   const                                 yB                      =  0.91883139318759   ;                 //> "
   const                                 zB                      =  0.14415890574689555;                 //> .
                                                                                                         //>
-  let                                   latQ                    = a_Qlat_360 *Math.PI/180;              //> Polar coordinates (latitude/declination and
+  let                                   latQ                    = a_Qlat_360 *Math.PI/180;              //> Polar coordinates (latitude/declination and 
   let                                   longQ                   = a_Qlong_360*Math.PI/180;              //> longitude/right-ascension) of the point.
   let                                   xQ                      = Math.cos(latQ)*Math.cos(longQ);       //> Convert to 3-D co-ords of unit vector
   let                                   yQ                      = Math.cos(latQ)*Math.sin(longQ);       //> "
   let                                   zQ                      = Math.sin(latQ)                ;       //> .
                                                                                                         //>
   let                                   xS                      =  yA*zB - zA*yB;                       //> a2b3 - a3b2   Cross product.
-  let                                   yS                      =  zA*xB - xA*zB;                       //> a3b1 - a1b3
-  let                                   zS                      =  xA*yB - yA*xB;                       //> a1b2 - a2b1
+  let                                   yS                      =  zA*xB - xA*zB;                       //> a3b1 - a1b3      
+  let                                   zS                      =  xA*yB - yA*xB;                       //> a1b2 - a2b1      
   let                                   dDotQS                  =            xS*xQ + yS*yQ + zS*zQ;     //>               Dot product.
   let                                   dS                      = Math.sqrt( xS*xS + yS*yS + zS*zS );   //>               Magnitude.
-  let                                   r_d_360                 = Math.asin(dDotQS/dS)*180/Math.PI;     //> core.output( "Q.S, "+ r_d ); //> Distance from point to dividing line.
+  let                                   r_d_360                 = Math.asin(dDotQS/dS)*180/Math.PI;     // core.output( "Q.S, "+ r_d ); //> Distance from point to dividing line.
 return r_d_360;                                                                                         //> Report distance from point to dividing line defined by Canis Minor.
 }//dOverLine_360//////////////////////////////////////////////////////////////////////////////////////////>
 function                                TEST_dOverLine_360(///////////////////////////////////////////////> Test the above code graphically.
@@ -395,24 +376,24 @@ function                                TEST_dOverLine_360(/////////////////////
   let                                   dBLong                  = map["raJ2000" ];                      //>
   let                                   r                       = "";                                   //>
   let                                   as                      = [                                     //>
-           "1 Gem"     ,"2 Gem"     ,"3 Gem"   ,"4 Gem"   ,"5 Gem"  ,"6 Gem"  ,"7 Gem"     ,"8 Gem"     //>
-          ,"9 Gem"     ,"10 Gem"    ,"11 Gem"  ,"12 Gem"  ,"13 Gem" ,"14 Gem" ,"15 Gem"    ,"16 Gem"    //> "17 Gem" ,
-          ,"18 Gem"    ,"19 Gem"    ,"20 Gem"                                                           //> "21 Gem" ,
-          ,"22 Gem"    ,"23 Gem"    ,"24 Gem"  ,"25 Gem"  ,"26 Gem" ,"27 Gem" ,"28 Gem"                 //> "29 Gem" ,
-          ,"30 Gem"    ,"31 Gem"    ,"32 Gem"  ,"33 Gem"  ,"34 Gem" ,"35 Gem" ,"36 Gem"    ,"37 Gem"    //>
-          ,"38 Gem"    ,"39 Gem"    ,"40 Gem"  ,"41 Gem"  ,"42 Gem" ,"43 Gem" ,"44 Gem"    ,"45 Gem"    //>
-          ,"46 Gem"    ,"47 Gem"    ,"48 Gem"  ,"49 Gem"                                                //> "50 Gem" ,
-          ,"51 Gem"    ,"52 Gem"    ,"53 Gem"  ,"54 Gem"  ,"55 Gem" ,"56 Gem" ,"57 Gem"    ,"58 Gem"    //>
-          ,"59 Gem"    ,"60 Gem"    ,"61 Gem"  ,"62 Gem"  ,"63 Gem" ,"64 Gem" ,"65 Gem"    ,"66 Gem"    //>
-          ,"67 Gem"    ,"68 Gem"    ,"69 Gem"  ,"70 Gem"  ,"71 Gem"                                     //> "72 Gem" ,"73 Gem" ,
-          ,"74 Gem"    ,"75 Gem"    ,"76 Gem"  ,"77 Gem"  ,"78 Gem" ,"79 Gem" ,"80 Gem"    ,"81 Gem"    //>
-          ,"82 Gem"    ,"83 Gem"    ,"84 Gem"  ,"85 Gem"                                                //> "86 Gem" ,
-          ,"87 Gem"    ,"1 CMi"     ,"2 CMi"   ,"3 CMi"   ,"4 CMi"  ,"5 CMi"  ,"6 CMi"     ,"7 CMi"     //>
-          ,"8 CMi"     ,"9 CMi"     ,"10 CMi"  ,"11 CMi"                                                //> "12 CMi" ,
-          ,"13 CMi"    ,"14 CMi"    ,"1 Aur"   ,"2 Aur"   ,"3 Aur"  ,"4 Aur"  ,"5 Aur"     ,"6 Aur"     //>
-          ,"7 Aur"     ,"8 Aur"     ,"9 Aur"   ,"10 Aur"  ,"11 Aur"                                     //> "12 Aur" ,
-          ,"13 Aur"    ,"14 Aur"    ,"15 Aur"  ,"16 Aur"  ,"17 Aur" ,"18 Aur" ,"19 Aur"    ,"20 Aur"    //>
-          ,"21 Aur"    ,"22 Aur"    ,"23 Aur"  ,"24 Aur"  ,"25 Aur" ,"26 Aur" ,"HIP 28500" ,"HIP 28417" //>
+           "1 Gem"     ,"2 Gem"     ,"3 Gem"   ,"4 Gem"   ,"5 Gem"  ,"6 Gem"  ,"7 Gem"     ,"8 Gem"     //>                       
+          ,"9 Gem"     ,"10 Gem"    ,"11 Gem"  ,"12 Gem"  ,"13 Gem" ,"14 Gem" ,"15 Gem"    ,"16 Gem"    //> "17 Gem" ,            
+          ,"18 Gem"    ,"19 Gem"    ,"20 Gem"                                                           //> "21 Gem" ,            
+          ,"22 Gem"    ,"23 Gem"    ,"24 Gem"  ,"25 Gem"  ,"26 Gem" ,"27 Gem" ,"28 Gem"                 //> "29 Gem" ,            
+          ,"30 Gem"    ,"31 Gem"    ,"32 Gem"  ,"33 Gem"  ,"34 Gem" ,"35 Gem" ,"36 Gem"    ,"37 Gem"    //>                       
+          ,"38 Gem"    ,"39 Gem"    ,"40 Gem"  ,"41 Gem"  ,"42 Gem" ,"43 Gem" ,"44 Gem"    ,"45 Gem"    //>                       
+          ,"46 Gem"    ,"47 Gem"    ,"48 Gem"  ,"49 Gem"                                                //> "50 Gem" ,            
+          ,"51 Gem"    ,"52 Gem"    ,"53 Gem"  ,"54 Gem"  ,"55 Gem" ,"56 Gem" ,"57 Gem"    ,"58 Gem"    //>                       
+          ,"59 Gem"    ,"60 Gem"    ,"61 Gem"  ,"62 Gem"  ,"63 Gem" ,"64 Gem" ,"65 Gem"    ,"66 Gem"    //>                       
+          ,"67 Gem"    ,"68 Gem"    ,"69 Gem"  ,"70 Gem"  ,"71 Gem"                                     //> "72 Gem" ,"73 Gem" ,  
+          ,"74 Gem"    ,"75 Gem"    ,"76 Gem"  ,"77 Gem"  ,"78 Gem" ,"79 Gem" ,"80 Gem"    ,"81 Gem"    //>                       
+          ,"82 Gem"    ,"83 Gem"    ,"84 Gem"  ,"85 Gem"                                                //> "86 Gem" ,            
+          ,"87 Gem"    ,"1 CMi"     ,"2 CMi"   ,"3 CMi"   ,"4 CMi"  ,"5 CMi"  ,"6 CMi"     ,"7 CMi"     //>                       
+          ,"8 CMi"     ,"9 CMi"     ,"10 CMi"  ,"11 CMi"                                                //> "12 CMi" ,            
+          ,"13 CMi"    ,"14 CMi"    ,"1 Aur"   ,"2 Aur"   ,"3 Aur"  ,"4 Aur"  ,"5 Aur"     ,"6 Aur"     //>                       
+          ,"7 Aur"     ,"8 Aur"     ,"9 Aur"   ,"10 Aur"  ,"11 Aur"                                     //> "12 Aur" ,            
+          ,"13 Aur"    ,"14 Aur"    ,"15 Aur"  ,"16 Aur"  ,"17 Aur" ,"18 Aur" ,"19 Aur"    ,"20 Aur"    //>                       
+          ,"21 Aur"    ,"22 Aur"    ,"23 Aur"  ,"24 Aur"  ,"25 Aur" ,"26 Aur" ,"HIP 28500" ,"HIP 28417" //>                       
           ,"HIP 28327" ,"HIP 28697" ,"136 Tau" ,"139 Tau"         ];                                    //>
   for( let i = 0; i < as.length; i++ ){                                                                 //>
    core.output(r);                                                                                      //>
@@ -420,7 +401,7 @@ function                                TEST_dOverLine_360(/////////////////////
    Mark(  r,"disk" ,dOverLine_360(map["decJ2000"],map["raJ2000"]) < 0  ?"#ff0000"  :"#00ff00" ,10  );   //>
   }//for i                                                                                              //>
 }//TEST_dOverLine_360/////////////////////////////////////////////////////////////////////////////////////>
-
+                                                                                                        
 
 function                                DrawLine(/////////////////////////////////////////////////////////>
 ){                                      //////////////////////////////////////////////////////////////////>
@@ -448,6 +429,8 @@ function                                DrawLine(///////////////////////////////
   let                                   x3               = ( xB - xA*Math.cos(dPsi) ) / Math.sin(dPsi); //>
   let                                   y3               = ( yB - yA*Math.cos(dPsi) ) / Math.sin(dPsi); //>
   let                                   z3               = ( zB - zA*Math.cos(dPsi) ) / Math.sin(dPsi); //>
+//let                                   lat3             = Math.asin(z3);                               //> Back to polar latitude and
+//let                                   long3            = Math.atan2(y3 ,x3);                          //> longitude result.
   for( let dPhi = 0; dPhi <= 8.5*dPsi; dPhi += 0.25*dPsi ){                                             //> DOTTED LINE
    let                                  xD               = xA*Math.cos(dPhi) + x3*Math.sin(dPhi);       //>
    let                                  yD               = yA*Math.cos(dPhi) + y3*Math.sin(dPhi);       //>
@@ -455,115 +438,24 @@ function                                DrawLine(///////////////////////////////
    let                                  latD             = Math.asin(  zD     );                        //> Back to polar
    let                                  longD            = Math.atan2( yD ,xD );                        //> result.
    MarkerMgr.markerEquatorial( longD*180/Math.PI ,latD*180/Math.PI ,true,true ,"cross" ,"#ffff00" ,4);  //>
+   //core.output( "dPhi: "+ dPhi +",lat," + (latD*180/Math.PI) +",long,"+ longD*180/Math.PI +",(,"+ xD +","+ yD +","+ zD +",)" ); //>
   }//for dPhi                                                                                           //>
 }//DrawLine///////////////////////////////////////////////////////////////////////////////////////////////>
-
-
-function                                s5(///////////////////////////////////////////////////////////////#
-                                        a                                                               //>
-){                                      //////////////////////////////////////////////////////////////////>
-return a;
-// let                                    r_s                     = a +"      ";                          //>
-// let                                    i                       = r_s.indexOf(".");                     //>
-// if( i < 0 ){                                                                             return a +"";}//>
-//return r_s.slice(0 ,i) +"."+ r_s.slice(i+1 ,i+6);                                                       //>
-}//s5/////////////////////////////////////////////////////////////////////////////////////////////////////>
-
-
-function                                avBasics(/////////////////////////////////////////////////////////> Set Time to time when Vega kisses the horizon.
-                                        a_nDay                                                          //>
-){                                      //////////////////////////////////////////////////////////////////>
-  core.setJDay( a_nDay );                                                                               //> Set the display to the day in question.
-  let                                   sDate                   = core.getDate();                       //> Get ISO representation of the date.
-  let                                   mapSun                  = mapSelect("Sun" );
-  let                                   mapMoon                 = mapSelect("Moon");
-  let                                   dSunSet_h               = mapSun[ "set-dhr" ];                  //> mapSelect the sun so we can get time of sunset.
-  let                                   r_dMoonRise_h           = mapMoon["rise-dhr"];                  //> mapSelect the moon so we can get the time of sunrise.
-  let                                   r_dMoonSet_h            = -1;                                   //>
-  if(       isNaN(r_dMoonRise_h)         ){ r_dMoonRise_h = -1;                                         //> If unable to get the moonrise then flag this.
-  }else{                                    r_dMoonSet_h  = mapMoon["set-dhr" ];                        //> If no problem, then get the time of moonset.
-   if(      isNaN(r_dMoonSet_h)          ){ r_dMoonSet_h = -1; }                                        //> If unable to get the moonset then flag this,
-   else if( r_dMoonSet_h < r_dMoonRise_h ){ r_dMoonSet_h = -1; }                                        //> or if the moonset is before the moonrise, then we will want to try again.
-   else if( r_dMoonSet_h < dSunSet_h     ){ r_dMoonSet_h = -1; r_dMoonRise_h = -1; }                    //> If moonset is before sunset, then we will want to try again.
-  }//if                                                                                                 //> .
-                                                                                                        //>
-  core.setJDay( a_nDay + 1 );                                                                           //> Next day:
-  let                                   dSunRise_h              = -1;                                   //> The time of the runrise
-  mapSun  = mapSelect("Sun" ); dSunRise_h  = mapSun[ "rise-dhr"] + 24;                                  //> mapSelect the sun so we can find sunrise, the end of the night.
-  mapMoon = mapSelect("Moon");                                                                          //> mapSelect the moon.
-  if( r_dMoonRise_h < 0 ){                                                                              //> If we still need the moonrise, then
-   r_dMoonRise_h = mapMoon["rise-dhr"];                                                                 //> get it now.
-   if(   isNaN(r_dMoonRise_h)      ){ r_dMoonRise_h = -1; }                                             //> If there is a problem, then flag it as unavailable.
-   else{                                                                                                //> otherwise,
-    r_dMoonRise_h += 24;                                                                                //> remember we are past midnight.
-    if( dSunRise_h < r_dMoonRise_h ){ r_dMoonRise_h = -1; }                                             //> If the moonrise is after sunrise, then flag it as unavailable.
-  }}//if//if                                                                                            //>
-return [sDate +","+ a_nDay +","+ s5( dSunSet_h     ) // .toFixed(4)                                     //> Output what we have so far.
-                           +","+ s5( dSunRise_h    ) // .toFixed(4)                                     //>
-                           +","+ s5( r_dMoonRise_h ) // .toFixed(4)                                     //>
-       ,r_dMoonSet_h                                                                                    //>
-       ,r_dMoonRise_h                                                                                   //>
-       ];                                                                                               //>
-}//avBasics///////////////////////////////////////////////////////////////////////////////////////////////>
-
-
-function                                Table(////////////////////////////////////////////////////////////# Start main execution
-                                        a_nGo                                                           //>
-,                                       a_nEnd                                                          //>
-,                                       a_sPath                                                         //>
-){                                      //////////////////////////////////////////////////////////////////>
-  core.resetOutput();                                                                                   //> Clear output file buffer.
-  Reset();                                                                                              //> Reset Stellarium to known state, or best possible.
-  core.output("----- sTable");                                                                          //>
-  core.setObserverLocation( -1.82618827 ,51.17886594 ,0 ,0 ,"Stonehenge" ,"Earth" );                    //> Stonehenge = 51.17886594 ,-1.82618827   Cool location
-  core.setTimezone("LMST");                                                                             //> "LMST" = Local Mean Solar Time    https://stellarium.org/doc/23.0/classStelMainScriptAPI.html#abc7e6a709ec2670b6581ce4b51db3185
-  core.setDate( a_nGo +"-01-01T00:00:00" ,"LMST" );                                                     //> Before early start of year.
-  let                                   nDay                    = Math.floor( core.getJDay() );         //> Get the count of days, the noon before midnight.
-  Look( 90,  180  ,180 ,0.1 );                                                                          //> Look straight up, south at bottom, whole sky view, quick.
-  core.output( "Date,nDay" +",Sunset,Sunrise,Moonrise" +",Moonset" +",MOON_when,illumination,ra,dec"    //> Row of table headers.
-                                                                   +",TIME_when,illumination,ra,dec"    //>
-                                                                   +",VEGA_when,illumination,ra,dec"    //>
-  );                                                                                                    //>
-  let                                   dNoon                   = 0;                                    //>
-  for( dNoon = nDay; dNoon < nDay + (a_nEnd - a_nGo )*365 + 7; dNoon++ ){                               //> For a number of years (plus a bit of slop).
-   let                                  av                      = avBasics(dNoon);                      //>
-   sRow =                               av[0];                                                          //>
-   let                dMoonSet_h      = av[1];                                                          //>
-   let                dMoonRise_h     = av[2];                                                          //>
-                                                                                                        //> But, if we have a moonrise time, then not a new moon, so...
-   let                                  m                       = mapSelect("Moon");         // NAP();  //> Refresh info about the moon.
-   if( dMoonSet_h < 0 ){ dMoonSet_h  = m["set-dhr" ] + 24; }                                            //> MOST ROWS: If still looking for the moonset, then get it now, including day we have skipped in hours.
-   sRow += ","+s5(dMoonSet_h);                                                                          //>
-//.core.setJDay( a_nDayI + 1 );                                                                 NAP();  //> Next day:
-//.core.setJDay( a_nDayI-0.5+( (dSet_h + dRise_h)/2 - 5/60 )/24   );                                    //> At time of Vega kiss...
-//.core.setJDay( dSunset  );                                                              core.wait(2); //> Sunset - start of night.
-//.core.setJDay( dNoon + 0.5 );                                                           core.wait(3); //> Midnight.
-   core.setJDay( dNoon - 0.5 + dMoonSet_h/24             );   m = mapSelect("Moon");                    //> MOON: At time of moonset...
-   sRow += ","+core.getDate()+","+s5(m["illumination"])
-                             +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
-   core.setJDay( dNoon + 0.5                             );   m = mapSelect("Moon");                    //> TIME: At Midnight...
-   sRow += ","+core.getDate()+","+s5(m["illumination"])
-                             +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
-   VegaKiss(     dNoon                                   );   m = mapSelect("Moon");                    //> VEGA: When Vega kisses horizon...
-   sRow += ","+core.getDate()+","+s5(m["illumination"])
-                             +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
-   core.output( sRow );                                                                                 //>
-  }//for dNoon                                                                                          //>
-  core.saveOutputAs( a_sPath + "table012_"+ a_nGo +"_"+ a_nEnd +".csv" );                               //> Write
-}//Table//////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
 function                                sSimulate(////////////////////////////////////////////////////////> Start main execution
                                         a_nGo                                                           //>
 ,                                       a_nEnd                                                          //>
 ,                                       a_sFirstQuarter                                                 //> When first-quarter observation is made: at moonset,
+,                                       a_bAboveHorizon                                                 //> Demand that Moon is above horizon at "midnight";
 ,                                       a_nCountDays                                                    //> Number of nights to count, where 0 = last crescent, 1 = first gibbous, 7 should be full.
 ,                                       a_sPath                                                         //>
 ){                                      //////////////////////////////////////////////////////////////////>
- let                                    sFile            = "out007_"+ a_nGo                             //>
-                                                                +"_"+ a_nEnd                            //>
-                                                                +"_"+ a_sFirstQuarter                   //>
-                                                                +"_"+ a_nCountDays;                     //>
+ let                                    sFile                = "out007_"+ a_nGo                         //>
+                                                                    +"_"+ a_nEnd                        //>
+                                                                    +"_"+ a_sFirstQuarter               //>
+                                                                    +"_"+ ( a_bAboveHorizon ?"v" :"_" ) //>
+                                                                    +"_"+ a_nCountDays;                 //>
   core.resetOutput();                                                                                   //> Clear output file buffer.
   Reset();                                                                                              //> Reset Stellarium to known state, or best possible.
   MarkerMgr.deleteAllMarkers();                                                                         //> https://stellarium.org/doc/23.0/classMarkerMgr.html
@@ -574,17 +466,17 @@ function                                sSimulate(//////////////////////////////
   MarkStars();                                                                                          //> Mark major stars.
   DrawLine();                                                                                           //> Draw dotted line through Canis Minor.
   let                                   nDay                    = Math.floor( core.getJDay() );         //> Get the count of days, the noon before midnight.
-  //core.moveToAltAzi( 90,  180  ,1 );                                                                  //>
+  //core.moveToAltAzi( 90,  180  ,1 );                                                                    
   // ???set zoom?                                                                                       //>
   Look( 90,  180  ,180 ,0.1 );                                                                          //> Look straight up, south at bottom, whole sky view, quick.
-//return; // DEBUG                                                                                      //>
+
   let                                   dSeasonMin              =  99999999;                            //>
   let                                   dSeasonMax              = -99999999;                            //>
   let                                   dSeasonCount            = 0;                                    //>
   let                                   dSeasonSum              = 0;                                    //>
   let                                   dSeason2Sum             = 0;                                    //>
   let                                   dDev                    = 0;                                    //>
-                                                                                                        //>
+
   let                                   mapSun                  = null;                                 //> List of data about the sun.
   let                                   mapMoon                 = null;                                 //> List of data about the moon.
   core.output( "moon,Date,nDay" +",Sunset,Sunrise,Moonrise" +",_TYPE_,when"                             //> Row of table headers.
@@ -600,33 +492,36 @@ function                                sSimulate(//////////////////////////////
    if( 0 < iGibbous ){ iGibbous++; }                                                                    //> If not turned off, count days after 1st quarter moon.
    let                                  av                      = avBasics(dNoon);                      //>
    sRow = iMoon +","+ av[0];   dMoonSet_h = av[1];   dMoonRise_h = av[2];                               //>
-   if( dMoonRise_h < 0 ){   if( 0 < iGibbous ){iMoon++; iGibbous = -1;}    core.output(sRow); continue;}//> If no moon-rise time (at the new moon), then reset this flag as this can happen at the new moon.
+   if( dMoonRise_h < 0 ){   if( 0 < iGibbous ){iMoon++; iGibbous = -1;}                     core.output(sRow); continue;}//> If no moon-rise time (at the new moon), then reset this flag at the new moon.
                                                                                                         //> But, if we have a moonrise time, then not a new moon, so...
    mapMoon = mapSelect("Moon");                                                                         //> Refresh info about the moon.
    if( dMoonSet_h < 0 ){ dMoonSet_h  = mapMoon["set-dhr" ] + 24; }                                      //> MOST ROWS: If still looking for the moonset, then get it now, including day we have skipped in hours.
    switch( a_sFirstQuarter ){                                                                           //>
    case       "MOON": sRow += ",_"+ "MOON" +"_"; core.setJDay( dNoon - 0.5 + dMoonSet_h/24 );           //> MOONSET: At time of moonset...
-   break;case "TIME": sRow += ",_"+ "TIME" +"_"; core.setJDay( dNoon + 0.5                 );           //> or at local mean MIDNIGHT...
+   break;case "TIME": sRow += ",_"+ "TIME" +"_"; core.setJDay( dNoon - 0.5 +         24/24 );           //> or at local mean MIDNIGHT...
    break;case "VEGA": sRow += ",_"+ "VEGA" +"_"; VegaKiss(     dNoon                       );           //> VEGA KISS: At Vega=midnight? Set Time to time when Vega kisses the horizon.
    }//switch a_sFirstQuarter                                                                            //>
                                                                                                         //>
    NAP();   sRow += ","+ core.getDate();                                                                //>
    let                                  dIllumination           = mapMoon["illumination"];              //> Illumination.
    let                                  dAltitude               = mapMoon["altitude"    ];              //>
-   sRow += ","+ s5( dMoonSet_h          ) // .toFixed(4)                                                 //> Info about moon...
-          +","+ s5( dIllumination       ) // .toFixed(4)                                                 //>
+   sRow += ","+ dMoonSet_h         .toFixed(4)                                                          //> Info about moon...
+          +","+ dIllumination      .toFixed(4)                                                          //>
+          +","+ dAltitude          .toFixed(4)                                                          //>
+          +","+ mapMoon["raJ2000" ].toFixed(4)                                                          //>
+          +","+ mapMoon["decJ2000"].toFixed(4)                                                          //>
           ;                                                                                             //>
-   if(  dIllumination < 1 ){                                                                            //> If a new moon by illumination (ensure at least a day or two are not suitble for observing the Moon) ...
-    if( 0 < iGibbous ){ iMoon++; iGibbous = -1; }                          core.output(sRow); continue ;//> Reset this flag at the new moon.
+   if(  dIllumination < 1 ){                                                                            //> If a new moon by illumination (ensure at least a day or two are not suitble for observing the Moon) ...      
+    if( 0 < iGibbous ){ iMoon++; iGibbous = -1; }                                                       //> Reset this flag at the new moon.
    }else{                                                                                               //> If not a new moon...
-    if(   iGibbous <= 0   &&   50 < dIllumination ){ iGibbous = 1; }                                    //> If gibbous count has not started,
+    if(   iGibbous <= 0                                                                                 //> If gibbous count has not started,
+     &&   50 < dIllumination                                                                            //> and moon is gibbous,
+      &&  ( !a_bAboveHorizon   ||   0 <= dAltitude )                                                    //> and, if we care, moon is above the horizon
+    ){   iGibbous = 1;   }                                                                              //> then star the gibbous nights count.
    }//if                                                                                                //>
-   sRow += ","+ s5( dAltitude           ) // .toFixed(4)                                              //>
-          +","+ s5( mapMoon["raJ2000" ] ) // .toFixed(4)                                              //>
-          +","+ s5( mapMoon["decJ2000"] ) // .toFixed(4)                                              //>
-          +","+ iGibbous;                                                                               //> Add gibbous count to output row.
+   sRow += ",gg,"+ iGibbous;                                                                            //> Add gibbous count to output row.
                                                                                                         //>
-   if( 0 != iMoon%12   ||   iGibbous <= 0 ){                               core.output(sRow); continue;}//> If not in last month, or gibbous count has not started, then move on to next day.
+   if( 0 != iMoon%12   ||   iGibbous <= 0 ){                                                core.output(sRow); continue;}//> Unless in last month and gibbous moon seen, then move on to next day.
                                                                                                         //> But, if in last month and gibbous count has started...
    sRgb = ["#00ff00","#ff0000","#00ffff","#ff8800","#0000ff","#ffff00","#ff00ff","#00ff00"              //>
           ,          "#ff0000","#00ffff","#ff8800","#0000ff","#ffff00","#ff00ff","#00ff00"              //>
@@ -634,63 +529,63 @@ function                                sSimulate(//////////////////////////////
           ,          "#ff0000","#00ffff","#ff8800","#0000ff","#ffff00","#ff00ff","#00ff00"              //>
           ,"#ffffff"                                                                                    //>
           ][iGibbous]                                                                                   //>
-   if( a_nCountDays != iGibbous ){      Mark("Moon" ,"circle"  ,sRgb ,4 ); core.output(sRow); continue;}//>
-   let                                  dNoonWas                = dNoon;
+   if( a_nCountDays != iGibbous ){                       Mark("Moon" ,"circle"  ,sRgb ,4 ); core.output(sRow); continue;}//>
    dNoon += 354 - a_nCountDays - 10;                                                                    //>
    mapMoon = mapSelect("Moon");                                                                         //> Refresh info about the moon.
    iMoon += 12;                                                                                         //> Last month of lunar year.
-   iGibbous = -1;                                                                                       //> Reset this, so we look for first-quarter moon again.
+   iGibbous = 0;                                                                                        //> Reset this, so we look for first-quarter moon again.
  // if( mapMoon["raJ2000"] < 90                                    ){                                   //>
-   let               dLeap = ( 0 < dOverLine_360(mapMoon["decJ2000"] ,mapMoon["raJ2000"]) )   ?30   :0; //>
-   dNoon += dLeap;                                                                                      //>
-   sRow += ","+ dLeap + ","+ (dNoon - iDay1Was - 354);   iDay1Was = dNoon;                              //> Year length.
+   let                dLeap = ( 0 < dOverLine_360(mapMoon["decJ2000"] ,mapMoon["raJ2000"]) )  ?30   :0; //>
+   if( 0 == dLeap ){ sRow += ",aaa,"+ dLeap;                 }
+   else            { sRow += ",BBB,"+ dLeap; dNoon += dLeap; }
+                                                                                                        //>
+   sRow += ",ccc,"+ dLeap + ","+ (dNoon - iDay1Was - 354);   iDay1Was = dNoon;                              //> Year length.
    if( 10*12 + 2 < iMoon ){                                                                             //> Skip a few initial years, to get everything synced up.
-    Mark( "Moon" , 0 == dLeap   ?"cross"   :"disk"   ,sRgb ,6 );                                        //>
-    Mark( "Moon" , ( core.getDate() ).slice(0,10)    ,sRgb ,24);                                        //>
-    // if( 1 == iGibbous ){ core.wait(1); }                                                                //>
-
-    let                                 dSeason                 = dNoonWas / 365.24219 + 0.5;           //>
+    sRow += ",ddd,"+ dLeap;              
+    Mark( "Moon" , 0 == dLeap   ?"cross"   :"disk"   ,sRgb ,6 );   
+    if( 1 == iGibbous ){ core.wait(1); }                                                                //>
+    let                                 dSeason                 = dNoon / 365.24219 + 0.5;              //>
     dSeason -= Math.floor(dSeason);                                                                     //> Keep fractional part only.
-    sRow += ","+ s5( dSeason ); //.toFixed(4)                                                        //>
+    sRow += ","+ dSeason.toFixed(4) +",eee,"+ dLeap;                                                                    //>
     if( dSeason < dSeasonMin ){ dSeasonMin = dSeason; }                                                 //> Update minimum and
     if( dSeasonMax < dSeason ){ dSeasonMax = dSeason; }                                                 //> maximum fractional part (of the year).
     dSeasonCount +=               1;                                                                    //> Update sums for calculating
     dSeasonSum   +=         dSeason;                                                                    //> statistics
     dSeason2Sum  += dSeason*dSeason;                                                                    //> .
+   }else{
+    sRow += ",fff,"+ dLeap;              
    }//if                                                                                                //>
-                                                                                                        //>
+
    core.output( sRow );                                                                                 //>
   }//for dNoon                                                                                          //>
                                                                                                         //>
   dDev = Math.sqrt(   ( dSeasonCount*dSeason2Sum - dSeasonSum*dSeasonSum )                              //> Calculate Standard Sample Deviation
                      /(           dSeasonCount*(dSeasonCount - 1)        )                              //>
          );                                                                                             //>
-  // Day  0 is Nov 24, 4714 BC, in the proleptic Gregorian calendar, Day  6 is Nov 30, Day  7 is Dec  1, Day 37 is Dec 31.
-  core.output(   "Min"  +","+ dSeasonMin              +","+ ( (dSeasonMin              - 0.5)*365.24219 - 37 )   );//>
-  core.output(   "Max"  +","+ dSeasonMax              +","+ ( (dSeasonMax              - 0.5)*365.24219 - 37 )   );//>
-  core.output(   "N"    +","+ dSeasonCount                                                                       );//>
-  core.output(   "Mean" +","+ dSeasonSum/dSeasonCount +","+ ( (dSeasonSum/dSeasonCount - 0.5)*365.24219 - 37 )   );//>
-  core.output(   "Dev"  +","+ dDev                    +","+    dDev                          *365.24219          );//>
+  core.output( "Min"  +","+ dSeasonMin              +","+ (dSeasonMin              - 0.5)*365.24219 );  //>
+  core.output( "Max"  +","+ dSeasonMax              +","+ (dSeasonMax              - 0.5)*365.24219 );  //>
+  core.output( "N"    +","+ dSeasonCount                                                            );  //>
+  core.output( "Mean" +","+ dSeasonSum/dSeasonCount +","+ (dSeasonSum/dSeasonCount - 0.5)*365.24219 );  //>
+  core.output( "Dev"  +","+ dDev                    +","+  dDev                          *365.24219 );  //>
                                                                                                         //>
   //. let                               g_iShot                 = 0;                                    //>
   //. core.setJDay( dSunset  );                                                           core.wait(2); //> Sunset - start of night.
   //. g_iShot = iEasePng( 0 ,dSunset ,dSunrise ,4 /24/60); //> Screenshot every 4 minutes               //>
                                                                                                         //>
-  core.setJDay( dNoon + 0.5 );                                                         // core.wait(3); //> Midnight.
-  core.saveOutputAs(            "output.csv" );                                                         //> Write output to a file.
-  core.saveOutputAs( a_sPath + sFile +".csv" );                                                         //> Write a copy.
+  core.setJDay( dNoon + 0.5 );                                                            core.wait(3); //> Midnight.
+  core.saveOutputAs(            "output.txt" );                                                         //> Write output to a file.
+  core.saveOutputAs( a_sPath + sFile +".txt" );                                                         //> Write a copy.
   core.screenshot(       "a_"+ sFile ,false ,a_sPath ,true ,'png' );                                    //> Save the screen.
   Look( 70,  210  ,60 ,1 );                                                                             //> Zoom in on Gemini and Canis Minor.
   core.screenshot(       "z_"+ sFile ,false ,a_sPath ,true ,'png' );                                    //> Save the screen.
-return sFile +".csv"                                                                                    //> Report the summary lines, starting with details file name,...
-       +","+     "Min"  +","+ dSeasonMin              +","+ ( (dSeasonMin              - 0.5)*365.24219 - 37 )//> min and
-       +","+     "Max"  +","+ dSeasonMax              +","+ ( (dSeasonMax              - 0.5)*365.24219 - 37 )//> max dates relative to day count in years, and also in days.
-       +","+     "N"    +","+ dSeasonCount                                                                    //> Count in stats.
-       +","+     "Mean" +","+ dSeasonSum/dSeasonCount +","+ ( (dSeasonSum/dSeasonCount - 0.5)*365.24219 - 37 )//> Average date in years, and also in days.
-       +","+     "Dev"  +","+ dDev                    +","+    dDev                          *365.24219 //> Standard deviation in years, and also in days.
+return sFile +".txt"                                                                                    //> Report the summary lines, starting with details file name,...
+       +","+   "Min"  +","+ dSeasonMin              +","+ (dSeasonMin              - 0.5)*365.24219     //> min and 
+       +","+   "Max"  +","+ dSeasonMax              +","+ (dSeasonMax              - 0.5)*365.24219     //> max dates relative to day count in years, and also in days.
+       +","+   "N"    +","+ dSeasonCount                                                                //> Count in stats.
+       +","+   "Mean" +","+ dSeasonSum/dSeasonCount +","+ (dSeasonSum/dSeasonCount - 0.5)*365.24219     //> Average date in years, and also in days.
+       +","+   "Dev"  +","+ dDev                    +","+ dDev                           *365.24219     //> Standard deviation in years, and also in days.
 ;                                                                                                       //>
 }//sSimulate//////////////////////////////////////////////////////////////////////////////////////////////>
-
 
 // core.output( core.mapToString(mapInfo ) );                                                           //> Info available from Stellarium:
 //  "above-horizon"                               = true                                                //> if celestial body is above horizon or not.
@@ -773,22 +668,19 @@ return sFile +".csv"                                                            
 
   Reset();                                                                                              //> Clear Stellarium to known state.
 // TEST_GreatCircle();                                                                                  //>
-//const                                 sPATH = "/home/dave/Desktop/AAA/hey_diddle/lunascope/trials/";  //>
-  const                                 sPATH = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //>
-//.   let                                   r_s                     =
-//.   "file,min,year,days,max,year,days,N,N,Mean,year,days,Deviation,year,days";                            //> Overall summary of trial runs.
-//. //                       GO  ,END ,a_sFirstQuarter,a_nCountDays,a_sPath                                 //>
-//.   r_s += "\n"+ sSimulate(2000,2100,"MOON"         ,8           ,sPATH);                                 //>
-//.   r_s += "\n"+ sSimulate(2000,2100,"VEGA"         ,8           ,sPATH);                                 //>
-//.   r_s += "\n"+ sSimulate(2000,2100,"MOON"         ,7           ,sPATH);                                 //>
-//.   r_s += "\n"+ sSimulate(2000,2100,"VEGA"         ,7           ,sPATH);                                 //>
-//. //r_s += "\n"+ sSimulate(2000,2010,"VEGA"         ,8           ,sPATH);                                 //>
-//.   core.resetOutput();                                                                                   //> Clear output file buffer.
-//.   core.output( r_s );
-//.   core.saveOutputAs( sPATH + "output_Summary.csv" );                                                    //> Write output to a file.
+  const                                 sPATH  = "/home/dave/Desktop/AAA/hey_diddle/lunascope/trials/"; //>
+  let                                   r_s                     = 
+  "file,min,year,days,max,year,days,N,N,Mean,year,days,Deviation,year,days";                            //> Overall summary of trial runs.
+//                       GO  ,END ,a_sFirstQuarter,a_bAboveHorizon,a_nCountDays,a_sPath,a_sFile         //>
+//r_s += "\n"+ sSimulate(2000,2100,"MOON"         ,false       ,8 ,sPATH);                              //>
+//r_s += "\n"+ sSimulate(2000,2100,"VEGA"         ,false       ,8 ,sPATH);                              //>
+//r_s += "\n"+ sSimulate(2000,2100,"VEGA"         ,false       ,7 ,sPATH);                              //>
+  r_s += "\n"+ sSimulate(2000,2010,"VEGA"         ,true        ,8 ,sPATH);                              //>
 
-for( let iYear = 2000; iYear < 2010; iYear += 1 ){ Table( iYear ,iYear + 1 ,sPATH ); }                //>
-//for( let iYear = 1000; iYear < 2000; iYear += 10 ){ Table( iYear ,iYear + 10 ,sPATH ); }
+  core.resetOutput();                                                                                   //> Clear output file buffer.
+  core.output( r_s );
+  core.saveOutputAs( sPATH + "output_Summary.txt" );                                                    //> Write output to a file.
+
 
 //TEST_dOverLine_360();
 
