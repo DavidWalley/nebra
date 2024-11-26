@@ -31,7 +31,6 @@ Some details of potential calendars are beyond computer analysis. For example, n
 The hope is that running the code in this repo leads to new ideas and further investigations that use or extend the code.
 
 # Stellarium
-
 Stellarium software v:24.2+ , downloaded for free from stellarium.org, was the starting point for calculating and displaying the night sky for current and historic dates. Stellarium contributors (2024). Stellarium v24.3 Astronomy Software. URL https://stellarium.org/. DOI: 10.5281/zenodo.13825639
 
 This research has made use of the Stellarium planetarium. Zotti, G., Hoffmann, S. M., Wolf, A., Chéreau, F., & Chéreau, G. (2021). The Simulated Sky: Stellarium for Cultural Astronomy Research. Journal of Skyscape Archaeology, 6(2), 221–258. DOI: 10.1558/jsa.17822
@@ -46,3 +45,20 @@ The first part is a Stellarium script which generates CSV (comma separated value
 
 The second part is a Haxe program for reading the generated files, and testing various potential astronomical procedures reasonably quickly. The Haxe language is designed to use and be compatible with, and exportable to, various other languages including JavaScript, Java, Python and C.
 
+# Files and Directories
+README.md                       This file.
+lunascope.ssc                   Stellarium script for generating sun and moon data files.
+TestProcedures.hx               Haxe code for reading data files and testing various lunar sync systems.
+Tool_Chain_lunascope.hx         Haxe bodge code for pre-processing and the Stellarium script lunascope.ssc
+
+
+Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+
+This work is licensed under a
+[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
+
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
+
+[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
+[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
+[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
