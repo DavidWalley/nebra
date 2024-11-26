@@ -46,12 +46,12 @@ The first part is a Stellarium script which generates CSV (comma separated value
 The second part is a Haxe program for reading the generated files, and testing various potential astronomical procedures reasonably quickly. The Haxe language is designed to use and be compatible with, and exportable to, various other languages including JavaScript, Java, Python and C.
 
 # Files and Directories
-README.md                       This file.
-lunascope.ssc                   Stellarium script for generating sun and moon data files.
-TestProcedures.hx               Haxe code for reading data files and testing various lunar sync systems.
-Tool_Chain_lunascope.hx         Haxe bodge code for pre-processing and the Stellarium script lunascope.ssc
+| README.md               | This file.                                                                 |
+| lunascope.ssc           | Stellarium script for generating sun and moon data files.                  |
+| TestProcedures.hx       | Haxe code for reading data files and testing various lunar sync systems.   |
+| Tool_Chain_lunascope.hx | Haxe bodge code for pre-processing and the Stellarium script lunascope.ssc |
 
-
+# License
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
 This work is licensed under a
