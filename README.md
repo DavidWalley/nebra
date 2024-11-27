@@ -11,22 +11,20 @@ Such lunar calendars account for 354 days of the modern value of 365.24219 days 
 
 Deciding whether to add a "leap lunar month", or not, is the hypothetical subject of the Sky Disc and the rhyme, and what we are simulating with code.
 
-The use of calendars and astronomical observations for determining when to plant and harvest is often overstated. There are dozens of signs of spring that a farmer would use, perhaps including the melting of snow and ice, bird migrations, budding of leaves, and so on. For harvest, the maturity of the crop would surely top the list. Observation of the sky would be a factor, but if anything like today, every farmer would have their own way of deciding when to plant.
+The use of calendars and astronomical observations for determining when to plant and harvest, is often overstated. There are dozens of signs of spring that a farmer would use, perhaps including the melting of snow and ice, bird migrations, budding of leaves, and so on. For harvest, the maturity of the crop would surely top the list. Observation of the sky might be a factor, but if anything like today's farmers, everyone would have their own way of deciding when to plant.
 
-Far more important for emerging societies is the ability to synchronize group activities - market days and fares, celebrations, war, and more mundane meetups. Synchronizing calendars to the seasons synchronizes calendars to each other. A procedure to do this should work across a geographic area, and work around bad weather. While considerable expertise is required to create such a procedure, it is best if its application is simple and understandable by everyone. 
+Far more important for emerging societies is the ability to synchronize group activities - market days and fares, celebrations, war, and more mundane meetups. Importantly, synchronizing calendars to the sky synchronizes calendars to each other. Procedures to do this should work across a geographic area, and work-around bad weather. While considerable expertise is required to create such a procedure, the application of the best should be simple and understandable by everyone. 
 
-More details can be found at https://dcwalley.com/sky-disc, but the basic proposed procedure is:
+We believe the Sky Disc and "High Diddle Diddle" are consistent with such a common procedure. More details can be found at https://dcwalley.com/sky-disc, but the basic proposed procedure is:
 
-- Count the days of the previously declared year, till the last (lunar) month (around the modern calendar's December).
+- Count the days of the previously declared year, till the last (lunar) month (around our modern calendar's December).
 - Look for a waxing crescent Moon, and the last time it sets (before becoming gibbous).
 - Count another 7 or 8 nights to the full Moon, noting nightly Moon positions should they be needed due to unfavorable weather.
 - When the star Vega kisses the horizon, if the Moon is still in Taurus, the new year needs an intercalary month. If in Gemini, no extra month is required.
 - If a close call, use the line defined by the 2 brightest stars of nearby Canis Minor as the boundary.
 - In any case, when the ball of the Harp star Vega drops and kisses the horizon, it is midnight and a new year, so kiss someone and sing.
 
-There are several variations of this which also work. For example, the count from gibbous to full can be 7 nights, or 8 nights. One goal of this code is to test the effects of some of these choices, perhaps leading to insights on choices facing early astronomers.
-
-Some details of potential calendars are beyond this analysis, for example, names of things, and exactly when the leap month (and leap days) are added. The hope is that running the code in this repo leads to new ideas and further investigations that show what can be done, and support or refute whatever historical analysis can be gleaned.
+There are several variations of the proposed procedure which work. For example, the count from gibbous to full can be 7 nights, or 8 nights. One goal of this code is to test the effects of some of these choices, perhaps leading to insights on choices facing early astronomers. The hope is that this repo's code leads to hints that might support or refute whatever can be gleaned from historical research.
 
 # Stellarium
 Stellarium software v:24.3+ , downloaded for free from stellarium.org, was the starting point for calculating and displaying the night sky for current and historic dates. ^Stellarium contributors (2024). Stellarium v24.3 Astronomy Software. URL https://stellarium.org/. DOI: 10.5281/zenodo.13825639
@@ -44,7 +42,7 @@ The first part is a Stellarium script which generates CSV (comma separated value
 The second part is a Haxe program for reading the generated files, and testing various potential astronomical procedures reasonably quickly with local command line execution. The Haxe language is designed to use, be compatible with, and port code to, various other languages including JavaScript, Java, Python and C.
 
 # Files and Directories
-| File                    | Contents                                                                 |
+| File / Folder name      | Contents                                                                 |
 |------------------------|----------------------------------------------------------------------|
 | README.md               | This file.                                                               |
 | lunascope.ssc           | Stellarium script for generating sun and moon data files.                |

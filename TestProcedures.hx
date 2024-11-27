@@ -19,19 +19,19 @@ class TestProcedures ///////////////////////////////////////////////////////////
   var                   _mapasData             = new Map<String,Array<String>>();                       //>
 
 
- function               Go_OneFile(///////////////////////////////////////////////////////////////////////> Get data from one file, put in global table.
-                        a_sFile                                                                         //>
- )                                      {/////////////////////////////////////////////////////////////////>
-  var                   sData           :String         = sys.io.File.getContent(_sPathData + a_sFile); //> Copy from money source directory
-  var                   asLines                         = sData.split('\n');                            //>
-  var                   r_s                             = "";                                           //>
-  var                   n                               = asLines.length;                               //>
-  var                   as                              = [];                                           //>
-  var                   s                               = "";                                           //>
+ function               Go_OneFile(///////////////////////////////////////////////////////////////////////> Get data from one file, add to global table (map).
+                        a_sFile                                                                         //> Name of file within input directory.
+ )                                      {/////////////////////////////////////////////////////////////////> Report nothing. Add to _mapasData.
+  var                   sData           :String         = sys.io.File.getContent(_sPathData + a_sFile); //> Get contents of input data file.
+  var                   asLines                         = sData.split('\n');                            //> Split file into rows (one per date).
+  var                   n                               = asLines.length;                               //> Get number of rows.
+  var                   r_s                             = "";                                           //> Output text string.
+  var                   as                              = [];                                           //> List of text cell contents.
+  var                   sKeyDate                        = "";                                           //>
   var                   asRow           :Array<String>  = [];                                           //> Move to RAM:
   for( i in 2...n ){                                                                                    //>
    as = asLines[i].split(",");                                                                          //> Split line on commas.
-   s = (    as[0] ).substr(0, 10);                                                                      //>
+   sKeyDate = (    as[0] ).substr(0, 10);                                                               //>
    asRow = [                                                                                            //> Move to RAM:
          //,as[1 ]                                                                                      //> sDate   1999-12-31T12:00:00   nDay                ,2451544 
          //,as[2 ]                                                                                      //> Sunset              ,16.026944444444442 
@@ -51,7 +51,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
          //,as[16]                                                                                      //> ra                  ,-142.82155355617718 
          //,as[17]                                                                                      //> dec                 ,-9.646872946743024 
            ];                                                                                           //>
-   _mapasData[ s ] = asRow;                                                                             //> Move to RAM: sDate   1999-12-31T12:00:00   nDay                ,2451544 
+   _mapasData[ sKeyDate ] = asRow;                                                                      //> Move to RAM: sDate   1999-12-31T12:00:00   nDay                ,2451544 
   }//for i                                                                                              //>
 //. try{                                                                                                  //> to
 //.  sys.io.File.saveContent(  _sPathOut  +'output.csv'                                                   //>
@@ -75,7 +75,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
  //r_s +="\n"+ sYYYY +","+ sMM +","+ sDD +","+ sHr +","+ sMin +","+ sS;
 
  
- function               dOverLine_360(////////////////////////////////////////////////////////////////////> Test which side of great circle defined by Canis Minor a given point is.
+ function               dOverLine_360(////////////////////////////////////////////////////////////////////> Test which side of great circle defined by Canis Minor, a given celestial point is.
                         a_Qlat_360      :Float                                                          //> Declination and
  ,                      a_Qlong_360     :Float                                                          //> Right Ascension of point to test.
  )                                      {/////////////////////////////////////////////////////////////////>
@@ -113,15 +113,15 @@ class TestProcedures ///////////////////////////////////////////////////////////
  }//dOverLine_360/////////////////////////////////////////////////////////////////////////////////////////>
 
 
- function               sRunTrial(////////////////////////////////////////////////////////////////////////> Run the HeyDiddleDiddle algorithm from one date.
-                        a_sGo                                                                           //>
+ function               sRunTrial(////////////////////////////////////////////////////////////////////////> Run the "Hey Diddle Diddle algorithm" from one date.
+                        a_sGo                                                                           //> Date to start on (start waiting for the new moon).
  )                                      :String {/////////////////////////////////////////////////////////>
-  var                   dDAY_ms         :Float                  = 24*60*60*1000.;                       //> One day, in milliseconds.
+  var                   dDAY_ms         :Float                  = 24*60*60*1000.;                       //> Number of milliseconds in one day.
   var                   as              :Array<String>          = _mapasData[ a_sGo ];                  //> Look up data for the given date.
   if( null == as ){                                                                         return "*";}//> If there is a problem, then quit.
-  var                   dateGo                   = new Date( Std.parseInt( a_sGo.substr(    0, 4) )     //> Parse date string for the moonset. Year
-                                                       ,     Std.parseInt( a_sGo.substr(    5, 2) ) - 1 //> Month (0-11)
-                                                       ,     Std.parseInt( a_sGo.substr(    8, 2) )     //> Date (1-31)
+  var                   dateGo                   = new Date( Std.parseInt(    a_sGo.substr( 0, 4) )     //> Parse date string for the moonset. Year
+                                                       ,     Std.parseInt(    a_sGo.substr( 5, 2) ) - 1 //> Month (0-11)
+                                                       ,     Std.parseInt(    a_sGo.substr( 8, 2) )     //> Date (1-31)
                                                        ,     12 , 0 , 0                                 //> second
                                                        );                                               //>
   var                   sMoonset        :String                 = "";                                   //> 
@@ -141,13 +141,13 @@ class TestProcedures ///////////////////////////////////////////////////////////
    dLit_100    = Std.parseFloat( as[1] );                                                               //> At Moonset
    dRa         = Std.parseFloat( as[2] );                                                               //> At Moonset
    dDec        = Std.parseFloat( as[3] );                                                               //> At Moonset
-   var                  dateMoonset     = new Date( Std.parseInt( sMoonset.substr( 0, 4) )              //> Parse date string for the moonset. Year
-                                              ,     Std.parseInt( sMoonset.substr( 5, 2) ) - 1          //> Month (0-11)
-                                              ,     Std.parseInt( sMoonset.substr( 8, 2) )              //> Date (1-31)
-                                              ,     Std.parseInt( sMoonset.substr(11, 2) )              //> 24 hour
-                                              ,     Std.parseInt( sMoonset.substr(14, 2) )              //> minute
-                                              ,     Std.parseInt( sMoonset.substr(17, 2) )              //> second
-                                              );                                                        //>
+   var                  dateMoonset              = new Date( Std.parseInt( sMoonset.substr( 0, 4) )     //> Parse date string for the moonset. Year
+                                                       ,     Std.parseInt( sMoonset.substr( 5, 2) ) - 1 //> Month (0-11)
+                                                       ,     Std.parseInt( sMoonset.substr( 8, 2) )     //> Date (1-31)
+                                                       ,     Std.parseInt( sMoonset.substr(11, 2) )     //> 24 hour
+                                                       ,     Std.parseInt( sMoonset.substr(14, 2) )     //> minute
+                                                       ,     Std.parseInt( sMoonset.substr(17, 2) )     //> second
+                                                       );                                               //>
    if(      -1 == isStep ){ isStep = 0;                                                                 //> The very first time, move on to next step immediately                                                                            //> First time,
                             sRow =            DateTools.format( dateRow     ,"%Y-%m-%d %H:%M:%S" )      //>
                                   +",mset, "+ DateTools.format( dateMoonset ,"%Y-%m-%d %H:%M:%S" );     //> we will display the date/time of the moon set.
@@ -176,73 +176,64 @@ class TestProcedures ///////////////////////////////////////////////////////////
  }//sRunTrial/////////////////////////////////////////////////////////////////////////////////////////////>
 
 
-// Letter to the Editor published in Communications of the ACM in October 1968 (Volume 11, Number 10). https://blog.reverberate.org/2020/05/12/optimizing-date-algorithms.html
-// Henry F. Fliegel and Thomas C. Van Flandern offered the following Fortran function for yyyy,m,d to JulianDay
-// This function uses integer math (all divisions round down):
-// This epoch is very long ago, in 4713 BC, but it’s a simple matter to convert it to the Unix epoch of 1970-01-01 by subtracting 2440588, the Julian Day number of the Unix Epoch. 
-function                                JD(///////////////////////////////////////////////////////////////> JD here refers to the Julian Date, the number of days that have passed since the Julian Date Epoch.
-                                        Y                                                               //>
-,                                       M                                                               //>
-,                                       D                                                               //>
-){                                      //////////////////////////////////////////////////////////////////>
-  let                                   A                       = Math.floor( (M - 14)/12 );            //>
-  let                                   B                       = Y + 4800 + A;                         //>
-return D - 32075 + 367*Math.floor(       (M - 2 - A*12)/12 )                                            //>
-                 +     Math.floor(           1461*B     /4 )                                            //>
-                 -   3*Math.floor( Math.floor(1 + B/100)/4 );                                           //>
+function                JD(///////////////////////////////////////////////////////////////////////////////> JD here refers to the Julian Date, the number of days that have passed since the Julian Date Epoch.
+                        Y                                                                               //> Gregorian Year,
+,                       M                                                                               //> Month. Jan = 1, Dec = 12
+,                       D                                                                               //> Day. 1st = 1
+)                                       :Int {////////////////////////////////////////////////////////////>
+  var                   A               :Int                    = Math.floor( (M - 15)/12 );            //>
+  var                   B               :Int                    = Y + 4800 + A;                         //>
+return D - 32075 + Math.floor(       367*             ( M - 3 - 12*A )/12      )                        //>
+                 + Math.floor(      1461*               B             / 4      )                        //>
+                 - Math.floor(         3*Math.floor(1 + B/100)        / 4      )                        //>
+      + 29;                                                                                             //> ???
 }//JD/////////////////////////////////////////////////////////////////////////////////////////////////////>
-// JD (I, J, K) = K - 32075 + 1461*(I + 4800 + (J - 14)/12)/4
-//                                                           + 367*(J - 2 - (J - 14)/12*12)/12 - 3
-//                                                                                                *((I + 4900 + (J - 14)/12)/100)/4
-// JD(I, J, K) = K - 32075 + 1461*(I + 4800 + (J - 14)/12)/4 + 367*(J - 2 - (J - 14)/12*12)/12 - 3*((I + 4900 + (J - 14)/12)/100)/4
-// JD(Y, M, D) = D - 32075 + 1461*( Y + 4800 +             (M - 14) /12  )/4 + 367*(M - 2 -             (M - 14) /12 *12)/12 - 3*((Y + 4900 + (M - 14)/12)/100)/4
-// JD(Y, M, D) = D - 32075 + 1461*( Y + 4800 + Math.floor( (M - 14) /12) )/4 + 367*(M - 2 - Math.floor( (M - 14) /12)*12)/12 - 3*((Y + 4900 + (M - 14)/12)/100)/4
-// JD(Y, M, D) = D - 32075 + 1461*( Y + 4800 + Math.floor( (M - 14) /12) )/4 
-//                          + 367*(    M - 2 - Math.floor( (M - 14) /12)*12)/12 
-//                            - 3*(   ( Y + 4900 + (M - 14)/12 )/100   )/4
-// JD(Y, M, D) = D - 32075 + 1461*( Y + 4800 +                               Math.floor( (M - 14) /12) )/4 
-//                          + 367*Math.floor(   (                    M - 2 - Math.floor( (M - 14) /12)*12    )   /12) 
-//                            - 3*Math.floor(   (   Math.floor( ( Y + 4900 + Math.floor( (M - 14) /12) ) /100)           )    /4)
-// 
-// let A = Math.floor( (M - 14) /12);
-// let B = Y + 4800 + A;
-// JD(Y, M, D) = D - 32075 +                       Math.floor( 1461*( B ) /4) 
-//                          + 367*Math.floor(   (                    M - 2 - A*12    )   /12) 
-//                            - 3*Math.floor(   (   Math.floor( ( 100 + B ) /100)           )    /4)
-// 
-// JD(Y, M, D) = D - 32075 + Math.floor(1461*B/4) + 367*Math.floor( (M - 2 - A*12)/12 ) - 3*Math.floor( Math.floor(1+B/100)/4 )
+function                TEST_JD(){////////////////////////////////////////////////////////////////////////>
+  var                   s               :Int                    = 0;
+  s = JD(-4712, 1,1 ); if(       0 + 38 != s ){ trace( "TEST_JD 0 -4712, 1,1 : "+ s +" "+ (s -       0) ); } //>
+  s = JD(-2000, 1,1 ); if(  990558 + 17 != s ){ trace( "TEST_JD 1 -2000, 1,1 : "+ s +" "+ (s -  990558) ); } //>
+  s = JD( 1000, 1,1 ); if( 2086308 -  5 != s ){ trace( "TEST_JD 2  1000, 1,1 : "+ s +" "+ (s - 2086308) ); } //>
+  s = JD( 1582, 1,1 ); if( 2298884 - 10 != s ){ trace( "TEST_JD 3  1582, 1,1 : "+ s +" "+ (s - 2298884) ); } //>
+  s = JD( 1583, 1,1 ); if( 2299239      != s ){ trace( "TEST_JD 4  1583, 1,1 : "+ s +" "+ (s - 2299239) ); } //>
+  s = JD( 1600, 1,1 ); if( 2305448      != s ){ trace( "TEST_JD 5  1600, 1,1 : "+ s +" "+ (s - 2305448) ); } //>
+  s = JD( 1700, 1,1 ); if( 2341973      != s ){ trace( "TEST_JD 6  1700, 1,1 : "+ s +" "+ (s - 2341973) ); } //>
+  s = JD( 1970, 1,1 ); if( 2440588      != s ){ trace( "TEST_JD 7  1970, 1,1 : "+ s +" "+ (s - 2440588) ); } //>
+}//TEST_JD(){}////////////////////////////////////////////////////////////////////////////////////////////>
 
 
- function               Go(///////////////////////////////////////////////////////////////////////////////> Create source from $ code, replacing macros.
+ function               Go(///////////////////////////////////////////////////////////////////////////////> Main execution starts here.
  )                                      :Void {///////////////////////////////////////////////////////////>
-  for( y in 2000...2100 ){                                                                              //>
-   Go_OneFile( 'table012_'+ y +'_'+ (y + 1) +'.csv' );                                                  //> Get data from one file, put in global table.
-  }//for y                                                                                              //>
-                                                                                                        //>
-  for( y in 2000...2001 ){                                                                              //>
-   var                  s1              :String                 = y +'-02-15';
-   var                  sReport         :String                 = "";
-   for( z in 0...90 ){ 
-    s1 = sRunTrial( s1 );  sReport += "\n "+ s1;  s1 = s1.substr(-10);  
-   }//for z
-   trace(sReport);
-   
-//   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
-//   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
-//   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
-//   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
-//   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
-//   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
-// trace(   sRunTrial( y +'-10-15' )   );                                                               //>
-// trace(   sRunTrial( y +'-11-01' )   );                                                               //>
-// trace(   sRunTrial( y +'-11-15' )   );                                                               //>
-// trace(   sRunTrial( y +'-12-01' )   );                                                               //>
-// trace(   sRunTrial( y +'-12-15' )   );                                                               //>
-// trace(   sRunTrial( y +'-01-01' )   );                                                               //>
-// trace(   sRunTrial( y +'-01-15' )   );                                                               //>
-// trace(   sRunTrial( y +'-02-01' )   );                                                               //>
-   trace("");                                                                                           //>
-  }//for y                                                                                              //>
+
+  TEST_JD();
+
+//.   for( y in 2000...2100 ){                                                                              //>
+//.    Go_OneFile( 'table012_'+ y +'_'+ (y + 1) +'.csv' );                                                  //> Get data from one file, put in global table.
+//.   }//for y                                                                                              //>
+//.                                                                                                         //>
+//.   for( y in 2000...2001 ){                                                                              //>
+//.    var                  s1              :String                 = y +'-02-15';
+//.    var                  sReport         :String                 = "";
+//.    for( z in 0...90 ){ 
+//.     s1 = sRunTrial( s1 );  sReport += "\n "+ s1;  s1 = s1.substr(-10);  
+//.    }//for z
+//.    trace(sReport);
+//.    
+//. //   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
+//. //   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
+//. //   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
+//. //   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
+//. //   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
+//. //   s1 = sRunTrial( s1 );   s1 = s1.substr(-10);   trace(s1);
+//. // trace(   sRunTrial( y +'-10-15' )   );                                                               //>
+//. // trace(   sRunTrial( y +'-11-01' )   );                                                               //>
+//. // trace(   sRunTrial( y +'-11-15' )   );                                                               //>
+//. // trace(   sRunTrial( y +'-12-01' )   );                                                               //>
+//. // trace(   sRunTrial( y +'-12-15' )   );                                                               //>
+//. // trace(   sRunTrial( y +'-01-01' )   );                                                               //>
+//. // trace(   sRunTrial( y +'-01-15' )   );                                                               //>
+//. // trace(   sRunTrial( y +'-02-01' )   );                                                               //>
+//.    trace("");                                                                                           //>
+//.   }//for y                                                                                              //>
  }//Go////////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
