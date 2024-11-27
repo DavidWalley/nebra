@@ -1,5 +1,5 @@
-# nebra
-Stellarium Scripts and Other Code for Analyzing the Nebra Sky Disc
+## nebra
+# Stellarium Scripts and Other Code for Analyzing the Nebra Sky Disc
 
 The Nebra Sky Disc and the rhyme "High Diddle Diddle" relate to a procedure for keeping a lunar calendar in sync with the seasons. This repo contains code for simulating and analysing potential procedures.
 
