@@ -12,11 +12,11 @@ Such lunar calendars account for 354 days of the modern value of 365.24219 days 
 
 Deciding whether to add a "leap lunar month", or not, is the hypothetical subject of the Sky Disc and the rhyme, and what we are simulating with code.
 
-The use of calendars and astronomical observations for determining when to plant and harvest, is often overstated. There are dozens of signs of spring that a farmer would use, perhaps including the melting of snow and ice, bird migrations, budding of leaves, and so on. For harvest, the maturity of the crop would surely top the list. Observation of the sky might be a factor, but if anything like today's farmers, everyone would have their own way of deciding when to plant.
+The importance of calendars and astronomical observations for determining when to plant and harvest, is often overstated. There are dozens of signs of spring that a farmer would use, perhaps including the melting of snow and ice, bird migrations, budding of leaves, and so on. For harvest, the maturity of the crop would surely be most important. Observation of the sky might be a factor, but if anything like today's farmers, everyone would have their own way of deciding when to plant.
 
-Far more important for emerging societies is the ability to synchronize group activities - market days and fares, celebrations, war, and more mundane meetups. Importantly, synchronizing calendars to the sky synchronizes calendars to each other. Procedures to do this should work across a geographic area, and work-around bad weather. While considerable expertise is required to create such a procedure, the application of the best should be simple and understandable by everyone. 
+Far more important for emerging societies is the ability to synchronize group activities - market days and annual fares, celebrations, war, and more mundane meetups. Importantly, synchronizing calendars to the sky synchronizes calendars to each other. Procedures to do this should work across a geographic area, and work-around bad weather. While considerable expertise is required to create such a procedure, its application should be simple and understandable by everyone. 
 
-We believe the Sky Disc and "High Diddle Diddle" are consistent with such a common procedure. More details can be found at https://dcwalley.com/sky-disc, but the basic proposed procedure is:
+We believe the Sky Disc and "High Diddle Diddle" point to such a common procedure. More details can be found at https://dcwalley.com/sky-disc, but the basic proposed procedure is:
 
 - Count the days of the previously declared year, till the last (lunar) month (around our modern calendar's December).
 - Look for a waxing crescent Moon, and the last time it sets (before becoming gibbous).
@@ -25,22 +25,26 @@ We believe the Sky Disc and "High Diddle Diddle" are consistent with such a comm
 - If a close call, use the line defined by the 2 brightest stars of nearby Canis Minor as the boundary.
 - In any case, when the ball of the Harp star Vega drops and kisses the horizon, it is midnight and a new year, so kiss someone and sing.
 
-There are several variations of the proposed procedure which work. For example, the count from gibbous to full can be 7 nights, or 8 nights. One goal of this code is to test the effects of some of these choices, perhaps leading to insights on choices facing early astronomers. The hope is that this repo's code leads to hints that might support or refute whatever can be gleaned from historical research.
+The main goal of this code is show that proposed procedures work over centuries, and get a measure of how well they work. 
+
+There are several variations of the proposed procedure which work. For example, the count from gibbous to full can be 7 nights, or 8 nights. Both work if applied consistently.
+
+Another goal of this code is to test the effects of some of these choices, perhaps leading to insights on choices facing early astronomers. The hope is that this repo's code leads to hints that might support or refute whatever can be gleaned from historical research.
 
 ## Stellarium
-Stellarium software v:24.3+ , downloaded for free from stellarium.org, was the starting point for calculating and displaying the night sky for current and historic dates. ^Stellarium contributors (2024). Stellarium v24.3 Astronomy Software. URL https://stellarium.org/. DOI: 10.5281/zenodo.13825639
+Stellarium software v:24.3+ , downloaded for free from stellarium.org, was the starting point for calculating and displaying the night sky for current and historic dates. [^Stellarium contributors (2024). Stellarium v24.3 Astronomy Software. URL https://stellarium.org/. DOI: 10.5281/zenodo.13825639]
 
-This research has made use of the Stellarium planetarium. ^Zotti, G., Hoffmann, S. M., Wolf, A., Chéreau, F., & Chéreau, G. (2021). The Simulated Sky: Stellarium for Cultural Astronomy Research. Journal of Skyscape Archaeology, 6(2), 221–258. DOI: 10.1558/jsa.17822
+This research has made use of the Stellarium planetarium. [^Zotti, G., Hoffmann, S. M., Wolf, A., Chéreau, F., & Chéreau, G. (2021). The Simulated Sky: Stellarium for Cultural Astronomy Research. Journal of Skyscape Archaeology, 6(2), 221–258. DOI: 10.1558/jsa.17822]
 
-Stellarium was not originally designed for simulation of historic or prehistoric skies, but this has become a goal. The developers now claim a few arcseconds of accuracy going back at least 10,000 years (^User Guide, Appendix F, https://stellarium.org/files/guide.pdf).
+Stellarium was not originally designed for simulation of historic or prehistoric skies, but this has become a goal. The developers now claim a few arcseconds of accuracy going back at least 10,000 years. [^User Guide, Appendix F, https://stellarium.org/files/guide.pdf]
 
 Stellarium features scripting capabilities, which makes it ideal for retroactive testing of potential lunar calendar systems, or so it seems. However, at the time of this writing, it suffers from a couple of problems. First, it can be very slow. Some calculations have to wait for graphical rendering to finish before results are accurate. The only way to do this appears to be generous use of 'wait' commands. Second, while output to the file system is possible with text logs and high quality screen snapshots, file input is awkward or impossible, so the only simple, practical data input is generated source code.
 
 To test calendar systems, initial code worked, but was too slow for multiple tests. Instead, the code is now in two parts. 
 
-The first part is a Stellarium script which generates CSV (comma separated values) files with basic information about the sun and moon, as seen from a point on Earth (Stonehenge). Each row represents data for one night, and each file covers one (Gregorian) year. It can take hours, days even, to generate files for significant time spans, so the code is intended to run unattended overnight and/or in the background. Output is stored in this repo in the folder trials/.
+The first part is a Stellarium script which generates CSV (comma separated values) files with basic information about the sun and moon, as seen from a point on Earth (Stonehenge). Each row represents data for one night, and each file covers one (Gregorian) year. It can take hours, days even, to generate files for significant time spans, so the code is intended to run unattended overnight and/or in the background. Output is stored in this repo in the folder "trials".
 
-The second part is a Haxe program for reading the generated files, and testing various potential astronomical procedures reasonably quickly with local command line execution. The Haxe language is designed to use, be compatible with, and port code to, various other languages including JavaScript, Java, Python and C.
+The second part is a Haxe program for reading the generated files, and testing various potential astronomical procedures quickly using local command line execution. The Haxe language was chosen because it is designed to use, be compatible with, and port code to, various other languages including JavaScript, Java, Python and C.
 
 ## Files and Directories
 | File / Folder name      | Contents                                                                 |
