@@ -32,7 +32,7 @@ There are several variations of the proposed procedure which work. For example, 
 Another goal of this code is to test the effects of some of these choices, perhaps leading to insights on choices facing early astronomers. The hope is that this repo's code leads to hints that might support or refute whatever can be gleaned from historical research.
 
 ## Stellarium
-Stellarium software v:24.3+ , downloaded for free from stellarium.org, was the starting point for calculating and displaying the night sky for current and historic dates. [^Stellarium contributors (2024). Stellarium v24.3 Astronomy Software. URL https://stellarium.org/. DOI: 10.5281/zenodo.13825639]
+Stellarium software v:24.3+, downloaded for free from stellarium.org, was the starting point for calculating and displaying the night sky for current and historic dates. [^Stellarium contributors (2024). Stellarium v24.3 Astronomy Software. URL https://stellarium.org/. DOI: 10.5281/zenodo.13825639]
 
 This research has made use of the Stellarium planetarium. [^Zotti, G., Hoffmann, S. M., Wolf, A., Chéreau, F., & Chéreau, G. (2021). The Simulated Sky: Stellarium for Cultural Astronomy Research. Journal of Skyscape Archaeology, 6(2), 221–258. DOI: 10.1558/jsa.17822]
 

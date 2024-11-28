@@ -41,7 +41,7 @@ function                                dGreenwichMeanSiderealTime_rad(/////////
   if( dGmst_rad < 0 ){ dGmst_rad += 2*Math.PI; }                                                        //>
 return dGmst_rad;                                                                                       //>
 }//dGreenwichMeanSiderealTime_rad/////////////////////////////////////////////////////////////////////////>
-function                                avRaDecToAltAz(/////////////////////////////////////////////////////>
+function                                avRaDecToAltAz(///////////////////////////////////////////////////>
                                         a_Ra_rad                                                        //>
 ,                                       a_Dec_rad                                                       //>
 ,                                       a_Lat_rad                                                       //>
@@ -258,7 +258,7 @@ function                                Reset(//////////////////////////////////
   SporadicMeteorMgr     .setFlagShow(                         false );                                  //> No meteors.   https://stellarium.org/doc/23.0/classSporadicMeteorMgr.html
   StelSkyDrawer         .setFlagTwinkle(                      false );                                  //> No star twinkle.   https://stellarium.org/doc/23.0/classStelSkyDrawer.html
   StelSkyDrawer         .setFlagLuminanceAdaptation(          false );                                  //> Set the value of the eye adaptation flag.
-}//Reset/////////////////////////////////////////////////////////////////////////////////////////////////////>
+}//Reset//////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
 //ScreenImageMgr.showImage("img_"+ asIMAGE[0] ,true); //> Set an image's visible status. ID for the image, and visibility state. https://stellarium.org/doc/24.0/classScreenImageMgr.html#abd9a1164bbf7596be7a12e47bce984cf
@@ -502,7 +502,6 @@ return [sDate +","+ a_nDay_jd +","+ s5( dSunSet_h     ) // .toFixed(4)          
 
 function                                Table(////////////////////////////////////////////////////////////# Start main execution
                                         a_nGo                                                           //>
-,                                       a_nEnd                                                          //>
 ,                                       a_sPath                                                         //>
 ){                                      //////////////////////////////////////////////////////////////////>
   core.resetOutput();                                                                                   //> Clear output file buffer.
@@ -518,7 +517,8 @@ function                                Table(//////////////////////////////////
                                                                    +",VEGA_when,illumination,ra,dec"    //>
   );                                                                                                    //>
   let                                   dNoon                   = 0;                                    //>
-  for( dNoon = nDay; dNoon < nDay + (a_nEnd - a_nGo )*365 + 7; dNoon++ ){                               //> For a number of years (plus a bit of slop).
+  let                                   nEnd                    = nDay + 365 + 7;                       //> A year and a bit of overlap with next year.
+  for( dNoon = nDay; dNoon < nEnd; dNoon++ ){                                                           //> For a number of years (plus a bit of slop)...
    let                                  av                      = avBasics(dNoon);                      //>
    sRow =                               av[0];                                                          //>
    let                dMoonSet_h      = av[1];                                                          //>
@@ -538,7 +538,7 @@ function                                Table(//////////////////////////////////
                              +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
    core.output( sRow );                                                                                 //>
   }//for dNoon                                                                                          //>
-  core.saveOutputAs( a_sPath + "table012_"+ a_nGo +"_"+ a_nEnd +".csv" );                               //> Write
+  core.saveOutputAs( a_sPath + "table012_"+ a_nGo +".csv" );                                            //> Write results to file system.
 }//Table//////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
@@ -764,6 +764,12 @@ function                                Table(//////////////////////////////////
 // TEST_GreatCircle();                                                                                  //>
 //const                                 sPATH = "/home/dave/Desktop/AAA/hey_diddle/lunascope/trials/";  //>
   const                                 sPATH = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> Path to output directory.
+// Just do the time-consuming stuff in this Stellarium code, generating CSV files for use by other code...
+//for( let iYear = 2010; iYear < 2100; iYear += 1 ){ Table( iYear ,sPATH ); }                  //>
+  for( let iYear = 1187; iYear < 1188; iYear += 1 ){ Table( iYear ,sPATH ); } // 1187_1188
+  for( let iYear = 1065; iYear < 1100; iYear += 1 ){ Table( iYear ,sPATH ); } // 1065_1066 ... 1099
+  for( let iYear = 1314; iYear < 2000; iYear += 1 ){ Table( iYear ,sPATH ); }
+
 //.   let                                   r_s                     =
 //.   "file,min,year,days,max,year,days,N,N,Mean,year,days,Deviation,year,days";                            //> Overall summary of trial runs.
 //. //                       GO  ,END ,a_sFirstQuarter,a_nCountDays,a_sPath                                 //>
@@ -776,8 +782,6 @@ function                                Table(//////////////////////////////////
 //.   core.output( r_s );
 //.   core.saveOutputAs( sPATH + "output_Summary.csv" );                                                    //> Write output to a file.
 
-//for( let iYear = 2010; iYear < 2100; iYear += 1 ){ Table( iYear ,iYear + 1 ,sPATH ); }                  //>
-for( let iYear = 1188; iYear < 1300; iYear += 1 ){ Table( iYear ,iYear + 1 ,sPATH ); }
 
 //TEST_dOverLine_360();
 
