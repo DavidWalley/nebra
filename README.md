@@ -4,17 +4,17 @@
 
 The Nebra Sky Disc and the rhyme "High Diddle Diddle" relate to a procedure for keeping a lunar calendar in sync with the seasons. This repo contains code for simulating and analysing potential procedure variations.
 
-Lunar calendars from cultures around the world are based on observations of the Moon's phases, as it cycles from invisible (new) to full, and back again, about every 29.5 days. No particular skill is required to make these observations - it only requires interest in the sky. Combined with counting, the sky gives early societies a natural calendar, suitable for mid-term planning and societal synchronization.
+Lunar calendars from cultures around the world are based on observations of the Moon's phases, as it cycles from new (invisible) to full, and back again, about every 29.5 days. No particular skill is required to make these observations - it only requires interest in the sky, and the Moon in particular. Combined with counting, the sky gave early societies a natural calendar, suitable for mid-term planning and societal synchronization.
 
-Counting yeilds 12 months (lunar phase cycles) per year, with months alternating between 29 and 30 days long. A "year" corresponds to a cycle of the seasons. Observations of the Sun eventually lead to more precise definitions, but a lunar calendar can stand on its own and find use, long before complete and precise understanding.
+Counting yeilds 12 months (lunar phase cycles) per year, with months alternating between 29 and 30 days long, and "year" corresponding to a cycle of the seasons. Astronomers observing the Sun over long terms can become more precise, but a lunar calendar can stand on its own and find use by everyone, long before precision or understanding.
 
-Such lunar calendars account for 354 days of the modern value of 365.24219 days per year, a difference of 11.24219 days. Thus, every 3 years, the lunar calendar drifts a little more than 33 days, or 1 lunar month, from its initial synchronicity. To correct for this, an extra lunar month can be added every 2 or 3 years.
+Such simple counting and observation account for 354 days of the modern value of 365.24219 days per year, a difference of 11.24219 days. Thus, every 3 years, the lunar calendar drifts a little more than 1 lunar month, from its initial synchronicity. To correct for this, an extra lunar month can be added every 2 or 3 years.
 
-Deciding whether to add a "leap lunar month", or not, is the hypothetical subject of the Sky Disc and the rhyme, and what we are simulating with code.
+The annual decision to add a "leap lunar month" or not, is the hypothetical subject of the Sky Disc and the rhyme, and what we are simulating with this code.
 
-The importance of calendars and astronomical observations for determining when to plant and harvest, is often overstated. There are dozens of signs of spring that a farmer would use, perhaps including the melting of snow and ice, bird migrations, budding of leaves, and so on. For harvest, the maturity of the crop would surely be most important. Observation of the sky might be a factor, but if anything like today's farmers, everyone would have their own way of deciding when to plant.
+The importance of calendars and astronomical observations for determining when to plant and harvest, is often overstated. There are dozens of signs of spring that a farmer would use, perhaps including the melting of snow and ice, bird migrations, budding of leaves, and so on. For harvest, the maturity of the crop would surely be the most important factor. Observation of the sky might be a factor, but if anything like today, every farmer would have their own way of deciding when to plant.
 
-Far more important for emerging societies is the ability to synchronize group activities - market days and annual fares, celebrations, war, and more mundane meetups. Importantly, synchronizing calendars to the sky synchronizes calendars to each other. Procedures to do this should work across a geographic area, and work-around bad weather. While considerable expertise is required to create such a procedure, its application should be simple and understandable by everyone. 
+Far more important for emerging societies is the ability to synchronize group activities - market days and annual fairs, celebrations, war, and more mundane meetups. Importantly, synchronizing calendars to the sky synchronizes calendars to each other. Procedures to do this should work across a geographic area, and work-around bad weather. While considerable expertise is required to create such a procedure, its application should be simple and understandable by everyone.
 
 We believe the Sky Disc and "High Diddle Diddle" point to such a common procedure. More details can be found at https://dcwalley.com/sky-disc, but the basic proposed procedure is:
 
@@ -30,6 +30,8 @@ The main goal of this code is show that proposed procedures work over centuries,
 There are several variations of the proposed procedure which work. For example, the count from gibbous to full can be 7 nights, or 8 nights. Both work if applied consistently.
 
 Another goal of this code is to test the effects of some of these choices, perhaps leading to insights on choices facing early astronomers. The hope is that this repo's code leads to hints that might support or refute whatever can be gleaned from historical research.
+
+We are interested in theoretical calendars here. Whether or not any particular system was implemented, or implemented consistently over any particular geographic area or time span, is an entirely different question. In the modern day, calendars, timezones, and Daylight Saving Time are all subject to politics, and there is no reason to think prehistoric time-keeping was any different.
 
 ## Stellarium
 Stellarium software v:24.3+, downloaded for free from stellarium.org, was the starting point for calculating and displaying the night sky for current and historic dates. [^Stellarium contributors (2024). Stellarium v24.3 Astronomy Software. URL https://stellarium.org/. DOI: 10.5281/zenodo.13825639]
@@ -55,6 +57,7 @@ The second part is a Haxe program for reading the generated files, and testing v
 | Tool_Chain_lunascope.hx | Haxe bodge code for pre-processing and Stellarium script lunascope.ssc   |
 | trials/                 | Results of running lunascope.ssc, and input to TestProcedures.hx         |
 | trials/YYYY_yyyy/       | CSV files of results for a range of years.                               |
+| YYYY_yyyy/table012_*    | CSV files of results for a years, from a particular version of code.     |
 
 ## License
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
@@ -67,4 +70,3 @@ This work is licensed under a
 [cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
 [cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
-
