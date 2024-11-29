@@ -6,7 +6,7 @@ The Nebra Sky Disc and the rhyme "High Diddle Diddle" relate to a procedure for 
 
 Lunar calendars from cultures around the world are based on observations of the Moon's phases, as it cycles from new (invisible) to full, and back again, about every 29.5 days. No particular skill is required to make these observations - it only requires interest in the sky, and the Moon in particular. Combined with counting, the sky gave early societies a natural calendar, suitable for mid-term planning and societal synchronization.
 
-Counting yeilds 12 months (lunar phase cycles) per year, with months alternating between 29 and 30 days long, and "year" corresponding to a cycle of the seasons. Astronomers observing the Sun over long terms can become more precise, but a lunar calendar can stand on its own and find use by everyone, long before precision or understanding.
+Counting yeilds 12 months (lunar phase cycles) per year, with months alternating between 29 and 30 days long, and "year" corresponding to a cycle of the seasons. Astronomers observing the Sun over years and centuries can become more precise, but a lunar calendar can stand on its own and find use by everyone, long before precision or understanding.
 
 Such simple counting and observation account for 354 days of the modern value of 365.24219 days per year, a difference of 11.24219 days. Thus, every 3 years, the lunar calendar drifts a little more than 1 lunar month, from its initial synchronicity. To correct for this, an extra lunar month can be added every 2 or 3 years.
 
@@ -16,22 +16,22 @@ The importance of calendars and astronomical observations for determining when t
 
 Far more important for emerging societies is the ability to synchronize group activities - market days and annual fairs, celebrations, war, and more mundane meetups. Importantly, synchronizing calendars to the sky synchronizes calendars to each other. Procedures to do this should work across a geographic area, and work-around bad weather. While considerable expertise is required to create such a procedure, its application should be simple and understandable by everyone.
 
-We believe the Sky Disc and "High Diddle Diddle" point to such a common procedure. More details can be found at https://dcwalley.com/sky-disc, but the basic proposed procedure is:
+We believe the Sky Disc and "High Diddle Diddle" point to such a common procedure. More details can be found at https://dcwalley.com/sky-disc. The basic proposed procedure is:
 
 - Count the days of the previously declared year, till the last (lunar) month (around our modern calendar's December).
 - Look for a waxing crescent Moon, and the last time it sets (before becoming gibbous).
 - Count another 7 or 8 nights to the full Moon, noting nightly Moon positions should they be needed due to unfavorable weather.
-- When the star Vega kisses the horizon, if the Moon is still in Taurus, the new year needs an intercalary month. If in Gemini, no extra month is required.
+- When the star Vega kisses the horizon, if the full Moon is in the constellation Taurus, the new year needs an intercalary month. If in Gemini, no extra month is required.
 - If a close call, use the line defined by the 2 brightest stars of nearby Canis Minor as the boundary.
 - In any case, when the ball of the Harp star Vega drops and kisses the horizon, it is midnight and a new year, so kiss someone and sing.
 
-The main goal of this code is show that proposed procedures work over centuries, and get a measure of how well they work. 
+The main goal of this code repo is show that proposed procedures work over centuries, and get a measure of how well they work. 
 
 There are several variations of the proposed procedure which work. For example, the count from gibbous to full can be 7 nights, or 8 nights. Both work if applied consistently.
 
 Another goal of this code is to test the effects of some of these choices, perhaps leading to insights on choices facing early astronomers. The hope is that this repo's code leads to hints that might support or refute whatever can be gleaned from historical research.
 
-We are interested in theoretical calendars here. Whether or not any particular system was implemented, or implemented consistently over any particular geographic area or time span, is an entirely different question. In the modern day, calendars, timezones, and Daylight Saving Time are all subject to politics, and there is no reason to think prehistoric time-keeping was any different.
+We are interested in theoretical calendars here. Whether or not any particular system was implemented, or implemented consistently over any particular geographic area or time span, are entirely different questions. In the modern day, calendars, timezones, and Daylight Saving Time are all subject to politics, and there is no reason to think the politics of prehistoric time-keeping was any less tangled.
 
 ## Stellarium
 Stellarium software v:24.3+, downloaded for free from stellarium.org, was the starting point for calculating and displaying the night sky for current and historic dates. [^Stellarium contributors (2024). Stellarium v24.3 Astronomy Software. URL https://stellarium.org/. DOI: 10.5281/zenodo.13825639]
