@@ -91,6 +91,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
  }//dDate_jd//////////////////////////////////////////////////////////////////////////////////////////////>
  function               TEST_dDate_jd(////////////////////////////////////////////////////////////////////> Test the above function.
  )                                      :Int {////////////////////////////////////////////////////////////> Report 0 if no problems.
+//. TODO - Make more sense of the following:
 //.  var                   m               :Float                  = 0;                                    //>
 //.  var                   n               :Float                  = 0;                                    //>
 //.  m = dDate_jd(-4713,11,24); trace("TEST_dDate_jd -4713 " + m );                                        //> Does not match Stellarium, as Stellarium switches to the Julian calendar before 1500s.
@@ -126,8 +127,8 @@ class TestProcedures ///////////////////////////////////////////////////////////
  function               nYearFromJd(//////////////////////////////////////////////////////////////////////> Convert Julian Day to Year.
                         a_jd            :Float                                                          //> Julian Day
  )                                      :Int {////////////////////////////////////////////////////////////>
-  var           dStartOfDay_jd            :Float             = Math.floor(a_jd - 0.5) + 0.5;              //> Round off to the noon before given day number.
-  var           dDay_jd                 :Float             = dStartOfDay_jd - _GREGORIANePOCH;                //> this.constants.gregorian.EPOCH;
+  var           dStartOfDay_jd          :Float             = Math.floor(a_jd - 0.5) + 0.5;              //> Round off to the noon before given day number.
+  var           dDay_jd                 :Float             = dStartOfDay_jd - _GREGORIANePOCH;          //> this.constants.gregorian.EPOCH;
                                                                                                         //>
   var           nCycles_400y            :Int               = Math.floor(dDay_jd           / 146097);    //> Number of 400 nYear cycles.
   var           nIn400yCycle_day        :Int               = nMod(      dDay_jd           , 146097);    //> Day within 400 nYear cycle.
@@ -167,37 +168,38 @@ class TestProcedures ///////////////////////////////////////////////////////////
   var                   r_nY            :Int     = nYearFromJd(a_jd);                                   //>
   var                   r_nM            :Int     = 0;                                                   //>
   var                   r_nD            :Int     = 0;                                                   //>
-  var                   dStartOfDay_jd  :Float   = Math.floor(a_jd - 0.5) + 0.5;                    //> The midnight before the given date/time.
-  var                   iDayInYear      :Int     = Math.floor( dStartOfDay_jd - dDate_jd(r_nY,1,1) +2);   //> Count of days in year, 1 = Jan 1.
-  if( dDate_jd(r_nY,3,1) <= dStartOfDay_jd ){ iDayInYear += bLeapGregorian(r_nY) ?1 :2; }                 //> If after Jan and Feb, add a day and a possible leap day.
+  var                   dStartOfDay_jd  :Float   = Math.floor(a_jd - 0.5) + 0.5;                        //> The midnight before the given date/time.
+  var                   iDayInYear      :Int     = Math.floor( dStartOfDay_jd - dDate_jd(r_nY,1,1) +2); //> Count of days in year, 1 = Jan 1.
+  if( dDate_jd(r_nY,3,1) <= dStartOfDay_jd ){ iDayInYear += bLeapGregorian(r_nY) ?1 :2; }               //> If after Jan and Feb, add a day and a possible leap day.
   r_nM = Math.floor(   ( (iDayInYear-1)*12 + 373 )/367   );                                             //> Magic! (worked in Excel!)
-  r_nD = Math.floor( dStartOfDay_jd - dDate_jd(r_nY, r_nM, 1) + 0.5 ) + 1;                                //>
+  r_nD = Math.floor( dStartOfDay_jd - dDate_jd(r_nY, r_nM, 1) + 0.5 ) + 1;                              //>
  return [r_nY, r_nM, r_nD];                                                                             //>
  }//anGregorianFromJd/////////////////////////////////////////////////////////////////////////////////////>
  function               TEST_anGregorianFromJd(///////////////////////////////////////////////////////////>
  ){                     //////////////////////////////////////////////////////////////////////////////////>
   trace("TEST_anGregorianFromJd");                                                                      //>
   var                   s               :String                 = "";                                   //>
-  s = ""+ anGregorianFromJd( 2299239          ); if( "[1583,1,1]"    != s ){ trace("TEST_anGregorianFromJd 1  >"+ s +"<"); return 1 ; } //>
-  s = ""+ anGregorianFromJd( 2305448          ); if( "[1600,1,1]"    != s ){ trace("TEST_anGregorianFromJd 2  >"+ s +"<"); return 2 ; } //>
-  s = ""+ anGregorianFromJd( 2341973          ); if( "[1700,1,1]"    != s ){ trace("TEST_anGregorianFromJd 3  >"+ s +"<"); return 3 ; } //>
-  s = ""+ anGregorianFromJd( 2440588          ); if( "[1970,1,1]"    != s ){ trace("TEST_anGregorianFromJd 4  >"+ s +"<"); return 4 ; } //>
-  s = ""+ anGregorianFromJd( 2298884 - 4*3 +2 ); if( "[1582,1,1]"    != s ){ trace("TEST_anGregorianFromJd 5  >"+ s +"<"); return 5 ; } //>
-  s = ""+ anGregorianFromJd( 2086308 - 2*3 +1 ); if( "[1000,1,1]"    != s ){ trace("TEST_anGregorianFromJd 6  >"+ s +"<"); return 6 ; } //>
-  s = ""+ anGregorianFromJd( 1721424 +      2 ); if( "[1,1,1]"       != s ){ trace("TEST_anGregorianFromJd 7  >"+ s +"<"); return 7 ; } //>
-  s = ""+ anGregorianFromJd( 1721058 +      2 ); if( "[0,1,1]"       != s ){ trace("TEST_anGregorianFromJd 8  >"+ s +"<"); return 8 ; } //>
-  s = ""+ anGregorianFromJd(       0          ); if( "[-4713,11,24]" != s ){ trace("TEST_anGregorianFromJd 9  >"+ s +"<"); return 9 ; } //>
-  s = ""+ anGregorianFromJd(       0 +12*3 +2 ); if( "[-4712,1,1]"   != s ){ trace("TEST_anGregorianFromJd 10 >"+ s +"<"); return 10; } //>
-  s = ""+ anGregorianFromJd(  990558 + 5*3 +2 ); if( "[-2000,1,1]"   != s ){ trace("TEST_anGregorianFromJd 11 >"+ s +"<"); return 11; } //>
-  s = ""+ anGregorianFromJd( 1720693 +      2 ); if( "[-1,1,1]"      != s ){ trace("TEST_anGregorianFromJd 12 >"+ s +"<"); return 12; } //>
-
+                       // Stellarium   Fudge                                                            //> Fudge factor because Stellarium switches to the Julian calendar before 1500s.
+                       //    vvvvvvv  vvvvvvv                                                           //>
+  s = ""+ anGregorianFromJd(       0          ); if( "[-4713,11,24]" != s ){ trace("TEST_anGregorianFromJd 1  >"+ s +"<"); return 1 ; } //>
+  s = ""+ anGregorianFromJd(       0 +12*3 +2 ); if( "[-4712,1,1]"   != s ){ trace("TEST_anGregorianFromJd 2  >"+ s +"<"); return 2 ; } //>
+  s = ""+ anGregorianFromJd(  990558 + 5*3 +2 ); if( "[-2000,1,1]"   != s ){ trace("TEST_anGregorianFromJd 3  >"+ s +"<"); return 3 ; } //>
+  s = ""+ anGregorianFromJd( 1720693 +      2 ); if( "[-1,1,1]"      != s ){ trace("TEST_anGregorianFromJd 4  >"+ s +"<"); return 4 ; } //>
+  s = ""+ anGregorianFromJd( 1721058 +      2 ); if( "[0,1,1]"       != s ){ trace("TEST_anGregorianFromJd 5  >"+ s +"<"); return 5 ; } //>
+  s = ""+ anGregorianFromJd( 1721424 +      2 ); if( "[1,1,1]"       != s ){ trace("TEST_anGregorianFromJd 6  >"+ s +"<"); return 6 ; } //>
+  s = ""+ anGregorianFromJd( 2086308 - 2*3 +1 ); if( "[1000,1,1]"    != s ){ trace("TEST_anGregorianFromJd 7  >"+ s +"<"); return 7 ; } //>
+  s = ""+ anGregorianFromJd( 2298884 - 4*3 +2 ); if( "[1582,1,1]"    != s ){ trace("TEST_anGregorianFromJd 8  >"+ s +"<"); return 8 ; } //>
+  s = ""+ anGregorianFromJd( 2299239          ); if( "[1583,1,1]"    != s ){ trace("TEST_anGregorianFromJd 9  >"+ s +"<"); return 9 ; } //>
+  s = ""+ anGregorianFromJd( 2305448          ); if( "[1600,1,1]"    != s ){ trace("TEST_anGregorianFromJd 10 >"+ s +"<"); return 10; } //>
+  s = ""+ anGregorianFromJd( 2341973          ); if( "[1700,1,1]"    != s ){ trace("TEST_anGregorianFromJd 11 >"+ s +"<"); return 11; } //>
+  s = ""+ anGregorianFromJd( 2440588          ); if( "[1970,1,1]"    != s ){ trace("TEST_anGregorianFromJd 12 >"+ s +"<"); return 12; } //>
   for( d in 0...3000000 ){                                                                              //> Test every day for a long time...
    var                  an              :Array<Int>             = anGregorianFromJd(d);                 //> Convert to Gregorian Y M D
    var                  d1              :Float                  = dDate_jd( an[0]                       //> Convert back - Gregorian Year,
                                                                   ,         an[1]                       //> Month. Jan = 1, Dec = 12
                                                                   ,         an[2]                       //> Day. 1st = 1
                                                                   );                                    //>
- //if( 0 == d%50000 ){ trace( sYMD(d) +" "+ an ); }                                                                   //> Progress indication.
+   if( 0 == d%50000 ){ trace( sYMD(d) +" "+ an ); }                                                     //> Progress indication.
    if( d != d1 ){                                         trace("mismatch "+ d +" "+ d1); return d+100;}//>
   }//for d                                                                                              //>
  return 0;                                                                                              //>
@@ -205,9 +207,9 @@ class TestProcedures ///////////////////////////////////////////////////////////
 
 
  function               sYMD(/////////////////////////////////////////////////////////////////////////////> Convert Julian Day to ISO date string.
-                        a_jd              :Int                                                            //>
+                        a_jd              :Int                                                          //>
  ){                                     //////////////////////////////////////////////////////////////////>
-  var                   an              :Array<Int>             = anGregorianFromJd( a_jd );              //>
+  var                   an              :Array<Int>             = anGregorianFromJd( a_jd );            //>
  return an[0] +"-"+ ( "0"+an[1] ).substr(-2) +"-"+ ( "0"+an[2] ).substr(-2);                            //>
  }//sYMD//////////////////////////////////////////////////////////////////////////////////////////////////>
 
@@ -216,15 +218,15 @@ class TestProcedures ///////////////////////////////////////////////////////////
                         a_jd       :Float                                                               //>
  )                                 :String {//////////////////////////////////////////////////////////////>
   var                   n_jd       :Int   = Math.floor(a_jd);                                           //>
-  var                   d          :Float                    = a_jd - n_jd; d =            24*d       - 12; //>
+  var                   d          :Float                    = a_jd - n_jd; d =            24*d   - 12; //>
   var                   nH         :Int   = Math.floor( d ); d =  d - nH  ; d =            60*d       ; //>
   var                   nM         :Int   = Math.floor( d ); d =  d - nM  ; d = Math.floor(60*d + 0.5); //>
  return sYMD(n_jd) +" "+ ("0"+nH).substr(-2) +":"+ ("0"+nM).substr(-2) +":"+ ("0"+d).substr(-2);        //>
  }//sYMDhms///////////////////////////////////////////////////////////////////////////////////////////////>
  function               TEST_sYMDhms(/////////////////////////////////////////////////////////////////////>
- )                                      :Int {//////////////////////////////////////////////////////////////////////////////////>
-  var                   d               :Float                  = 0.;
-  var                   s               :String                 = "";
+ )                                      :Int {////////////////////////////////////////////////////////////>
+  var                   d               :Float                  = 0.;                                   //>
+  var                   s               :String                 = "";                                   //>
   d =       0         ; s = sYMDhms( d ); if( "-4713-11-24 12:00:00" != s ){ trace( "TEST_sYMDhms 1 : "+ d +" >"+ s +"<" ); return 1 ;}//>
   d =       0 +12*3 +2; s = sYMDhms( d ); if( "-4712-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 2 : "+ d +" >"+ s +"<" ); return 2 ;}//>
   d =  990558 + 5*3 +2; s = sYMDhms( d ); if( "-2000-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 3 : "+ d +" >"+ s +"<" ); return 3 ;}//>
@@ -237,62 +239,8 @@ class TestProcedures ///////////////////////////////////////////////////////////
   d = 2440588         ; s = sYMDhms( d ); if(  "1970-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 10: "+ d +" >"+ s +"<" ); return 10;}//>
   d = 2298884 - 4*3 +2; s = sYMDhms( d ); if(  "1582-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 11: "+ d +" >"+ s +"<" ); return 11;}//>
   d = 2086308 - 2*3 +1; s = sYMDhms( d ); if(  "1000-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 12: "+ d +" >"+ s +"<" ); return 12;}//>
- return 0;
+ return 0;                                                                                              //>
  }//TEST_sYMDhms(){}//////////////////////////////////////////////////////////////////////////////////////>
-
-
-
-
-//.  function              calendar_gregorianToJd(///////////////////////////////////////////////////////////> Determine Julian day number from Gregorian calendar date
-//.                        year
-//.  ,                     month
-//.  ,                     day
-//.  )                     {////////////////////////////////////////////////////////////////////////////////////////
-//.  return (_GREGORIANePOCH - 1)       
-//.        + (365 * (year - 1))                             
-//.        + Math.floor((year - 1) / 4)                     
-//.        + (-Math.floor((year - 1) / 100))                
-//.        + Math.floor((year - 1) / 400)                   
-//.        + Math.floor(
-//.           (   ( (367*month) - 362 ) /12   )        
-//.          +
-//.           (   (month <= 2) ?0 
-//.                            :( calendar_leapGregorian(year) ? -1 : -2 )
-//.           ) 
-//.          + day
-//.         )
-//.  ;
-//.  }///////////////////////////////////////////////////////////////////////////////////////////////////////////
-//.
-//.  function              calendar_jdToGregorianYear(///////////////
-//.                        a_jd
-//.  )                     {///////////////////////////////////////
-//.    var wjd        = Math.floor(a_jd - 0.5) + 0.5;
-//.    var depoch     = wjd - _GREGORIANePOCH;
-//.    var quadricent = Math.floor(depoch / 146097);
-//.    var dqc        = astro.mod(depoch, 146097);
-//.    var cent       = Math.floor(dqc / 36524);
-//.    var dcent      = astro.mod(dqc, 36524);
-//.    var quad       = Math.floor(dcent / 1461);
-//.    var dquad      = astro.mod(dcent, 1461);
-//.    var yindex     = Math.floor(dquad / 365);
-//.    var year       = (quadricent * 400) + (cent * 100) + (quad * 4) + yindex;
-//.    if (!((cent == 4) || (yindex == 4))) { year++; }
-//.  return year;
-//.  }///////////////////////////////////////////////////////>
-//.
-//.
-//.  function              calendar_jdToGregorian(/////////////////////////////////// Calculate Gregorian calendar date from Julian day
-//.                        a_jd
-//.  )                     {//////////////////////////////////
-//.    var                 wjd             = Math.floor(a_jd - 0.5) + 0.5;
-//.    var                 year            = calendar_jdToGregorianYear(a_jd);
-//.    var                 yearday         = wjd - calendar_gregorianToJd(year, 1, 1);
-//.    var                 leapadj         = (     (   wjd < calendar_gregorianToJd(year, 3, 1)   ) ?0 :(calendar_leapGregorian(year) ? 1 : 2)     );
-//.    var                 month           = Math.floor(     (   ( (yearday + leapadj)*12 ) + 373   )/367     );
-//.    var                 day             = (   wjd - calendar_gregorianToJd(year,month,1)   ) + 1;
-//.  return [year, month, day];
-//.  }/////////////////////////////////////////////////////
 
 
  function               sWinterObservations(//////////////////////////////////////////////////////////////> Run the "Hey Diddle Diddle algorithm" from one date.
@@ -302,9 +250,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
                                                             ,         Std.parseInt( a_sGo.substr(5,2) ) //> Month. Jan = 1, Dec = 12
                                                             ,         Std.parseInt( a_sGo.substr(8,2) ) //> Day. 1st = 1
                                                 )           );                                          //>
-
 trace("sWinterObservations "+ a_sGo +" "+ when_jd);
-
   var                   asJdMsMsIlRaDe  :Array<String>    = _mapasJdMsMsIlRaDe[ when_jd +"jd" ];        //> Look up data for the given day.
   if( null == asJdMsMsIlRaDe ){                                                             return "*";}//> If there is a problem, like date isn't in table, then quit.
   var                   sDate           :String           = "";                                         //>
@@ -321,7 +267,7 @@ trace("sWinterObservations "+ a_sGo +" "+ when_jd);
   var                   sRow            :String           = "";                                         //>
   while( isStep < 99 ){                                                                                 //>
    dSkipAhead_days = 1.;                                                                                //> Default is 1 loop = 1 day.
-   asJdMsMsIlRaDe = _mapasJdMsMsIlRaDe[ when_jd +"jd" ];                                                 //> Look up data for the given date.
+   asJdMsMsIlRaDe = _mapasJdMsMsIlRaDe[ when_jd +"jd" ];                                                //> Look up data for the given date.
    if( null == asJdMsMsIlRaDe ){                                        trace("???");            break;}//>
    sDate       =                 asJdMsMsIlRaDe[0]  ;                                                   //> sDate        ,1999-12-31T12:00:00   First cell is nYear as text in ISO format
    dMoonset_jd = Std.parseFloat( asJdMsMsIlRaDe[1] );                                                   //> Moonset      ,37.220555555555556 
