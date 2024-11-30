@@ -442,12 +442,11 @@ function                                DrawLine(///////////////////////////////
   let                                   y3               = ( yB - yA*Math.cos(dPsi) ) / Math.sin(dPsi); //>
   let                                   z3               = ( zB - zA*Math.cos(dPsi) ) / Math.sin(dPsi); //>
   for( let dPhi = 0; dPhi <= 8.5*dPsi; dPhi += 0.25*dPsi ){                                             //> DOTTED LINE
-   let                                  xD               = xA*Math.cos(dPhi) + x3*Math.sin(dPhi);       //>
-   let                                  yD               = yA*Math.cos(dPhi) + y3*Math.sin(dPhi);       //>
-   let                                  zD               = zA*Math.cos(dPhi) + z3*Math.sin(dPhi);       //>
-   let                                  latD             = Math.asin(  zD     );                        //> Back to polar
-   let                                  longD            = Math.atan2( yD ,xD );                        //> result.
-   MarkerMgr.markerEquatorial( longD*180/Math.PI ,latD*180/Math.PI ,true,true ,"cross" ,"#ffff00" ,4);  //>
+   MarkerMgr.markerEquatorial(  Math.atan2( yA*Math.cos(dPhi) + y3*Math.sin(dPhi)                       //>
+                                ,           xA*Math.cos(dPhi) + x3*Math.sin(dPhi) )*180/Math.PI         //>
+   ,                            Math.asin(  zA*Math.cos(dPhi) + z3*Math.sin(dPhi) )*180/Math.PI         //>
+   ,                            true ,true ,"cross" ,"#ffff00" ,4                                       //>
+   );                                                                                                   //>
   }//for dPhi                                                                                           //>
 }//DrawLine///////////////////////////////////////////////////////////////////////////////////////////////>
 
@@ -512,17 +511,19 @@ function                                Table(//////////////////////////////////
   core.setDate( a_nGo +"-01-01T00:00:00" ,"LMST" );                                                     //> Before early start of year.
   let                                   nDay                    = Math.floor( core.getJDay() );         //> Get the count of days, the noon before midnight.
   Look( 90,  180  ,180 ,0.1 );                                                                          //> Look straight up, south at bottom, whole sky view, quick.
-  core.output( "Date,nDay" +",Sunset,Sunrise,Moonrise" +",Moonset" +",MOON_when,illumination,ra,dec"    //> Row of table headers.
-                                                                   +",TIME_when,illumination,ra,dec"    //>
-                                                                   +",VEGA_when,illumination,ra,dec"    //>
+  core.output( "sDate,a_nDay_jd,dSunSet_h,dSunRise_h,r_dMoonRise_h"                                     //>
+  +           ",dMoonSet_h"                                                                             //>
+  +           ",Moon_sDate,dLit_100,dRa,dDec"                                                           //>
+  +           ",MidN_sDate,dLit_100,dRa,dDec"                                                           //>
+  +           ",Vega_sDate,dLit_100,dRa,dDec"                                                           //>
   );                                                                                                    //>
   let                                   dNoon                   = 0;                                    //>
   let                                   nEnd                    = nDay + 365 + 7;                       //> A year and a bit of overlap with next year.
   for( dNoon = nDay; dNoon < nEnd; dNoon++ ){                                                           //> For a number of years (plus a bit of slop)...
    let                                  av                      = avBasics(dNoon);                      //>
    sRow =                               av[0];                                                          //>
-   let                dMoonSet_h      = av[1];                                                          //>
-   let                dMoonRise_h     = av[2];                                                          //>
+   let                  dMoonSet_h    = av[1];                                                          //>
+   let                  dMoonRise_h   = av[2];                                                          //>
                                                                                                         //> But, if we have a moonrise time, then not a new moon, so...
    let                                  m                       = mapSelect("Moon");         // NAP();  //> Refresh info about the moon.
    if( dMoonSet_h < 0 ){ dMoonSet_h  = m["set-dhr" ] + 24; }                                            //> MOST ROWS: If still looking for the moonset, then get it now, including day we have skipped in hours.
