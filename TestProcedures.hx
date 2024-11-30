@@ -15,15 +15,28 @@ class TestProcedures ///////////////////////////////////////////////////////////
 
   var                   _sPathData     :String ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> ???Hard-coded? Pre-calculated data files.
   var                   _sPathOut      :String ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> ???Hard-coded? Results output to here.
-  var                   _mapasDataForDay                        = new Map<String,Array<String>>();      //> Table of data for moon for each day (night), read from files.
-  var                   _iDATAfORdAY_sDate                      = 0;                                    //>
-  var                   _iDATAfORdAY_nDay_jd                    = 1;                                    //>
-  var                   _iDATAfORdAY_dMoonSet_h                 = 2;                                    //>
-  var                   _iDATAfORdAY_Moon_sDate                 = 3;                                    //>
-  var                   _iDATAfORdAY_dLit_100                   = 4;                                    //>
-  var                   _iDATAfORdAY_dRa                        = 5;                                    //>
-  var                   _iDATAfORdAY_dDec                       = 6;                                    //>
-  var                   _GREGORIANePOCH                         = 1721425.5;                            //> ??? https://dzucconi.github.io/calendrical/docs/calendrical.calendar.constants.html
+
+  var                   _mapasDaysData                        = new Map<String,Array<String>>();      //> Table of data for moon for each day (night), read from files.
+  var                       _iDATAfORdAY_sDate                  =  0;                                   //> sDate         ,1999-12-31T12:00:00  First cell is nYear as text in ISO format yyyy-mm-dd. 
+  var                       _iDATAfORdAY_nDay_jd                =  1;                                   //> a_nDay_jd     ,2451544              Numeric version of key.
+  var                       _iDATAfORdAY_dSunSet_h              =  2;                                   //> dSunSet_h     ,16.026944444444442 
+  var                       _iDATAfORdAY_dSunRise_h             =  3;                                   //> dSunRise_h    ,32.06888888888889 
+  var                       _iDATAfORdAY_dMoonRise_h            =  4;                                   //> r_dMoonRise_h ,26.668333333333333 
+  var                       _iDATAfORdAY_dMoonSet_h             =  5;                                   //> dMoonSet_h    ,37.220555555555556 
+  var                       _iDATAfORdAY_Moon_sDate             =  6;                                   //> Moon_sDate    ,2000-01-01T13:13:14 
+  var                       _iDATAfORdAY_Moon_dLit_100          =  7;                                   //> dLit_100      ,22.799720764160156 
+  var                       _iDATAfORdAY_Moon_dRa               =  8;                                   //> dRa           ,-137.51418852173234 
+  var                       _iDATAfORdAY_Moon_dDec              =  9;                                   //> dDec          ,-11.811177408287486 
+  var                       _iDATAfORdAY_MidN_sDate             = 10;                                   //> MidN_sDate    ,2000-01-01T00:00:00 
+  var                       _iDATAfORdAY_MidN_dLit_100          = 11;                                   //> dLit_100      ,26.628517150878906 
+  var                       _iDATAfORdAY_MidN_dRa               = 12;                                   //> dRa           ,-142.82009664343948 
+  var                       _iDATAfORdAY_MidN_dDec              = 13;                                   //> dDec          ,-9.647356542776926 
+  var                       _iDATAfORdAY_Vega_sDate             = 14;                                   //> Vega_sDate    ,1999-12-31T23:59:50 
+  var                       _iDATAfORdAY_Vega_dLit_100          = 15;                                   //> dLit_100      ,26.629600524902344 
+  var                       _iDATAfORdAY_Vega_dRa               = 16;                                   //> dRa           ,-142.82155355617718 
+  var                       _iDATAfORdAY_Vega_dDec              = 17;                                   //> dDec          ,-9.646872946743024 
+
+  var                   _dGREGORIANePOCH                        = 1721425.5;                            //> ??? https://dzucconi.github.io/calendrical/docs/calendrical.calendar.constants.html
 
 
  function                nMod(////////////////////////////////////////////////////////////////////////////> Fix the modulus function (% is the remainder function in this language?)
@@ -77,7 +90,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
- function               dDateFromYms_jd(//////////////////////////////////////////////////////////////////> Alternate implementation to convert Gregorian to JDay.   https://dzucconi.github.io/calendrical/docs/calendrical.calendar.conversions.html
+ function               dJDayFromYms_jd(//////////////////////////////////////////////////////////////////> Alternate implementation to convert Gregorian to JDay.   https://dzucconi.github.io/calendrical/docs/calendrical.calendar.conversions.html
                         Y               :Int                                                            //> Gregorian Year,
  ,                      M               :Int                                                            //> Month. Jan = 1, Dec = 12
  ,                      D               :Int                                                            //> Day. 1st = 1
@@ -85,7 +98,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
 //,                     0                                                                               //> or after
 //,                     0                                                                               //> .
  )                                      :Float {//////////////////////////////////////////////////////////>
- return (  _GREGORIANePOCH                                                                              //>
+ return (  _dGREGORIANePOCH                                                                             //>
          +           365*(Y - 1)                                                                        //>
          +   Math.floor( (Y - 1) /   4)                                                                 //> Add a leap year every 4th, 
          -   Math.floor( (Y - 1) / 100)                                                                 //> but not on century years,
@@ -95,33 +108,33 @@ class TestProcedures ///////////////////////////////////////////////////////////
              )                                                                                          //>
          + D - 0.5                                                                                      //> Assuming noon of given day. -1 + 0.5
         );                                                                                              //>
- }//dDateFromYms_jd//////////////////////////////////////////////////////////////////////////////////////////////>
+ }//dJDayFromYms_jd///////////////////////////////////////////////////////////////////////////////////////>
  function               TEST_dDate_jd(////////////////////////////////////////////////////////////////////> Test the above function.
  )                                      :Int {////////////////////////////////////////////////////////////> Report 0 if no problems.
 //. TODO - Make more sense of the following:
-//.  var                   m               :Float                  = 0;                                    //>
-//.  var                   n               :Float                  = 0;                                    //>
-//.  m = dDateFromYms_jd(-4713,11,24); trace("TEST_dDate_jd -4713 " + m );                                 //> Does not match Stellarium, as Stellarium switches to the Julian calendar before 1500s.
-//.  m = dDateFromYms_jd(-4712, 1, 1); trace("TEST_dDate_jd -4712 " + m );                                 //>
-//.  for( y in 1600...2100 ){                                                                              //>
-//.   m = dDateFromYms_jd(y,11,24);                                                                        //>
-//.   //n = dDateFromYms_jd(y,11,24);                                                                      //>
-//.   if( y == 1700 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //> 2342300              //>
-//.   if( y == 1800 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //> 2378824              //>
-//.   if( y == 1900 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //> 2415348              //>
-//.   if( y == 2000 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //> 2451873              //>
-//.   if( y <  1609 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //>                      //>
-//.                          // 2305776                                                                    //>
-//.                          // 2306141                                                                    //>
-//.                          // 2306506                                                                    //>
-//.                          // 2306871                                                                    //>
-//.                          // 2307237                                                                    //>
-//.                          // 2307602                                                                    //>
-//.                          // 2307967                                                                    //>
-//.                          // 2308332                                                                    //>
-//.                          // 2308698                                                                    //>
-//.   // if( m != n ){ trace( "TEST_dDate_jd "+ y +" "+ m +" "+ n ); return 1 ;} //>       0               //>
-//.  }//for i                                                                                              //>
+//.  var                   m               :Float                  = 0;                                 //>
+//.  var                   n               :Float                  = 0;                                 //>
+//.  m = dJDayFromYms_jd(-4713,11,24); trace("TEST_dDate_jd -4713 " + m );                              //> Does not match Stellarium, as Stellarium switches to the Julian calendar before 1500s.
+//.  m = dJDayFromYms_jd(-4712, 1, 1); trace("TEST_dDate_jd -4712 " + m );                              //>
+//.  for( y in 1600...2100 ){                                                                           //>
+//.   m = dJDayFromYms_jd(y,11,24);                                                                     //>
+//.   //n = dJDayFromYms_jd(y,11,24);                                                                   //>
+//.   if( y == 1700 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //> 2342300           //>
+//.   if( y == 1800 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //> 2378824           //>
+//.   if( y == 1900 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //> 2415348           //>
+//.   if( y == 2000 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //> 2451873           //>
+//.   if( y <  1609 ){ trace( "TEST_dDate_jd "+ y +" "+ m +" " ); } //return 1 ;} //>                   //>
+//.                          // 2305776                                                                 //>
+//.                          // 2306141                                                                 //>
+//.                          // 2306506                                                                 //>
+//.                          // 2306871                                                                 //>
+//.                          // 2307237                                                                 //>
+//.                          // 2307602                                                                 //>
+//.                          // 2307967                                                                 //>
+//.                          // 2308332                                                                 //>
+//.                          // 2308698                                                                 //>
+//.   // if( m != n ){ trace( "TEST_dDate_jd "+ y +" "+ m +" "+ n ); return 1 ;} //>       0            //>
+//.  }//for i                                                                                           //>
  return 0;                                                                                              //> Report no problems - looks good against Stellarium.
  }//TEST_dDate_jd/////////////////////////////////////////////////////////////////////////////////////////>
 
@@ -135,7 +148,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
                         a_jd            :Float                                                          //> Julian Day, immediately rounded down to last midnight.
  )                                      :Int {////////////////////////////////////////////////////////////>
   var           dStartOfDay_jd          :Float                  = Math.floor(a_jd - 0.5) + 0.5;         //> Integer is noon, so everything after midnight keeps same day but at midight, everything before midnight gets rounded down to previous day's midnight (= start of today).
-  var           dDay_jd                 :Float                  = dStartOfDay_jd - _GREGORIANePOCH;     //> this.constants.gregorian.EPOCH;
+  var           dDay_jd                 :Float                  = dStartOfDay_jd - _dGREGORIANePOCH;    //>
                                                                                                         //>
   var           nCycles_400y            :Int                    = Math.floor(dDay_jd          /146097); //> Number of 400 year cycles.
   var           nIn400yCycle_day        :Int                    = nMod(      dDay_jd          ,146097); //> Day within 400 year cycle.
@@ -160,7 +173,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
   var                   n               :Int                    = 0;                                    //>
   var                   d               :Float                  = 0.;                                   //>
   for( y in -4172...2100 ){                                                                             //>
-   d = dDateFromYms_jd(y,1,1); n = nYearFromJd(d);                                                      if( y != n ){ trace( "TEST_nYearFromJd "+ n ); return 1 ;}  //> Test that this is the inverse of a known good function.
+   d = dJDayFromYms_jd(y,1,1); n =nYearFromJd(d); if( y != n ){ trace("TEST_nYearFromJd "+n); return 1;}//> Test that this is the inverse of a known good function.
   }//for y                                                                                              //>
  return 0;                                                                                              //>
  }//nYearFromJd///////////////////////////////////////////////////////////////////////////////////////////>
@@ -177,19 +190,19 @@ class TestProcedures ///////////////////////////////////////////////////////////
   var                   r_nD            :Int          = 0;                                              //>
   var                   dStartOfDay_jd  :Float        = Math.floor(a_jd - 0.5) + 0.5;                   //> The midnight before the given date/time.
   var                   iDayInYear      :Int          = Math.floor(                                     //> Count of day in year so far, 
-                                                         dStartOfDay_jd - dDateFromYms_jd(r_nY,1,1) + 2 //> 1 = Jan 1.
+                                                         dStartOfDay_jd - dJDayFromYms_jd(r_nY,1,1) + 2 //> 1 = Jan 1.
                                                         );                                              //>
-  if( dDateFromYms_jd(r_nY,3,1) <= dStartOfDay_jd ){ iDayInYear += bLeap(r_nY) ?1 :2; }                 //> If after Jan and Feb, add a day and a possible leap day.
+  if( dJDayFromYms_jd(r_nY,3,1) <= dStartOfDay_jd ){ iDayInYear += bLeap(r_nY) ?1 :2; }                 //> If after Jan and Feb, add a day and a possible leap day.
   r_nM = Math.floor(   ( (iDayInYear-1)*12 + 373 )/367   );                                             //> Magic! (worked in Excel!)
-  r_nD = Math.floor( dStartOfDay_jd - dDateFromYms_jd(r_nY, r_nM, 1) + 0.5 ) + 1;                       //>
+  r_nD = Math.floor( dStartOfDay_jd - dJDayFromYms_jd(r_nY, r_nM, 1) + 0.5 ) + 1;                       //>
  return [r_nY, r_nM, r_nD];                                                                             //>
  }//anYmdFromJd///////////////////////////////////////////////////////////////////////////////////////////>
  function               TEST_anYmdFromJd(/////////////////////////////////////////////////////////////////>
  ){                     //////////////////////////////////////////////////////////////////////////////////>
   trace("TEST_anYmdFromJd");                                                                            //>
   var                   s               :String                 = "";                                   //>
-                       // Stellarium   Fudge                                                            //> Fudge factor because Stellarium switches to the Julian calendar before 1500s.
-                       //    vvvvvvv  vvvvvvv                                                           //>
+                 // Stellarium  Fudge factor                                                            //> Fudge factor because Stellarium switches to the Julian calendar before 1500s.
+                 //    v-----v  v-----v                                                                 //>
   s = ""+ anYmdFromJd(       0          ); if( "[-4713,11,24]" != s ){ trace("TEST_anYmdFromJd 1  >"+ s +"<"); return 1 ; } //>
   s = ""+ anYmdFromJd(       0 +12*3 +2 ); if( "[-4712,1,1]"   != s ){ trace("TEST_anYmdFromJd 2  >"+ s +"<"); return 2 ; } //>
   s = ""+ anYmdFromJd(  990558 + 5*3 +2 ); if( "[-2000,1,1]"   != s ){ trace("TEST_anYmdFromJd 3  >"+ s +"<"); return 3 ; } //>
@@ -204,114 +217,117 @@ class TestProcedures ///////////////////////////////////////////////////////////
   s = ""+ anYmdFromJd( 2440588          ); if( "[1970,1,1]"    != s ){ trace("TEST_anYmdFromJd 12 >"+ s +"<"); return 12; } //>
   for( d in 0...3000000 ){                                                                              //> Test every day for a long time...
    var                  an              :Array<Int>             = anYmdFromJd(d);                       //> Convert to Gregorian Y M D
-   var                  d1              :Float                  = dDateFromYms_jd( an[0]                //> Convert back - Gregorian Year,
+   var                  d1              :Float                  = dJDayFromYms_jd( an[0]                //> Convert back - Gregorian Year,
                                                                   ,         an[1]                       //> Month. Jan = 1, Dec = 12
                                                                   ,         an[2]                       //> Day. 1st = 1
                                                                   );                                    //>
-   if( 0 == d%50000 ){ trace( sYMD(d) +" "+ an ); }                                                     //> Progress indication.
+   if( 0 == d%50000 ){ trace( sYmd(d) +" "+ an ); }                                                     //> Progress indication.
    if( d != d1 ){                                         trace("mismatch "+ d +" "+ d1); return d+100;}//>
   }//for d                                                                                              //>
  return 0;                                                                                              //>
  }//TEST_anYmdFromJd//////////////////////////////////////////////////////////////////////////////////////>
 
 
- function               sYMD(/////////////////////////////////////////////////////////////////////////////> Convert Julian Day to ISO date string.
+ function               sYmd(/////////////////////////////////////////////////////////////////////////////> Convert Julian Day to ISO date string.
                         a_jd            :Int                                                            //> Given a Julian Day number.
  ){                                     //////////////////////////////////////////////////////////////////>
   var                   an              :Array<Int>             = anYmdFromJd( a_jd );                  //>
  return an[0]   +"-"+ ( "0"+an[1] ).substr(-2)   +"-"+   ( "0"+an[2] ).substr(-2);                      //>
- }//sYMD//////////////////////////////////////////////////////////////////////////////////////////////////>
+ }//sYmd//////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
- function               sYMDhms(//////////////////////////////////////////////////////////////////////////> Convert Julian Day to ISO date/time string.
+ function               sYmdHms(//////////////////////////////////////////////////////////////////////////> Convert Julian Day to ISO date PLUS time string.
                         a_jd       :Float                                                               //>
  )                                 :String {//////////////////////////////////////////////////////////////>
-  var                   n_jd       :Int   = Math.floor(a_jd);                                           //>
-  var                   d          :Float =            a_jd         - n_jd; d =            24*d   - 12; //>
+  var                   n_jd       :Int   = Math.floor( a_jd - 0.5);                                    //> .0 = noon, -0.5 = start of (normal Gregorian) day.
+  var                   d          :Float =                    a_jd - n_jd; d =            24*d   - 12; //>
   var                   nH         :Int   = Math.floor( d ); d =  d - nH  ; d =            60*d       ; //>
   var                   nM         :Int   = Math.floor( d ); d =  d - nM  ; d = Math.floor(60*d + 0.5); //>
- return sYMD(n_jd) +" "+ ("0"+nH).substr(-2) +":"+ ("0"+nM).substr(-2) +":"+ ("0"+d).substr(-2);        //>
- }//sYMDhms///////////////////////////////////////////////////////////////////////////////////////////////>
+ return sYmd(n_jd) +" "+ ("0"+nH).substr(-2) +":"+ ("0"+nM).substr(-2) +":"+ ("0"+d).substr(-2);        //>
+ }//sYmdHms///////////////////////////////////////////////////////////////////////////////////////////////>
  function               TEST_sYMDhms(/////////////////////////////////////////////////////////////////////>
  )                                      :Int {////////////////////////////////////////////////////////////>
   var                   d               :Float                  = 0.;                                   //>
   var                   s               :String                 = "";                                   //>
-  d =       0         ; s = sYMDhms( d ); if( "-4713-11-24 12:00:00" != s ){ trace( "TEST_sYMDhms 1 : "+ d +" >"+ s +"<" ); return 1 ;}//>
-  d =       0 +12*3 +2; s = sYMDhms( d ); if( "-4712-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 2 : "+ d +" >"+ s +"<" ); return 2 ;}//>
-  d =  990558 + 5*3 +2; s = sYMDhms( d ); if( "-2000-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 3 : "+ d +" >"+ s +"<" ); return 3 ;}//>
-  d = 1720693 +      2; s = sYMDhms( d ); if(    "-1-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 4 : "+ d +" >"+ s +"<" ); return 4 ;}//>
-  d = 1721058 +      2; s = sYMDhms( d ); if(     "0-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 5 : "+ d +" >"+ s +"<" ); return 5 ;}//>
-  d = 1721424 +      2; s = sYMDhms( d ); if(     "1-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 6 : "+ d +" >"+ s +"<" ); return 6 ;}//>
-  d = 2086308 - 2*3 +1; s = sYMDhms( d ); if(  "1000-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 7 : "+ d +" >"+ s +"<" ); return 7 ;}//>
-  d = 2298884 - 4*3 +2; s = sYMDhms( d ); if(  "1582-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 8 : "+ d +" >"+ s +"<" ); return 8 ;}//>
-  d = 2299239         ; s = sYMDhms( d ); if(  "1583-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 9 : "+ d +" >"+ s +"<" ); return 9 ;}//>
-  d = 2305448         ; s = sYMDhms( d ); if(  "1600-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 10: "+ d +" >"+ s +"<" ); return 10;}//>
-  d = 2341973         ; s = sYMDhms( d ); if(  "1700-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 11: "+ d +" >"+ s +"<" ); return 11;}//>
-  d = 2440588         ; s = sYMDhms( d ); if(  "1970-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 12: "+ d +" >"+ s +"<" ); return 12;}//>
+  d =       0         ; s = sYmdHms( d ); if( "-4713-11-24 12:00:00" != s ){ trace( "TEST_sYMDhms 0 : "+ d +" >"+ s +"<" ); return 0 ;}//>
+  d =       0 +12*3 +2; s = sYmdHms( d ); if( "-4712-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 1 : "+ d +" >"+ s +"<" ); return 1 ;}//>
+  d =  990558 + 5*3 +2; s = sYmdHms( d ); if( "-2000-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 2 : "+ d +" >"+ s +"<" ); return 2 ;}//>
+  d = 1720693 +      2; s = sYmdHms( d ); if(    "-1-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 3 : "+ d +" >"+ s +"<" ); return 3 ;}//>
+  d = 1721058 +      2; s = sYmdHms( d ); if(     "0-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 4 : "+ d +" >"+ s +"<" ); return 4 ;}//>
+  d = 1721424 +      2; s = sYmdHms( d ); if(     "1-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 5 : "+ d +" >"+ s +"<" ); return 5 ;}//>
+  d = 2086308 - 2*3 +1; s = sYmdHms( d ); if(  "1000-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 6 : "+ d +" >"+ s +"<" ); return 6 ;}//>
+  d = 2298884 - 4*3 +2; s = sYmdHms( d ); if(  "1582-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 7 : "+ d +" >"+ s +"<" ); return 7 ;}//>
+  d = 2299239         ; s = sYmdHms( d ); if(  "1583-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 8 : "+ d +" >"+ s +"<" ); return 8 ;}//>
+  d = 2305448         ; s = sYmdHms( d ); if(  "1600-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 9 : "+ d +" >"+ s +"<" ); return 9 ;}//>
+  d = 2341973         ; s = sYmdHms( d ); if(  "1700-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 10: "+ d +" >"+ s +"<" ); return 10;}//>
+  d = 2440588         ; s = sYmdHms( d ); if(  "1970-01-01 12:00:00" != s ){ trace( "TEST_sYMDhms 11: "+ d +" >"+ s +"<" ); return 11;}//>
+
+  d = 2440588.25      ; s = sYmdHms( d ); if(  "1970-01-01 18:00:00" != s ){ trace( "TEST_sYMDhms 12: "+ d +" >"+ s +"<" ); return 12;}//>
+  d = 2440588.5       ; s = sYmdHms( d ); if(  "1970-01-02 00:00:00" != s ){ trace( "TEST_sYMDhms 13: "+ d +" >"+ s +"<" ); return 13;}//>
+  d = 2440588.75      ; s = sYmdHms( d ); if(  "1970-01-02 06:00:00" != s ){ trace( "TEST_sYMDhms 14: "+ d +" >"+ s +"<" ); return 14;}//>
+  d = 2440588.751     ; s = sYmdHms( d ); if(  "1970-01-02 06:00:00" != s ){ trace( "TEST_sYMDhms 15: "+ d +" >"+ s +"<" ); return 15;}//>
+  d = 2440588.75101   ; s = sYmdHms( d ); if(  "1970-01-02 06:00:00" != s ){ trace( "TEST_sYMDhms 16: "+ d +" >"+ s +"<" ); return 16;}//>
+
  return 0;                                                                                              //>
  }//TEST_sYMDhms(){}//////////////////////////////////////////////////////////////////////////////////////>
 
 
  function               sWinterObservations(//////////////////////////////////////////////////////////////> Run the "Hey Diddle Diddle algorithm" from one date.
-                        a_sGo                                                                           //> Date to start on (start waiting for the new moon).
- )                                      :String {/////////////////////////////////////////////////////////>
-  var                   when_jd   :Int = Math.floor( dDateFromYms_jd( Std.parseInt( a_sGo.substr(0,4) ) //> Convert Gregorian date to a Julian Day, the number of days that have passed since the Julian Date Epoch.  Gregorian Year,
+                        a_sGo                                                                           //> Date to start on (start waiting for the new moon), as ISO formatted text (yyyy-mm-dd)
+ )                                      :String {/////////////////////////////////////////////////////////> Report text errors, or empty string if okay.
+  var                   n_jd      :Int = Math.floor( dJDayFromYms_jd( Std.parseInt( a_sGo.substr(0,4) ) //> Convert Gregorian date to a Julian Day, the number of days that have passed since the Julian Date Epoch.  Gregorian Year,
                                                      ,                Std.parseInt( a_sGo.substr(5,2) ) //> Month. Jan = 1, Dec = 12
                                                      ,                Std.parseInt( a_sGo.substr(8,2) ) //> Day. 1st = 1
                                          )           );                                                 //>
-  trace("sWinterObservations "+ a_sGo +" "+ when_jd);                                                   //>
-  var                   asJdMsMsIlRaDe  :Array<String>          = _mapasDataForDay[ when_jd +"jd" ];    //> Look up data for the given day.
-  if( null == asJdMsMsIlRaDe ){                                                             return "*";}//> If there is a problem, like date isn't in table, then quit.
-  var                   sDate           :String                 = "";                                   //>
-  var                   dDate_jd        :Float                  = 0.;                                   //>
-  var                   dMoonset_jd     :Float                  = 0.;                                   //>
-  var                   sMoonset        :String                 = "";                                   //>
-  var                   dLit_100        :Float                  = 0.;                                   //> Illumination in percent.
-  var                   dRa             :Float                  = 0.;                                   //> Short-term right ascension (long) and
-  var                   dDec            :Float                  = 0.;                                   //> declination (lat) of a point.
-  var                   whenGo_jd       :Int                    = when_jd;                              //> Make a copy...
-  var                   isStep          :Int                    = -1;                                   //>
-  var                   isLeap          :Int                    = -1;                                   //>
-  var                   dSkipAhead_days :Float                  =  1.;                                  //>
-  var                   sRow            :String                 = "";                                   //>
-  while( isStep < 99 ){                                                                                 //>
-   dSkipAhead_days = 1.;                                                                                //> Default is 1 loop = 1 day.
-   asJdMsMsIlRaDe = _mapasDataForDay[ when_jd +"jd" ];                                                  //> Look up data for the given date.
-   if( null == asJdMsMsIlRaDe ){                                        trace("???");            break;}//>
-   sDate       =                   asJdMsMsIlRaDe[ _iDATAfORdAY_sDate      ]    ;                       //> sDate        ,1999-12-31T12:00:00   First cell is nYear as text in ISO format
-   dDate_jd    = Std.parseFloat(   asJdMsMsIlRaDe[ _iDATAfORdAY_nDay_jd    ]   );                       //>
-   dMoonset_jd = Std.parseFloat(   asJdMsMsIlRaDe[ _iDATAfORdAY_dMoonSet_h ]   );                       //> Moonset      ,37.220555555555556 
-   sMoonset    =                   asJdMsMsIlRaDe[ _iDATAfORdAY_Moon_sDate ]    ;                       //> MOON_when    ,2000-01-01T13:13:14 
-   dLit_100    = Std.parseFloat(   asJdMsMsIlRaDe[ _iDATAfORdAY_dLit_100   ]   );                       //> illumination ,22.799720764160156            
-   dRa         = Std.parseFloat(   asJdMsMsIlRaDe[ _iDATAfORdAY_dRa        ]   );                       //> ra           ,-137.51418852173234           
-   dDec        = Std.parseFloat(   asJdMsMsIlRaDe[ _iDATAfORdAY_dDec       ]   );                       //> dec          ,-11.811177408287486           
-   if(      -1 == isStep ){ isStep = 0;                                                                 //> The very first time, move on to next step immediately.
-                            sRow   = sDate +"="+ sYMDhms(when_jd                    )                   //> But report date and
-                                     +",mset, "+ sYMDhms(when_jd + dMoonset_jd - 0.5)                   //> date/time of the moon set.
-                                     +     ", "+                   sMoonset          ;                  //>
+                                                                                                        trace("sWinterObservations "+ a_sGo +" "+ n_jd);//>
+  var                   asDaysData      :Array<String>          = _mapasDaysData[ n_jd +"jd" ];         //> Look up data for the given day.
+  if( null == asDaysData ){                                                                 return "*";}//> If there is a problem, like date isn't in table, then quit.
+  var                   whenGo_jd       :Int                    = n_jd;                                 //> Keep a copy of start day.
+  var                   isStep          :Int                    = 0 ;                                   //> Step in Hey Diddle algorithm.
+  var                   nSkipAhead_days :Int                    = 1 ;                                   //> Number of days we can skip ahead in running the Hey Diddle algorithm.
+  var                   r_s             :String                 = "";                                   //> Output text, start from scratch.
+  for( iLimit in 0...99 ){                                                                              //> Loop we promise to break out of, with a limit just in case.
+   nSkipAhead_days = 1;                                                                                 //> Default is 1 loop = 1 day, but we may want to skip some days.
+   asDaysData    = _mapasDaysData[ n_jd +"jd" ];                                                        //> Look up data for the given date.
+   if( null == asDaysData ){                                        trace("???");                break;}//>
+   if(       0 == isStep ){                                                                             //>
+    isStep = 1;                                                                                         //> The very first time, move on to next step immediately.
+    r_s    = asDaysData[ _iDATAfORdAY_sDate ]  +"="+ sYmdHms( n_jd )                         //DEBUG    //> But report date and
+             + ", mset,"+sYmdHms(  n_jd +Std.parseFloat( asDaysData[_iDATAfORdAY_dMoonSet_h] )-0.5  )   //> date/time of the moon set.
+             +       ","+                                asDaysData[_iDATAfORdAY_Moon_sDate]        ;   //>
    }//if                                                                                                //>
-   if(       0 == isStep ){                                                                             //> If in first stage...
-    if( dLit_100 < 2   ){   isStep++;   }                                                               //> Look for new moon, if seeing it, go to next stage.
-   }else if( 1 == isStep ){                                                                             //> In 2nd stage, look
-    if( 50 <= dLit_100 ){   isStep++;   dSkipAhead_days = 7.;                                           //> for first gibbous illumination (50%+), when we start count of nights.
-                            sRow +=    ",gib, "+ sYMDhms(when_jd + dMoonset_jd - 0.5)                   //>
-                                     +     "," +                   sMoonset          ;                  //>
+   if(       1 == isStep ){                                                                             //> If in first stage of algorithm...
+    if(       Std.parseFloat( asDaysData[_iDATAfORdAY_Moon_dLit_100] ) < 2   ){                         //> Look for new moon, if seeing it, go to next stage.
+     isStep = 2;                                                                                        //>
     }//if                                                                                               //>
-   }else{                                                                                               //>
-  break;//while                                                                                         //>
-   }//if                                                                                                //>
-   when_jd++;                                                                                           //> Next day
-  }//while                                                                                              //> .
-  var                   d_360           :Float                  = dOverLine_360(dDec,dRa);              //>
-  if( d_360 < 0 ){   when_jd += 337;   sRow += ",337, "+ sYMD( when_jd );   }                           //>
-  else           {   when_jd += 366;   sRow += ",366, "+ sYMD( when_jd );   }                           //>
- return sRow;                                                                                           //>
+   }else{                                                                                               //> In 2nd stage of algorithm, look
+    if( 50 <= Std.parseFloat( asDaysData[_iDATAfORdAY_Moon_dLit_100] )       ){                         //> for first gibbous illumination (50%+), when 
+     isStep = 3;    nSkipAhead_days = 8;                                                                //> we skip ahead to the big night.
+     r_s +=     ", gib,"+sYmdHms(  n_jd +Std.parseFloat( asDaysData[_iDATAfORdAY_dMoonSet_h] )-0.5  )   //>
+             +       ","+                                asDaysData[_iDATAfORdAY_Moon_sDate]        ;   //>
+  break;//for                                                                                           //> get out of this loop
+   }}//if//if                                                                                           //> .
+   n_jd += nSkipAhead_days;                                                                             //> If staying in loop, then skip ahead.
+  }//for                                                                                                //> .
+                                                                                                        //>
+  var                                   iDec                    = 0;                                    //>
+  var                                   iRa                     = 0;                                    //>
+  iDec = _iDATAfORdAY_Moon_dDec; iRa = _iDATAfORdAY_Moon_dRa; r_s += ", full,Moon,"+ asDaysData[iDec] +","+ asDaysData[iRa]; //>
+//iDec = _iDATAfORdAY_MidN_dDec; iRa = _iDATAfORdAY_MidN_dRa; r_s += ", full,MidN,"+ asDaysData[iDec] +","+ asDaysData[iRa]; //>
+//iDec = _iDATAfORdAY_Vega_dDec; iRa = _iDATAfORdAY_Vega_dRa; r_s += ", full,Vega,"+ asDaysData[iDec] +","+ asDaysData[iRa]; //>
+                                                                                                        //>
+  var                   d_360           :Float = dOverLine_360( Std.parseFloat( asDaysData[iDec] )      //> See if full moon has crossed "little dog" line or not.
+                                                 ,              Std.parseFloat( asDaysData[iRa ] )      //>
+                                                 );                                                     //>
+  if( d_360 < 0 ){   n_jd += 337;   r_s += ", 337,";   }                                                //> If it has, then skip ahead to next year.
+  else           {   n_jd += 366;   r_s += ", 366,";   }                                                //> If not, skip ahead with extra month, to next year.
+ return r_s + sYmd( n_jd );                                                                             //> Report results, with row ending in next year's date.
  }//sWinterObservations///////////////////////////////////////////////////////////////////////////////////>
 
 
  function               Go_ReadMapasDataFromFile(/////////////////////////////////////////////////////////> Get data from one file, add to global table (map).
                         a_sFile                                                                         //> Name of file within input directory.
- )                                      :Void {///////////////////////////////////////////////////////////> Report nothing. Add to _mapasDataForDay.
+ )                                      :Void {///////////////////////////////////////////////////////////> Report nothing. Add to _mapasDaysData.
   var                   sData           :String         = sys.io.File.getContent(_sPathData + a_sFile); //> Get contents of input data file.
   var                   asLines         :Array<String>  = sData.split('\n');                            //> Split file into rows (one per date).
   var                   n               :Int            = asLines.length;                               //> Get number of rows.
@@ -322,36 +338,36 @@ class TestProcedures ///////////////////////////////////////////////////////////
   for( i in 2...n ){                                                                                    //> Move to RAM: Skip first 2 lines, and then process each file line...
    asCell   = asLines[i].split(",");                                                                    //> Split line on commas.
    sKeyJDay =   asCell[ 1] +"jd";                                                                       //> List key is the Julian Day.
-   asRow    = [ asCell[ 0]              // _iDATAfORdAY_sDate       = 0;                                //> sDate         ,1999-12-31T12:00:00  First cell is nYear as text in ISO format yyyy-mm-dd. 
-              , asCell[ 1]              // _iDATAfORdAY_nDay_jd     = 1;                                //> a_nDay_jd     ,2451544              Numeric version of key.
-            //, asCell[ 2]                                                                              //> dSunSet_h     ,16.026944444444442 
-            //, asCell[ 3]                                                                              //> dSunRise_h    ,32.06888888888889 
-            //, asCell[ 4]                                                                              //> r_dMoonRise_h ,26.668333333333333 
-              , asCell[ 5]              // _iDATAfORdAY_dMoonSet_h  = 2;                                //> dMoonSet_h    ,37.220555555555556 
-              , asCell[ 6]              // _iDATAfORdAY_Moon_sDate  = 3;                                //> Moon_sDate    ,2000-01-01T13:13:14 
-              , asCell[ 7]              // _iDATAfORdAY_dLit_100    = 4;                                //> dLit_100      ,22.799720764160156 
-              , asCell[ 8]              // _iDATAfORdAY_dRa         = 5;                                //> dRa           ,-137.51418852173234 
-              , asCell[ 9]              // _iDATAfORdAY_dDec        = 6;                                //> dDec          ,-11.811177408287486 
-            //, asCell[10]                                                                              //> MidN_sDate    ,2000-01-01T00:00:00 
-            //, asCell[11]                                                                              //> dLit_100      ,26.628517150878906 
-            //, asCell[12]                                                                              //> dRa           ,-142.82009664343948 
-            //, asCell[13]                                                                              //> dDec          ,-9.647356542776926 
-            //, asCell[14]                                                                              //> Vega_sDate    ,1999-12-31T23:59:50 
-            //, asCell[15]                                                                              //> dLit_100      ,26.629600524902344 
-            //, asCell[16]                                                                              //> dRa           ,-142.82155355617718 
-            //, asCell[17]                                                                              //> dDec          ,-9.646872946743024 
+   asRow    = [ asCell[ 0]              // _iDATAfORdAY_sDate         =  0;                             //> sDate         ,1999-12-31T12:00:00  First cell is nYear as text in ISO format yyyy-mm-dd. 
+              , asCell[ 1]              // _iDATAfORdAY_nDay_jd       =  1;                             //> a_nDay_jd     ,2451544              Numeric version of key.
+              , asCell[ 2]              // _iDATAfORdAY_dSunSet_h     =  2;                             //> dSunSet_h     ,16.026944444444442 
+              , asCell[ 3]              // _iDATAfORdAY_dSunRise_h    =  3;                             //> dSunRise_h    ,32.06888888888889 
+              , asCell[ 4]              // _iDATAfORdAY_dMoonRise_h   =  4;                             //> r_dMoonRise_h ,26.668333333333333 
+              , asCell[ 5]              // _iDATAfORdAY_dMoonSet_h    =  5;                             //> dMoonSet_h    ,37.220555555555556 
+              , asCell[ 6]              // _iDATAfORdAY_Moon_sDate    =  6;                             //> Moon_sDate    ,2000-01-01T13:13:14 
+              , asCell[ 7]              // _iDATAfORdAY_Moon_dLit_100 =  7;                             //> dLit_100      ,22.799720764160156 
+              , asCell[ 8]              // _iDATAfORdAY_Moon_dRa      =  8;                             //> dRa           ,-137.51418852173234 
+              , asCell[ 9]              // _iDATAfORdAY_Moon_dDec     =  9;                             //> dDec          ,-11.811177408287486 
+              , asCell[10]              // _iDATAfORdAY_MidN_sDate    = 10;                             //> MidN_sDate    ,2000-01-01T00:00:00 
+              , asCell[11]              // _iDATAfORdAY_MidN_dLit_100 = 11;                             //> dLit_100      ,26.628517150878906 
+              , asCell[12]              // _iDATAfORdAY_MidN_dRa      = 12;                             //> dRa           ,-142.82009664343948 
+              , asCell[13]              // _iDATAfORdAY_MidN_dDec     = 13;                             //> dDec          ,-9.647356542776926 
+              , asCell[14]              // _iDATAfORdAY_Vega_sDate    = 14;                             //> Vega_sDate    ,1999-12-31T23:59:50 
+              , asCell[15]              // _iDATAfORdAY_Vega_dLit_100 = 15;                             //> dLit_100      ,26.629600524902344 
+              , asCell[16]              // _iDATAfORdAY_Vega_dRa      = 16;                             //> dRa           ,-142.82155355617718 
+              , asCell[17]              // _iDATAfORdAY_Vega_dDec     = 17;                             //> dDec          ,-9.646872946743024 
               ];                                                                                        //>
-   _mapasDataForDay[ sKeyJDay ] = asRow;                                                                //> Keep row of data in RAM table, keyed with ISO format date.
+   _mapasDaysData[ sKeyJDay ] = asRow;                                                                //> Keep row of data in RAM table, keyed with ISO format date.
   }//for i                                                                                              //>
  }//Go_ReadMapasDataFromFile//////////////////////////////////////////////////////////////////////////////>
 
  
  function               Go(///////////////////////////////////////////////////////////////////////////////> Main execution starts here.
  )                                      :Void {///////////////////////////////////////////////////////////>
-  if( 0 < TEST_dDate_jd()    ){                                                                 return;}//>
-  if( 0 < TEST_nYearFromJd() ){                                                                 return;}//>
-  if( 0 < TEST_anYmdFromJd() ){                                                                 return;}//>
-  if( 0 < TEST_sYMDhms()     ){                                                                 return;}//>
+// if( 0 < TEST_dDate_jd()    ){                                                                return;}//>
+// if( 0 < TEST_nYearFromJd() ){                                                                return;}//>
+// if( 0 < TEST_anYmdFromJd() ){                                                                return;}//>
+  if( 0 < TEST_sYMDhms()     ){                                                                return;}//>
                                                                                                         //>
   trace("Reading data. -----------------------------------------");                                     //>
   for( y in 2000...2100 ){                                                                              //> For a century...
@@ -359,16 +375,17 @@ class TestProcedures ///////////////////////////////////////////////////////////
   }//for y                                                                                              //> .
                                                                                                         //>
 //.  for( y in 2000...2001 ){                                                                           //> For each year...
-//.   var                  s1              :String                 = y +'-02-15';                       //> Create the starting date (late in this case).
-//.   var                  sReport         :String                 = "";                                //>
-//.   trace("Year = "+ y +" "+ s1 +"-------------------------------");                                  //>
-//.   for( z in 0...20 ){                                                                               //> Run observations for 20 years in a row.
-//.    s1 = sWinterObservations( s1 );  sReport += "\n "+ s1;                                           //> Run the "Hey Diddle Diddle algorithm" from one starting date. Add a row to the results.
-//.    s1 = s1.substr(-10);                                                                             //> The next date to start observations is given in the last cell of the row
-//.   }//for z                                                                                          //> .
-//.   trace(sReport);                                                                                   //> Output the report of rows.
-//.                                                                                                     //>
-//.   trace("");                                                                                        //>
+  var                   y               :Int                    = 2000;                                 //> Year as an integer.
+  var                   s1              :String                 = y +'-02-15';                          //> Create a starting date in ISO format (late in this case).
+  var                   sReport         :String                 = "";                                   //> Initialize the output text string.
+  trace("Year = "+ y +" "+ s1 +"-------------------------------");                                      //>
+  for( z in 0...20 ){                                                                                   //> Run observations for 20 years in a row.
+   s1 = sWinterObservations( s1 );                                                                      //> Run the "Hey Diddle Diddle algorithm" from one starting date. Add a row to the results.
+   sReport += "\n "+ s1;                                                                                //>
+   s1 = s1.substr(-10);                                                                                 //> The next date to start observations is given in the last cell of the row.
+  }//for z                                                                                              //> Repeat with the next date we have calculated.
+  trace(sReport);                                                                                       //> Output the report of rows.
+  trace("");                                                                                            //>
 //.  }//for y                                                                                           //>
   trace("Done");                                                                                        //>
  }//Go////////////////////////////////////////////////////////////////////////////////////////////////////>
@@ -376,9 +393,8 @@ class TestProcedures ///////////////////////////////////////////////////////////
 
  function               new(//////////////////////////////////////////////////////////////////////////////> Construct a new object of this class (and run appropriate processing).
  )                                      :Void {///////////////////////////////////////////////////////////>
-  //var                    sCommandLineDirection :String        = ( Sys.args() )[0];                    //> Get direction operation from command line.
-  //if(     "TOpROJECT" == sCommandLineDirection ){          trace( sCommandLineDirection +" <-----" ); //> If command line is specifying "Read summaries and write back to project":
-  //}//if                                                                                               //>
+  //var                    sCommandLine :String        = ( Sys.args() )[0];                             //> Get operation from command line.
+  //if(     "TOpROJECT" == sCommandLine ){          trace( sCommandLine +" <-----" );     }             //> If command line is specifying...
   Go();                                                                                                 //>
  }//new///////////////////////////////////////////////////////////////////////////////////////////////////>
 
