@@ -1,0 +1,5 @@
+# nebra files to ignore
+
+TEMP_*.*
+TEMP_*/*
+*/.~*.*

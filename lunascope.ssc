@@ -278,7 +278,7 @@ function                                VegaKiss(///////////////////////////////
    if( dSet_h  < 12 ){   dSet_h  = map["set-dhr" ]; if(dSet_h  < 12){dSet_h  += 24;}   }                // r_s +=" S:"+ dSet_h ;   } //>
    if( dRise_h < 12 ){   dRise_h = map["rise-dhr"]; if(dRise_h < 12){dRise_h += 24;}   }                // r_s +=" R:"+ dRise_h;   } //>
   }//if                                                                                                 //>
-  core.setJDay(  a_nDayI-0.5+( (dSet_h + dRise_h)/2 - 5/60 )/24   );                                    //> At time of Vega kiss (small fudge factor because we are using a nearby star)...
+  core.setJDay(  a_nDayI-0.5+( (dSet_h + dRise_h)/2 - 8/60 )/24   );                                    //> At time of Vega kiss (small fudge factor because we are using a nearby star)...
 }//VegaKiss///////////////////////////////////////////////////////////////////////////////////////////////>
 
 
@@ -539,7 +539,7 @@ function                                Table(//////////////////////////////////
                              +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
    core.output( sRow );                                                                                 //>
   }//for dNoon                                                                                          //>
-  core.saveOutputAs( a_sPath + "table012_"+ a_nGo +".csv" );                                            //> Write results to file system.
+  core.saveOutputAs( a_sPath + "table013_"+ a_nGo +".csv" );                                            //> Write results to file system.
 }//Table//////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
