@@ -767,8 +767,8 @@ function                                Table(//////////////////////////////////
   const                                 sPATH = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> Path to output directory.
 // Just do the time-consuming stuff in this Stellarium code, generating CSV files for use by other code...
 //for( let iYear = 2010; iYear < 2100; iYear += 1 ){ Table( iYear ,sPATH ); }                  //>
-  for( let iYear = 1082; iYear < 1100; iYear += 1 ){ Table( iYear ,sPATH ); } // 1187_1188
-  for( let iYear = 1314; iYear < 2000; iYear += 1 ){ Table( iYear ,sPATH ); }
+//for( let iYear = 1082; iYear < 1100; iYear += 1 ){ Table( iYear ,sPATH ); } // 1187_1188
+  for( let iYear = 1379; iYear < 2000; iYear += 1 ){ Table( iYear ,sPATH ); }
 
 //.   let                                   r_s                     =
 //.   "file,min,year,days,max,year,days,N,N,Mean,year,days,Deviation,year,days";                            //> Overall summary of trial runs.
