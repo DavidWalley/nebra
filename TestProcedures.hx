@@ -188,14 +188,14 @@ class TestProcedures ///////////////////////////////////////////////////////////
  ,                      a_sWhereLook    :String                                                         //> "Cani","Long"
  )                                      :Array<Dynamic> {/////////////////////////////////////////////////> Report text row, Over-line amount, Julian day of big night, number of days till next run of procedure.
   var                   asDaysData      :Array<String>          = _mapasDaysData[ n_jd +"jd" ];         //>
-  if( null == asDaysData ){                                                               return ["*0 no data >"+ (n_jd +"jd") +"< "+ sYmd(n_jd) ];}//> Look up data for the given day. If there is a problem, like date isn't in table, then quit.
+  if( null == asDaysData ){                   return ["*0 no data >"+ (n_jd +"jd") +"< "+ sYmd(n_jd) ];}//> Look up data for the given day. If there is a problem, like date isn't in table, then quit.
                                                                                                         //> trace("avWinterLooks_Row_Over_Full "+ a_sGo +" "+ n_jd +" "+ asDaysData);//>
   var                   whenGo_jd       :Int                    = n_jd;                                 //> Keep a copy of start day.
   var                   isStep          :Int                    = 0 ;                                   //> Step in Hey Diddle algorithm.
   var                   r_s             :String                 = "";                                   //> Output text, start from scratch.
   for( iNotUsed_Limit in 0...99 ){                                                                      //> Loop we promise to break out of, with a limit just in case.
    asDaysData    = _mapasDaysData[ n_jd +"jd" ];                                                        //> Look up data for the given date.
-   if( null == asDaysData ){                                        trace("???");         return ["*1 no data "+ n_jd];}//>
+   if( null == asDaysData ){                        trace("???");         return ["*1 no data "+ n_jd];}//>
                                                                                                         //>  trace( asDaysData );
    if(       0 == isStep ){   isStep = 1;                                                               //> The very first time only...
     r_s    = asDaysData[ _iDAYSdATA_sDate ]                                                             //> +" = "+ sYmdHms( n_jd ) DEBUG    //> Report date and
@@ -217,7 +217,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
                                                                                                         //>
   n_jd += a_nNights_days;                                                                               //> we skip ahead to the big night.
   asDaysData    = _mapasDaysData[ n_jd +"jd" ];                                                         //> Look up data for the given date.
-  if( null == asDaysData ){                                         trace("???");         return ["*2 no data "+ n_jd];}//>
+  if( null == asDaysData ){                         trace("???");         return ["*2 no data "+ n_jd];}//>
                                                                                                         //>
   var                                   iDate                   = 0;                                    //> Indexes
   var                                   iDec                    = 0;                                    //> to use depending on                      
@@ -239,7 +239,7 @@ class TestProcedures ///////////////////////////////////////////////////////////
   case "Lon2": d_360 = 120 - Std.parseFloat( asDaysData[iRa ] ); if( 180 < d_360 ){ d_360 -= 360; }     //> See if full moon has crossed 120 degree right ascension.
   }//switch                                                                                             //>
   r_s += "        ,"+ d_360 +","+ n_jd;                                                                 //>
-//trace( r_s );                                                                                           //>
+//trace( r_s );                                                                                         //>
 return [r_s ,d_360 ,n_jd];                                                                              //>
  }//avWinterLooks_Row_Over_Full///////////////////////////////////////////////////////////////////////////>
 
@@ -299,7 +299,7 @@ return [r_s ,d_360 ,n_jd];                                                      
 
  function               TEST_dDate_jd(////////////////////////////////////////////////////////////////////> Test the above function.
  )                                      :Int {////////////////////////////////////////////////////////////> Report 0 if no problems.
-//. TODO - Make more sense of the following:
+//. TODO - Make more sense of the following:                                                            //>
 //.  var                   m               :Float                  = 0;                                 //>
 //.  var                   n               :Float                  = 0;                                 //>
 //.  m = dJDayFromYms_jd(-4713,11,24); trace("TEST_dDate_jd -4713 " + m );                              //> Does not match Stellarium, as Stellarium switches to the Julian calendar before 1500s.
@@ -379,7 +379,7 @@ return [r_s ,d_360 ,n_jd];                                                      
   d = 2440588.75      ; s = sYmd( d ); if(  "1970-01-02" != s ){ trace( "TEST_sYmd 15: "+ d +" >"+ s +"<" ); return 15;}//>
   d = 2440588.751     ; s = sYmd( d ); if(  "1970-01-02" != s ){ trace( "TEST_sYmd 16: "+ d +" >"+ s +"<" ); return 16;}//>
   d = 2440588.75101   ; s = sYmd( d ); if(  "1970-01-02" != s ){ trace( "TEST_sYmd 17: "+ d +" >"+ s +"<" ); return 17;}//>
-  d = 2451590         ; s = sYmd( d ); if(  "2000-02-15" != s ){ trace( "TEST_sYmd 18: "+ d +" >"+ s +"<" ); return 18;}//>  
+  d = 2451590         ; s = sYmd( d ); if(  "2000-02-15" != s ){ trace( "TEST_sYmd 18: "+ d +" >"+ s +"<" ); return 18;}//>
  return 0;                                                                                              //>
  }//TEST_sYmd(){}/////////////////////////////////////////////////////////////////////////////////////////>
 
@@ -404,7 +404,7 @@ return [r_s ,d_360 ,n_jd];                                                      
   d = 2440588.5       ; s = sYmdHms( d ); if(  "1970-01-02 00:00:00" != s ){ trace( "TEST_sYMDhms 14: "+ d +" >"+ s +"<" ); return 14;}//>
   d = 2440588.75      ; s = sYmdHms( d ); if(  "1970-01-02 06:00:00" != s ){ trace( "TEST_sYMDhms 15: "+ d +" >"+ s +"<" ); return 15;}//>
   d = 2440588.751     ; s = sYmdHms( d ); if(  "1970-01-02 06:01:26" != s ){ trace( "TEST_sYMDhms 16: "+ d +" >"+ s +"<" ); return 16;}//>
-  d = 2451590         ; s = sYmdHms( d ); if(  "2000-02-15 12:00:00" != s ){ trace( "TEST_sYMDhms 18: "+ d +" >"+ s +"<" ); return 18;}//>  
+  d = 2451590         ; s = sYmdHms( d ); if(  "2000-02-15 12:00:00" != s ){ trace( "TEST_sYMDhms 18: "+ d +" >"+ s +"<" ); return 18;}//>
  return 0;                                                                                              //>
  }//TEST_sYMDhms(){}//////////////////////////////////////////////////////////////////////////////////////>
 
@@ -421,19 +421,19 @@ return [r_s ,d_360 ,n_jd];                                                      
   if( 0 < TEST_anYmdFromJd() ){                                                               return 1;}//>
   if( 0 < TEST_sYmd()        ){                                                               return 1;}//> Test: Convert Julian Day to ISO date string.
   if( 0 < TEST_sYMDhms()     ){                                                               return 1;}//>
- return 0;
+ return 0;                                                                                              //>
  }//Go_TESTs//////////////////////////////////////////////////////////////////////////////////////////////>
 
 
  function               Go_ReadData(//////////////////////////////////////////////////////////////////////> Main execution starts here.
  )                                      :Void {///////////////////////////////////////////////////////////>
+  for( y in 2000...2100 ){   Go_ReadMapasDataFromFile( '2000_2099/table012_' + y +'.csv' );   }         //> For a century... Get data from each file, put in global table.
   for( y in 1000...1100 ){   Go_ReadMapasDataFromFile( '1000_1099/table012_' + y +'.csv' );   }         //> For a century... Get data from each file, put in global table.
   for( y in 1100...1200 ){   Go_ReadMapasDataFromFile( '1100_1199/table012_' + y +'.csv' );   }         //> "
   for( y in 1200...1300 ){   Go_ReadMapasDataFromFile( '1200_1299/table012_' + y +'.csv' );   }         //> "
   for( y in 1300...1379 ){   Go_ReadMapasDataFromFile(  '1300_1399/table012_'+ y +'.csv' );   }         //> "
   for( y in 1379...1400 ){   Go_ReadMapasDataFromFile(  '1300_1399/table013_'+ y +'.csv' );   }         //> " Format change?
-
-  for( y in 2000...2100 ){   Go_ReadMapasDataFromFile( '2000_2099/table012_' + y +'.csv' );   }         //> For a century... Get data from each file, put in global table.
+  for( y in 1400...1470 ){   Go_ReadMapasDataFromFile(  '1400_1499/table013_'+ y +'.csv' );   }         //> " Format change?
  }//Go_ReadData///////////////////////////////////////////////////////////////////////////////////////////>
 
 
@@ -448,28 +448,28 @@ return [r_s ,d_360 ,n_jd];                                                      
   var                   nFullMoon_jd    :Int                    = 0 ;                                   //> Julian day of big night - offset from some date-of-the-Gregorian-year to prevent discontinuity of new year.
   var                   nNextYear_days  :Int                    = 0 ;                                   //> number of days till next run of procedure.
   var                   a2vPasses       :Array<Array<Dynamic>>  =                                       //> Table of parameters to use in several trials:
-        [[7,"Moon","Cani",-99999,99999] ,[7,"MidN","Cani",-99999,99999] ,[7,"Vega","Cani",-99999,99999]                   //>
-        ,[7,"Moon","Long",-99999,99999] ,[7,"MidN","Long",-99999,99999] ,[7,"Vega","Long",-99999,99999]                   //>
-        ,[7,"Moon","Lon2",-99999,99999] ,[7,"MidN","Lon2",-99999,99999] ,[7,"Vega","Lon2",-99999,99999]                   //>
-        ,[7,"Vega","Cani",    1,99999]                                                                       //> Require at least 1 normal year between leap years.
-        ,[7,"Vega","Cani",    1,   2]                                                                       //> Require at least 1 normal year and at most 2, between leap years.
-        ,[0,"Math",""    ,-99999,99999]
-        ,[8,"Moon","Cani",-99999,99999] ,[8,"MidN","Cani",-99999,99999] ,[8,"Vega","Cani",-99999,99999]                   //>
-        ,[8,"Moon","Long",-99999,99999] ,[8,"MidN","Long",-99999,99999] ,[8,"Vega","Long",-99999,99999]                   //>
-        ,[8,"Moon","Lon2",-99999,99999] ,[8,"MidN","Lon2",-99999,99999] ,[8,"Vega","Lon2",-99999,99999]                   //>
+        [[7,"Moon","Cani",-99999,99999] ,[7,"MidN","Cani",-99999,99999] ,[7,"Vega","Cani",-99999,99999] //>
+        ,[7,"Moon","Long",-99999,99999] ,[7,"MidN","Long",-99999,99999] ,[7,"Vega","Long",-99999,99999] //>
+        ,[7,"Moon","Lon2",-99999,99999] ,[7,"MidN","Lon2",-99999,99999] ,[7,"Vega","Lon2",-99999,99999] //>
+        ,[7,"Vega","Cani",    1,99999]                                                                  //> Require at least 1 normal year between leap years.
+        ,[7,"Vega","Cani",    1,   2]                                                                   //> Require at least 1 normal year and at most 2, between leap years.
+        ,[0,"Math",""    ,-99999,99999]                                                                 //>
+        ,[8,"Moon","Cani",-99999,99999] ,[8,"MidN","Cani",-99999,99999] ,[8,"Vega","Cani",-99999,99999] //>
+        ,[8,"Moon","Long",-99999,99999] ,[8,"MidN","Long",-99999,99999] ,[8,"Vega","Long",-99999,99999] //>
+        ,[8,"Moon","Lon2",-99999,99999] ,[8,"MidN","Lon2",-99999,99999] ,[8,"Vega","Lon2",-99999,99999] //>
         ];                                                                                              //>
   var                   dYEAR_days      :Float                  = 365.242189;                           //> Mean tropical year (Laskar's expression)
   var                   dMONTH_days     :Float                  = 29 + 12/24 + 44/60/24 + 2.9/60/60/24; //> Synodic month.
-//.  var                   n12             :Int                    = 0;                                    //>
-//.  sRow = "";                                                                                            //>
-//.  var                   y               :Int                    = 0;                                    //>
-//.  for( m in 0...12000 ){                                                                                //>
-//.   d += dMONTH_days; n12++;                                                                             //>
-//.   if( dYEAR_days < d ){                                                                                //>
-//.    sRow += 12 == n12   ?" "   :"*";                                                                    //> Show normal or leap year.
-//.    if( 0 == y%(19*1) ){   trace( (1000+y/19) + ">"+ sRow +sRow +"<"); sRow = "";   }                                       //> Make it easier to see 19-year Metonic cycles.
-//.    y++;   d -= dYEAR_days;   n12 = 0;                                                                  //> Count up year, adjust the day number back a solar year, reset month count.
-//.  }}//if//for y                                                                                         //>
+//.  var                   n12             :Int                    = 0;                                 //>
+//.  sRow = "";                                                                                         //>
+//.  var                   y               :Int                    = 0;                                 //>
+//.  for( m in 0...12000 ){                                                                             //>
+//.   d += dMONTH_days; n12++;                                                                          //>
+//.   if( dYEAR_days < d ){                                                                             //>
+//.    sRow += 12 == n12   ?" "   :"*";                                                                 //> Show normal or leap year.
+//.    if( 0 == y%(19*1) ){   trace( (1000+y/19) + ">"+ sRow +sRow +"<"); sRow = "";   }                //> Make it easier to see 19-year Metonic cycles.
+//.    y++;   d -= dYEAR_days;   n12 = 0;                                                               //> Count up year, adjust the day number back a solar year, reset month count.
+//.  }}//if//for y                                                                                      //>
                                                                                                         //>
   for( avPass in a2vPasses ){                                                                           //>
    var                  nNights_days    = avPass[0];                                                    //> Parameters to test in this pass - the count from first quarter moon to full.
@@ -514,11 +514,11 @@ return [r_s ,d_360 ,n_jd];                                                      
                       else                              { nSinceLeap_yr = 0; n_jd += 29; sLeap = "*"; } //> But if at maximum, use a leap year anyway.
      }//if                                                                                              //>
      if( 10 <= dYearRun ){                                                                              //> Ignoring the first decade when things are getting into long-term sync...
-      if( 0 == nNights_days ){                                                                           //> If the math-based procedure is being tried, then
-       d = dMoons_days + 113;                                                                           //> Get fractional part of year, in days. Add an offest to avoid discontinuity at Nov 24.
-      }else{
-       d = (nFullMoon_jd + 100)/dYEAR_days;   d = d - Math.floor(d);   d *= dYEAR_days;                    //> Get fractional part of year, in days. Add an offest to avoid discontinuity at Nov 24.
-      }//if
+      if( 0 == nNights_days ){                                                                          //> If the math-based procedure is being tried, then
+       d = dMoons_days + 113;                                                                           //> Get fractional part of year, in days. Add an offest to adjust average date to winter solstice.
+      }else{                                                                                            //>
+       d = (nFullMoon_jd + 100)/dYEAR_days;   d = d - Math.floor(d);   d *= dYEAR_days;                 //> Get fractional part of year, in days. Add an offest to avoid discontinuity at Nov 24.
+      }//if                                                                                             //>
       dS0           += 1;                                                                               //> Stats
       dS1           += d;                                                                               //>
       dS2           += d*d;                                                                             //>
@@ -529,18 +529,18 @@ return [r_s ,d_360 ,n_jd];                                                      
      }//if                                                                                              //>
     }//for dYearRun                                                                                     //>
     //trace( sReport );                                                                                 //>
-    trace(                        ( avPass   +"                   " ).substr(0,28)
+    trace(                        ( avPass   +"                   " ).substr(0,28)                      //>
                  +",  Max-min," + ( (dMax - dMin)+"               " ).substr(0,16)                      //> Max range.
                   +" ,N,"       + dS0                                                                   //>
                   +" ,Ave,"     + sYmdHms(dS1/dS0 - 100)                                                //> Average date is corrected for the offset added earlier.
-                  +" ,StDev,"   + (
-                                    Math.sqrt(   (dS0*dS2 - dS1*dS1)                                      //>
-                                                 /( dS0*(dS0 - 1) )                                       //>
-                                    )            +"               "                                                         //>
-                                  ).substr(0,16)
+                  +" ,StDev,"   + (                                                                     //>
+                                    Math.sqrt(   (dS0*dS2 - dS1*dS1)                                    //>
+                                                 /( dS0*(dS0 - 1) )                                     //>
+                                    )            +"               "                                     //>                
+                                  ).substr(0,16)                                                        //>
                   +" ,Pattern,'"+ sPattern +"'"                                                         //>
     );                                                                                                  //>
-  }}//for dYear0//for avPass                                                                                 //>
+  }}//for dYear0//for avPass                                                                            //>
   trace("Done");                                                                                        //>
  }//Go////////////////////////////////////////////////////////////////////////////////////////////////////>
 
