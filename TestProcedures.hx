@@ -414,48 +414,71 @@ return [r_s ,d_360 ,n_jd];                                                      
 //////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
- function               Go(///////////////////////////////////////////////////////////////////////////////> Main execution starts here.
+ function               Go_TESTs(/////////////////////////////////////////////////////////////////////////> Main execution starts here.
+ )                                      :Int {////////////////////////////////////////////////////////////>
+  if( 0 < TEST_dDate_jd()    ){                                                               return 1;}//> TESTS:
+  if( 0 < TEST_nYearFromJd() ){                                                               return 1;}//>
+  if( 0 < TEST_anYmdFromJd() ){                                                               return 1;}//>
+  if( 0 < TEST_sYmd()        ){                                                               return 1;}//> Test: Convert Julian Day to ISO date string.
+  if( 0 < TEST_sYMDhms()     ){                                                               return 1;}//>
+ return 0;
+ }//Go_TESTs//////////////////////////////////////////////////////////////////////////////////////////////>
+
+
+ function               Go_ReadData(//////////////////////////////////////////////////////////////////////> Main execution starts here.
  )                                      :Void {///////////////////////////////////////////////////////////>
-// if( 0 < TEST_dDate_jd()    ){                                                                return;}//> TESTS:
-// if( 0 < TEST_nYearFromJd() ){                                                                return;}//>
-// if( 0 < TEST_anYmdFromJd() ){                                                                return;}//>
-// if( 0 < TEST_sYmd()        ){                                                                return;}//> Test: Convert Julian Day to ISO date string.
-// if( 0 < TEST_sYMDhms()     ){                                                                return;}//>
-                                                                                                        //> READING DATA:
-//for( y in 2000...2100 ){   Go_ReadMapasDataFromFile( '2000_2099/table012_' + y +'.csv' );   }         //> For a century... Get data from each file, put in global table.
   for( y in 1000...1100 ){   Go_ReadMapasDataFromFile( '1000_1099/table012_' + y +'.csv' );   }         //> For a century... Get data from each file, put in global table.
   for( y in 1100...1200 ){   Go_ReadMapasDataFromFile( '1100_1199/table012_' + y +'.csv' );   }         //> "
   for( y in 1200...1300 ){   Go_ReadMapasDataFromFile( '1200_1299/table012_' + y +'.csv' );   }         //> "
   for( y in 1300...1379 ){   Go_ReadMapasDataFromFile(  '1300_1399/table012_'+ y +'.csv' );   }         //> "
   for( y in 1379...1400 ){   Go_ReadMapasDataFromFile(  '1300_1399/table013_'+ y +'.csv' );   }         //> " Format change?
+
+  for( y in 2000...2100 ){   Go_ReadMapasDataFromFile( '2000_2099/table012_' + y +'.csv' );   }         //> For a century... Get data from each file, put in global table.
+ }//Go_ReadData///////////////////////////////////////////////////////////////////////////////////////////>
+
+
+ function               Go(///////////////////////////////////////////////////////////////////////////////> Main execution starts here.
+ )                                      :Void {///////////////////////////////////////////////////////////>
+//if( 0 < Go_TESTs() ){                                                                         return;}//>
+  Go_ReadData();                                                                                        //> READING DATA:
                                                                                                         //> RUNNING TRIALS:
+  var                   d               :Float                  = 0;                                    //> Short-term utility.
   var                   sRow            :String                 = "";                                   //> Report text row
   var                   dOver           :Float                  = 0.;                                   //> Over-line amount (between Gemini and Taurus)
   var                   nFullMoon_jd    :Int                    = 0 ;                                   //> Julian day of big night - offset from some date-of-the-Gregorian-year to prevent discontinuity of new year.
   var                   nNextYear_days  :Int                    = 0 ;                                   //> number of days till next run of procedure.
   var                   a2vPasses       :Array<Array<Dynamic>>  =                                       //> Table of parameters to use in several trials:
-        [                                                                                               //>
-      // [7,"Moon","Cani",-99,99] ,[7,"MidN","Cani",-99,99]                 //>                         //>
-      //,[7,"Moon","Long",-99,99] ,[7,"MidN","Long",-99,99]                 //>                         //>
-      //,[7,"Moon","Lon2",-99,99] ,[7,"MidN","Lon2",-99,99]                 //>                         //>
-      //,[8,"Moon","Cani",-99,99] ,[8,"MidN","Cani",-99,99] ,[8,"Vega","Cani",-99,99]                   //>
-      //,[8,"Moon","Long",-99,99] ,[8,"MidN","Long",-99,99] ,[8,"Vega","Long",-99,99]                   //>
-      //,[8,"Moon","Lon2",-99,99] ,[8,"MidN","Lon2",-99,99] ,[8,"Vega","Lon2",-99,99]                   //>
-         [7,"Vega","Cani",  0, 9]                                                                       //>
-        ,[7,"Vega","Cani",  1, 3]                                                                       //>
-        ,[7,"Vega","Cani",  1, 2]                                                                       //>
-        ,[7,"Vega","Cani",  1, 1]                                                                       //>
-//      ,[7,"Vega","Long",-99,99]                                                                       //>
-//      ,[7,"Vega","Lon2",-99,99]                                                                       //>
+        [[7,"Moon","Cani",-99999,99999] ,[7,"MidN","Cani",-99999,99999] ,[7,"Vega","Cani",-99999,99999]                   //>
+        ,[7,"Moon","Long",-99999,99999] ,[7,"MidN","Long",-99999,99999] ,[7,"Vega","Long",-99999,99999]                   //>
+        ,[7,"Moon","Lon2",-99999,99999] ,[7,"MidN","Lon2",-99999,99999] ,[7,"Vega","Lon2",-99999,99999]                   //>
+        ,[7,"Vega","Cani",    1,99999]                                                                       //> Require at least 1 normal year between leap years.
+        ,[7,"Vega","Cani",    1,   2]                                                                       //> Require at least 1 normal year and at most 2, between leap years.
+        ,[0,"Math",""    ,-99999,99999]
+        ,[8,"Moon","Cani",-99999,99999] ,[8,"MidN","Cani",-99999,99999] ,[8,"Vega","Cani",-99999,99999]                   //>
+        ,[8,"Moon","Long",-99999,99999] ,[8,"MidN","Long",-99999,99999] ,[8,"Vega","Long",-99999,99999]                   //>
+        ,[8,"Moon","Lon2",-99999,99999] ,[8,"MidN","Lon2",-99999,99999] ,[8,"Vega","Lon2",-99999,99999]                   //>
         ];                                                                                              //>
+  var                   dYEAR_days      :Float                  = 365.242189;                           //> Mean tropical year (Laskar's expression)
+  var                   dMONTH_days     :Float                  = 29 + 12/24 + 44/60/24 + 2.9/60/60/24; //> Synodic month.
+//.  var                   n12             :Int                    = 0;                                    //>
+//.  sRow = "";                                                                                            //>
+//.  var                   y               :Int                    = 0;                                    //>
+//.  for( m in 0...12000 ){                                                                                //>
+//.   d += dMONTH_days; n12++;                                                                             //>
+//.   if( dYEAR_days < d ){                                                                                //>
+//.    sRow += 12 == n12   ?" "   :"*";                                                                    //> Show normal or leap year.
+//.    if( 0 == y%(19*1) ){   trace( (1000+y/19) + ">"+ sRow +sRow +"<"); sRow = "";   }                                       //> Make it easier to see 19-year Metonic cycles.
+//.    y++;   d -= dYEAR_days;   n12 = 0;                                                                  //> Count up year, adjust the day number back a solar year, reset month count.
+//.  }}//if//for y                                                                                         //>
+                                                                                                        //>
   for( avPass in a2vPasses ){                                                                           //>
-   var                  nNights_days    = avPass[0];                                                    //>
-   var                  sWhenGibbous    = avPass[1];                                                    //>
-   var                  sWhereLook      = avPass[2];                                                    //>
-   var                  nMinJump_yr     = avPass[3];                                                    //>
-   var                  nMaxJump_yr     = avPass[4];                                                    //>
-   for( y in 1000...1001 ){                                                                             //> For each year in a test run (starting with different years just to mix things up for testing)...
-    var                 sRow            :String                 = "";                                   //> Create a starting date in ISO format (late in this case). +'-11-00', +'-02-15';  
+   var                  nNights_days    = avPass[0];                                                    //> Parameters to test in this pass - the count from first quarter moon to full.
+   var                  sWhenGibbous    = avPass[1];                                                    //> When during night to apply the crescent/gibbous test.
+   var                  sWhereLook      = avPass[2];                                                    //> How to draw the line between Taurus and Gemini.
+   var                  nMinJump_yr     = avPass[3];                                                    //> Minimum number of normal years between leap years.
+   var                  nMaxJump_yr     = avPass[4];                                                    //> Miximum number of normal years between leap years.
+   for( dYear0 in 1000...1001 ){                                                                        //> For each year in a test run (starting with different years just to mix things up for testing)...
+    sRow = "";                                                                                          //>
     var                 sReport         :String                 = "";                                   //> Initialize the output text string.
     var                 av              :Array<Dynamic>         = [];                                   //>
     var                 dS0             :Float                  = 0;                                    //> STATS:
@@ -464,48 +487,60 @@ return [r_s ,d_360 ,n_jd];                                                      
     var                 dMin            :Float                  =  999999.;                             //>
     var                 dMax            :Float                  = -999999.;                             //>
     var                 sPattern        :String                 = "";                                   //> Generate the pattern of leap/non-leap years.
-    var                 d               :Float                  = 0;                                    //> The big night, as a fractional part of a year.
                                                                                                         //>
-    var                 n_jd            :Int               = Math.floor( dJDayFromYms_jd( y ,12,21 ) ); //> Convert Gregorian date to a Julian Day, the number of days that have passed since the Julian Date Epoch.  Gregorian Year,
+    var                 n_jd            :Int          = Math.floor( dJDayFromYms_jd( dYear0 ,12,31 ) ); //> Convert Gregorian date to a Julian Day, the number of days that have passed since the Julian Date Epoch.  Gregorian Year,
     var                 nSinceLeap_yr   :Int                    = 1;                                    //>
     var                 sLeap           :String                 = "";                                   //>
-    for(z in 0...100 ){                                                                                 //> Run observations for 100 years in a row  (hoping they converge on a winter date)...
+    var                 dMoons_days     :Float                  = 0;                                    //> For modern math-based lunar leap month determination.
+    for( dYearRun in 0...100 ){                                                                         //> Run observations for 100 years in a row  (hoping they converge on a winter date)...
+     if( 0 == nNights_days ){                                                                           //> If the math-based procedure is being tried, then
+      dMoons_days += 12*dMONTH_days - dYEAR_days;                                                       //>
+      if( dMoons_days < 0 ){ dOver =  1; dMoons_days += dMONTH_days; }                                  //>
+      else                 { dOver = -1;                             }                                  //>
+      nFullMoon_jd  =  0;                                                                               //> From Nov 24?
+     }else{                                                                                             //> For any observational procedure...
                       av = avWinterLooks_Row_Over_Full( n_jd ,nNights_days ,sWhenGibbous ,sWhereLook ); //> Run the "Hey Diddle Diddle algorithm" from one starting date. Add a row to the results.  The next date to start observations is given in the last cell of the row.
-     sRow           = av[0];                                                                            if( "*" == sRow.substr(0,1) ){ trace("what????????? "+ n_jd +" "+ sRow); } //> Reported text row.
-     dOver          = av[1];                                                                            //> Over-the-finish-line amount.
-     nFullMoon_jd   = av[2];                                                                            //> Julian day of big night.
+      sRow          = av[0];                                                                            if( "*" == sRow.substr(0,1) ){ trace("what????????? "+ n_jd +" "+ sRow); } //> Reported text row.
+      dOver         = av[1];                                                                            //> Over-the-finish-line amount.
+      nFullMoon_jd  = av[2];                                                                            //> Julian day of big night.
+     }//if nNights_days                                                                                 //>
      n_jd           = nFullMoon_jd + 354 - 17;                                                          //>
-     if( 0 < dOver ){                                                                                   //>
-      if( nSinceLeap_yr < nMinJump_yr   ){ nSinceLeap_yr++  ;             sLeap = " "; }                //> No leap until we are past minimum years between leaps.
-      else                               { nSinceLeap_yr = 0; n_jd += 29; sLeap = "*"; }                //> Leap as long as we are past minimum years between leaps.
-     }else{                                                                                             //>
-      if(  nMaxJump_yr  < nSinceLeap_yr ){ nSinceLeap_yr = 0; n_jd += 29; sLeap = "*"; }                //>
-      else                               { nSinceLeap_yr++  ;             sLeap = " "; }                //>
+                                                                                                        //>
+     if( 0 < dOver ){                                                                                   //> If a leap year is suggested...
+                      if( nSinceLeap_yr < nMinJump_yr  ){ nSinceLeap_yr++  ;             sLeap = " "; } //> No leap until we are past minimum normal years between leaps.
+                      else                              { nSinceLeap_yr = 0; n_jd += 29; sLeap = "*"; } //> Otherwise, follow suggestion of a leap year, and restart count between leap years.
+     }else{                                                                                             //> If leap year is not suggested...
+                      if( nSinceLeap_yr < nMaxJump_yr  ){ nSinceLeap_yr++  ;             sLeap = " "; } //> follow suggestion of no leap year if less than maximum allowed.
+                      else                              { nSinceLeap_yr = 0; n_jd += 29; sLeap = "*"; } //> But if at maximum, use a leap year anyway.
      }//if                                                                                              //>
-     if( 10 <= z ){                                                                                     //> Ignoring the first decade when things are getting into long-range sync...
-      d = (nFullMoon_jd + 100)/365.24219;   d = d - Math.floor(d);   d *= 365.24219;                    //> Get fractional part of year, in days. Add an offest to avoid discontinuity at Nov 24.
+     if( 10 <= dYearRun ){                                                                              //> Ignoring the first decade when things are getting into long-term sync...
+      if( 0 == nNights_days ){                                                                           //> If the math-based procedure is being tried, then
+       d = dMoons_days + 113;                                                                           //> Get fractional part of year, in days. Add an offest to avoid discontinuity at Nov 24.
+      }else{
+       d = (nFullMoon_jd + 100)/dYEAR_days;   d = d - Math.floor(d);   d *= dYEAR_days;                    //> Get fractional part of year, in days. Add an offest to avoid discontinuity at Nov 24.
+      }//if
       dS0           += 1;                                                                               //> Stats
       dS1           += d;                                                                               //>
       dS2           += d*d;                                                                             //>
       if(    d < dMin ){ dMin = d; }                                                                    //>
       if( dMax < d    ){ dMax = d; }                                                                    //>
-                                                                                                        //>
-      sPattern      += sLeap;
-                                                                                                        //>
+      sPattern      += sLeap;                                                                           //>
       sReport       += "\n"+ sRow.substr(0,50) +"   "+ d;                                               //>
      }//if                                                                                              //>
-    }//for z                                                                                            //>
+    }//for dYearRun                                                                                     //>
     //trace( sReport );                                                                                 //>
-    trace( avPass +", "                                                                                 //> Display results. 
-                  +" Max-min,"  + (dMax - dMin)                                                         //> Max range.
+    trace(                        ( avPass   +"                   " ).substr(0,28)
+                 +",  Max-min," + ( (dMax - dMin)+"               " ).substr(0,16)                      //> Max range.
                   +" ,N,"       + dS0                                                                   //>
                   +" ,Ave,"     + sYmdHms(dS1/dS0 - 100)                                                //> Average date is corrected for the offset added earlier.
-                  +" ,StDev,"   + Math.sqrt(   (dS0*dS2 - dS1*dS1)                                      //>
-                                               /( dS0*(dS0 - 1) )                                       //>
-                                  )                                                                     //>
+                  +" ,StDev,"   + (
+                                    Math.sqrt(   (dS0*dS2 - dS1*dS1)                                      //>
+                                                 /( dS0*(dS0 - 1) )                                       //>
+                                    )            +"               "                                                         //>
+                                  ).substr(0,16)
                   +" ,Pattern,'"+ sPattern +"'"                                                         //>
     );                                                                                                  //>
-  }}//for y//for avPass                                                                                 //>
+  }}//for dYear0//for avPass                                                                                 //>
   trace("Done");                                                                                        //>
  }//Go////////////////////////////////////////////////////////////////////////////////////////////////////>
 

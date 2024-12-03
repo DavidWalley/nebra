@@ -41,6 +41,24 @@ function                                dGreenwichMeanSiderealTime_rad(/////////
   if( dGmst_rad < 0 ){ dGmst_rad += 2*Math.PI; }                                                        //>
 return dGmst_rad;                                                                                       //>
 }//dGreenwichMeanSiderealTime_rad/////////////////////////////////////////////////////////////////////////>
+//. function                            dGreenwichMeanSiderealTime1_rad(///////////////////////////////////>
+//.                                     a_When_jdutc                                                    //> Time as a Julian Day date.
+//. ){                                  //////////////////////////////////////////////////////////////////>
+//.   const                             d                       = a_When_jdutc - 2451545.0;             //> IERS Technical Note No. 32 eq. 14
+//.   let                               e                       = d*0.000001;                           //>
+//.   let                               dGmst_rad       = ( a_When_jdutc%1.0 )*2*Math.PI                //>
+//.                                                      + 1.35971848071386E-02                         //>
+//.                                                      + 4.83960256064601E+01 *e                      //>
+//.                                                      + 1.84711251619895E+02 *e*e                    //>
+//.                                                      - 1.59899495718765E-03 *e*e*e                  //>
+//.                                                      - 2.98049237368634E+00 *e*e*e*e                //>
+//.                                                      - 2.74455262471887E-06 *e*e*e*e*e              //>
+//.                                                      ;                                              //>
+//.   dGmst_rad %= 2*Math.PI;   if( dGmst_rad < 0 ){ dGmst_rad += 2*Math.PI; }                          //>
+//. return dGmst_rad;                                                                                   //>
+//. }//dGreenwichMeanSiderealTime1_rad////////////////////////////////////////////////////////////////////>
+
+
 function                                avRaDecToAltAz(///////////////////////////////////////////////////>
                                         a_Ra_rad                                                        //>
 ,                                       a_Dec_rad                                                       //>
@@ -541,145 +559,6 @@ function                                Table(//////////////////////////////////
   }//for dNoon                                                                                          //>
   core.saveOutputAs( a_sPath + "table013_"+ a_nGo +".csv" );                                            //> Write results to file system.
 }//Table//////////////////////////////////////////////////////////////////////////////////////////////////>
-
-
-//. function                                sSimulate(////////////////////////////////////////////////////////> Start main execution
-//.                                         a_nGo                                                           //>
-//. ,                                       a_nEnd                                                          //>
-//. ,                                       a_sFirstQuarter                                                 //> When first-quarter observation is made: at moonset,
-//. ,                                       a_nCountDays                                                    //> Number of nights to count, where 0 = last crescent, 1 = first gibbous, 7 should be full.
-//. ,                                       a_sPath                                                         //>
-//. ){                                      //////////////////////////////////////////////////////////////////>
-//.  let                                    sFile            = "out007_"+ a_nGo                             //>
-//.                                                                 +"_"+ a_nEnd                            //>
-//.                                                                 +"_"+ a_sFirstQuarter                   //>
-//.                                                                 +"_"+ a_nCountDays;                     //>
-//.   core.resetOutput();                                                                                   //> Clear output file buffer.
-//.   Reset();                                                                                              //> Reset Stellarium to known state, or best possible.
-//.   MarkerMgr.deleteAllMarkers();                                                                         //> https://stellarium.org/doc/23.0/classMarkerMgr.html
-//.   core.output("----- sSimulate");                                                                       //>
-//.   core.setObserverLocation(-1.82618827 ,51.17886594 ,0 ,0 ,"Stonehenge" ,"Earth" );                     //> Stonehenge = 51.17886594 ,-1.82618827   Cool location
-//.   core.setTimezone("LMST");                                                                             //> "LMST" = Local Mean Solar Time    https://stellarium.org/doc/23.0/classStelMainScriptAPI.html#abc7e6a709ec2670b6581ce4b51db3185
-//.   core.setDate( (a_nGo - 10) +"-01-01T00:00:00" ,"LMST" );                                              //> Before early start of year.
-//.   MarkStars();                                                                                          //> Mark major stars.
-//.   DrawLine();                                                                                           //> Draw dotted line through Canis Minor.
-//.   let                                   nDay                    = Math.floor( core.getJDay() );         //> Get the count of days, the noon before midnight.
-//.   //core.moveToAltAzi( 90,  180  ,1 );                                                                  //>
-//.   // ???set zoom?                                                                                       //>
-//.   Look( 90,  180  ,180 ,0.1 );                                                                          //> Look straight up, south at bottom, whole sky view, quick.
-//. //return; // DEBUG                                                                                      //>
-//.   let                                   dSeasonMin              =  99999999;                            //>
-//.   let                                   dSeasonMax              = -99999999;                            //>
-//.   let                                   dSeasonCount            = 0;                                    //>
-//.   let                                   dSeasonSum              = 0;                                    //>
-//.   let                                   dSeason2Sum             = 0;                                    //>
-//.   let                                   dDev                    = 0;                                    //>
-//.                                                                                                         //>
-//.   let                                   mapSun                  = null;                                 //> List of data about the sun.
-//.   let                                   mapMoon                 = null;                                 //> List of data about the moon.
-//.   core.output( "moon,Date,nDay" +",Sunset,Sunrise,Moonrise" +",_TYPE_,when"                             //> Row of table headers.
-//.                                     +",Moonset,illumination,altitude,ra,dec" +",count,leap,year-length" //>
-//.   );                                                                                                    //>
-//.   let                                   iGibbous                = -1;                                   //> Count from last first-quarter moon, initially stopped.
-//.   let                                   iMoon                   = -1;                                   //> Count of moon-months.
-//.   let                                   iDay1Was                = 0;                                    //>
-//.   let                                   sRow                    = "";                                   //>
-//.   let                                   sRgb                    = "";                                   //>
-//.   let                                   dNoon                   = 0;                                    //>
-//.   for( dNoon = nDay; dNoon < nDay + (a_nEnd - a_nGo + 9)*365 + 60; dNoon++ ){                           //> For a number of years (plus a bit of slop).
-//.    if( 0 < iGibbous ){ iGibbous++; }                                                                    //> If not turned off, count days after 1st quarter moon.
-//.    let                                  av                      = avBasics(dNoon);                      //>
-//.    sRow = iMoon +","+ av[0];   dMoonSet_h = av[1];   dMoonRise_h = av[2];                               //>
-//.    if( dMoonRise_h < 0 ){   if( 0 < iGibbous ){iMoon++; iGibbous = -1;}    core.output(sRow); continue;}//> If no moon-rise time (at the new moon), then reset this flag as this can happen at the new moon.
-//.                                                                                                         //> But, if we have a moonrise time, then not a new moon, so...
-//.    mapMoon = mapSelect("Moon");                                                                         //> Refresh info about the moon.
-//.    if( dMoonSet_h < 0 ){ dMoonSet_h  = mapMoon["set-dhr" ] + 24; }                                      //> MOST ROWS: If still looking for the moonset, then get it now, including day we have skipped in hours.
-//.    switch( a_sFirstQuarter ){                                                                           //>
-//.    case       "MOON": sRow += ",_"+ "MOON" +"_"; core.setJDay( dNoon - 0.5 + dMoonSet_h/24 );           //> MOONSET: At time of moonset...
-//.    break;case "TIME": sRow += ",_"+ "TIME" +"_"; core.setJDay( dNoon + 0.5                 );           //> or at local mean MIDNIGHT...
-//.    break;case "VEGA": sRow += ",_"+ "VEGA" +"_"; VegaKiss(     dNoon                       );           //> VEGA KISS: At Vega=midnight? Set Time to time when Vega kisses the horizon.
-//.    }//switch a_sFirstQuarter                                                                            //>
-//.                                                                                                         //>
-//.    NAP();   sRow += ","+ core.getDate();                                                                //>
-//.    let                                  dIllumination           = mapMoon["illumination"];              //> Illumination.
-//.    let                                  dAltitude               = mapMoon["altitude"    ];              //>
-//.    sRow += ","+ s5( dMoonSet_h          ) // .toFixed(4)                                                 //> Info about moon...
-//.           +","+ s5( dIllumination       ) // .toFixed(4)                                                 //>
-//.           ;                                                                                             //>
-//.    if(  dIllumination < 1 ){                                                                            //> If a new moon by illumination (ensure at least a day or two are not suitble for observing the Moon) ...
-//.     if( 0 < iGibbous ){ iMoon++; iGibbous = -1; }                          core.output(sRow); continue ;//> Reset this flag at the new moon.
-//.    }else{                                                                                               //> If not a new moon...
-//.     if(   iGibbous <= 0   &&   50 < dIllumination ){ iGibbous = 1; }                                    //> If gibbous count has not started,
-//.    }//if                                                                                                //>
-//.    sRow += ","+ s5( dAltitude           ) // .toFixed(4)                                              //>
-//.           +","+ s5( mapMoon["raJ2000" ] ) // .toFixed(4)                                              //>
-//.           +","+ s5( mapMoon["decJ2000"] ) // .toFixed(4)                                              //>
-//.           +","+ iGibbous;                                                                               //> Add gibbous count to output row.
-//.                                                                                                         //>
-//.    if( 0 != iMoon%12   ||   iGibbous <= 0 ){                               core.output(sRow); continue;}//> If not in last month, or gibbous count has not started, then move on to next day.
-//.                                                                                                         //> But, if in last month and gibbous count has started...
-//.    sRgb = ["#00ff00","#ff0000","#00ffff","#ff8800","#0000ff","#ffff00","#ff00ff","#00ff00"              //>
-//.           ,          "#ff0000","#00ffff","#ff8800","#0000ff","#ffff00","#ff00ff","#00ff00"              //>
-//.           ,          "#ff0000","#00ffff","#ff8800","#0000ff","#ffff00","#ff00ff","#00ff00"              //>
-//.           ,          "#ff0000","#00ffff","#ff8800","#0000ff","#ffff00","#ff00ff","#00ff00"              //>
-//.           ,"#ffffff"                                                                                    //>
-//.           ][iGibbous]                                                                                   //>
-//.    if( a_nCountDays != iGibbous ){      Mark("Moon" ,"circle"  ,sRgb ,4 ); core.output(sRow); continue;}//>
-//.    let                                  dNoonWas                = dNoon;
-//.    dNoon += 354 - a_nCountDays - 10;                                                                    //>
-//.    mapMoon = mapSelect("Moon");                                                                         //> Refresh info about the moon.
-//.    iMoon += 12;                                                                                         //> Last month of lunar year.
-//.    iGibbous = -1;                                                                                       //> Reset this, so we look for first-quarter moon again.
-//.  // if( mapMoon["raJ2000"] < 90                                    ){                                   //>
-//.    let               dLeap = ( 0 < dOverLine_360(mapMoon["decJ2000"] ,mapMoon["raJ2000"]) )   ?30   :0; //>
-//.    dNoon += dLeap;                                                                                      //>
-//.    sRow += ","+ dLeap + ","+ (dNoon - iDay1Was - 354);   iDay1Was = dNoon;                              //> Year length.
-//.    if( 10*12 + 2 < iMoon ){                                                                             //> Skip a few initial years, to get everything synced up.
-//.     Mark( "Moon" , 0 == dLeap   ?"cross"   :"disk"   ,sRgb ,6 );                                        //>
-//.     Mark( "Moon" , ( core.getDate() ).slice(0,10)    ,sRgb ,24);                                        //>
-//.     // if( 1 == iGibbous ){ core.wait(1); }                                                                //>
-//. 
-//.     let                                 dSeason                 = dNoonWas / 365.24219 + 0.5;           //>
-//.     dSeason -= Math.floor(dSeason);                                                                     //> Keep fractional part only.
-//.     sRow += ","+ s5( dSeason ); //.toFixed(4)                                                        //>
-//.     if( dSeason < dSeasonMin ){ dSeasonMin = dSeason; }                                                 //> Update minimum and
-//.     if( dSeasonMax < dSeason ){ dSeasonMax = dSeason; }                                                 //> maximum fractional part (of the year).
-//.     dSeasonCount +=               1;                                                                    //> Update sums for calculating
-//.     dSeasonSum   +=         dSeason;                                                                    //> statistics
-//.     dSeason2Sum  += dSeason*dSeason;                                                                    //> .
-//.    }//if                                                                                                //>
-//.                                                                                                         //>
-//.    core.output( sRow );                                                                                 //>
-//.   }//for dNoon                                                                                          //>
-//.                                                                                                         //>
-//.   dDev = Math.sqrt(   ( dSeasonCount*dSeason2Sum - dSeasonSum*dSeasonSum )                              //> Calculate Standard Sample Deviation
-//.                      /(           dSeasonCount*(dSeasonCount - 1)        )                              //>
-//.          );                                                                                             //>
-//.   // Day  0 is Nov 24, 4714 BC, in the proleptic Gregorian calendar, Day  6 is Nov 30, Day  7 is Dec  1, Day 37 is Dec 31.
-//.   core.output(   "Min"  +","+ dSeasonMin              +","+ ( (dSeasonMin              - 0.5)*365.24219 - 37 )   );//>
-//.   core.output(   "Max"  +","+ dSeasonMax              +","+ ( (dSeasonMax              - 0.5)*365.24219 - 37 )   );//>
-//.   core.output(   "N"    +","+ dSeasonCount                                                                       );//>
-//.   core.output(   "Mean" +","+ dSeasonSum/dSeasonCount +","+ ( (dSeasonSum/dSeasonCount - 0.5)*365.24219 - 37 )   );//>
-//.   core.output(   "Dev"  +","+ dDev                    +","+    dDev                          *365.24219          );//>
-//.                                                                                                         //>
-//.   //. let                               g_iShot                 = 0;                                    //>
-//.   //. core.setJDay( dSunset  );                                                           core.wait(2); //> Sunset - start of night.
-//.   //. g_iShot = iEasePng( 0 ,dSunset ,dSunrise ,4 /24/60); //> Screenshot every 4 minutes               //>
-//.                                                                                                         //>
-//.   core.setJDay( dNoon + 0.5 );                                                         // core.wait(3); //> Midnight.
-//.   core.saveOutputAs(            "output.csv" );                                                         //> Write output to a file.
-//.   core.saveOutputAs( a_sPath + sFile +".csv" );                                                         //> Write a copy.
-//.   core.screenshot(       "a_"+ sFile ,false ,a_sPath ,true ,'png' );                                    //> Save the screen.
-//.   Look( 70,  210  ,60 ,1 );                                                                             //> Zoom in on Gemini and Canis Minor.
-//.   core.screenshot(       "z_"+ sFile ,false ,a_sPath ,true ,'png' );                                    //> Save the screen.
-//. return sFile +".csv"                                                                                    //> Report the summary lines, starting with details file name,...
-//.        +","+     "Min"  +","+ dSeasonMin              +","+ ( (dSeasonMin              - 0.5)*365.24219 - 37 )//> min and
-//.        +","+     "Max"  +","+ dSeasonMax              +","+ ( (dSeasonMax              - 0.5)*365.24219 - 37 )//> max dates relative to day count in years, and also in days.
-//.        +","+     "N"    +","+ dSeasonCount                                                                    //> Count in stats.
-//.        +","+     "Mean" +","+ dSeasonSum/dSeasonCount +","+ ( (dSeasonSum/dSeasonCount - 0.5)*365.24219 - 37 )//> Average date in years, and also in days.
-//.        +","+     "Dev"  +","+ dDev                    +","+    dDev                          *365.24219 //> Standard deviation in years, and also in days.
-//. ;                                                                                                       //>
-//. }//sSimulate//////////////////////////////////////////////////////////////////////////////////////////////>
 
 
 // core.output( core.mapToString(mapInfo ) );                                                           //> Info available from Stellarium:
