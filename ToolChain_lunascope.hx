@@ -1,20 +1,13 @@
-// codebasement/ToolChain_lunascope.hx - Haxe language BODGE code for transferring files in and out of a stellarium script.
+// hey_diddle/code/nebra/ToolChain_lunascope.hx - Haxe language BODGE code to run Stellarium script (currently just copies it to a directory).
 // (c)2024 David C. Walley
 
 // THE FOLLOWING IS NOT SOURCE CODE. THESE ARE MY NOTES!
 
 // Start stellarium
 // In a UBUNTU terminal (ctrl+alt+T):
-// cd ~/Desktop/AAA/hey_diddle/code/nebra                                                               # Where I keep this file.
-// #      Language (neko for local execution bodge code)                                                #
-// #      |    Intermediate file                                                                        #
-// #      |    |            Main code class                                                             #
-// #      V    V             V                                                                          #
-// haxe --neko TEMP_neko.n --main ToolChain_lunascope && neko TEMP_neko.n TOpROJECT && sleep 1 && wmctrl -a 'Stellarium 24.3'
-
-// && sleep 0.2 && xdotool key F12 && sleep 0.2 && xdotool key Return
-
-// && sleep 0.2 && xdotool type --delay 50 "/home/dave/Desktop/lunascope.ssc"
+// cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_lunascope && neko TEMP_neko.n DUMMYdATA && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
+// cd ~/Desktop/AAA/hey_diddle/lunascope  && for i in scr_*.png; do convert "$i"  -fuzz 25% -transparent black trans_$i; done # TRANSPARENT
+// cd ~/Desktop/AAA/hey_diddle/lunascope  && haxe --neko TEMP_neko.n --main Lunascope_svg && neko TEMP_neko.n DUMMYdATA && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
 
 // haxe --neko TEMP_neko.n --main ToolChain_lunascope && neko TEMP_neko.n SUMMARIZE  # <-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<- DANGER WILL ROBINSON <-<-<- WILL OVER-WRITE $-CODE <-<-<-
 
@@ -70,7 +63,7 @@
 // Stellarium
 // ==========
 // Stellarium is able to run close to JavaScript scripts. Unfortunately it seems some graphics
-// generation has to be done go get some values to update, and this requires some waiting for async
+// generation has to be done to get some values to update, and this requires some waiting for async
 // code to run.
 
 
@@ -78,7 +71,7 @@ class ToolChain_lunascope //////////////////////////////////////////////////////
 {/////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
   var                   _sPathStellarium  :String     ="/home/dave/Desktop/";                           //> ???Hard-coded? Root directory of stellarium script - "source code"
-//var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/hey_diddle/lunascope/";  //> ???Hard-coded? Money code directory.
+//var                   _sPathStellarium  :String     ="/home/dave/";                                   //> This should be simpler to use, but isn't because folders get in the way of the file listing when selecting the file.
   var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/"; //> ???Hard-coded? Money code directory.
 
 
@@ -93,15 +86,16 @@ class ToolChain_lunascope //////////////////////////////////////////////////////
    trace(e.message);                                                                                    //> report it
    trace(e.stack);                                                                                      //> "
   }//try                                                                                                //> .
+  trace("That should be it.");
  }//new_ToProject/////////////////////////////////////////////////////////////////////////////////////////>
 
 
  function               new(//////////////////////////////////////////////////////////////////////////////> Construct a new object of this class (and run appropriate processing).
  )                                      :Void {///////////////////////////////////////////////////////////>
-  var                      sCommandLineDirection :String        = ( Sys.args() )[0];                    //> Get direction operation from command line.
-  if(       "TOpROJECT" == sCommandLineDirection ){          trace( sCommandLineDirection +" <-----" ); //> If command line is specifying "Read summaries and write back to project":
+//var                      sCommandLineDirection :String        = ( Sys.args() )[0];                    //> Get direction operation from command line.
+//if(       "TOpROJECT" == sCommandLineDirection ){          trace( sCommandLineDirection +" <-----" ); //> If command line is specifying "Read summaries and write back to project":
    new_ToProject();                                                                                     //>
-  }//if                                                                                                 //>
+//}//if                                                                                                 //>
  }//new///////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
