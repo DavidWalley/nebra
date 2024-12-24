@@ -48,16 +48,18 @@ The first part is a Stellarium script which generates CSV (comma separated value
 
 The second part is a Haxe program for reading the generated files, and testing various potential astronomical procedures quickly using local command line execution. The Haxe language was chosen because it is designed to use, be compatible with, and port code to, various other languages including JavaScript, Java, Python and C.
 
+Other code generates graphics files from Stellarium, of stars and constellations at the winter solstice. These files are processed to make the black sky transparent, and then some haxe bodge code creates SVG files suitable for manipulation in InkScape.
+
 ## Files and Directories
-| File / Folder name      | Contents                                                                 |
-|------------------------|----------------------------------------------------------------------|
-| README.md               | This file.                                                               |
-| lunascope.ssc           | Stellarium script for generating sun and moon data files.                |
-| TestProcedures.hx       | Haxe code for reading data files and testing various lunar sync systems. |
-| Tool_Chain_lunascope.hx | Haxe bodge code for pre-processing and Stellarium script lunascope.ssc   |
-| trials/                 | Results of running lunascope.ssc, and input to TestProcedures.hx         |
-| trials/YYYY_yyyy/       | CSV files of results for a range of years.                               |
-| YYYY_yyyy/table012_*    | CSV files of results for a years, from a particular version of code.     |
+| File / Folder name     | Contents                                                                            |
+|-----------------------|-------------------------------------------------------------------------------|
+| README.md              | This file.                                                                          |
+| lunascope.ssc          | Stellarium script for generating sun and moon data files.                           |
+| TestProcedures.hx      | Haxe code for reading data files and testing various lunar sync systems.            |
+| ToolChain_lunascope.hx | Haxe BODGE code to run Stellarium script (currently just copies it to a directory). |
+| trials/                | Results of running lunascope.ssc, and input to TestProcedures.hx                    |
+| trials/YYYY_yyyy/      | CSV files of results for a range of years.                                          |
+| YYYY_yyyy/table012_*   | CSV files of results for a years, from a particular version of code.                |
 
 ## License
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]

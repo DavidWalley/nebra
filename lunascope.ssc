@@ -5,9 +5,9 @@
 // Version: 0.1
 // Description: Daily Lunar Horoscope
 
-// Start stellarium
+// Start Stellarium.
 // In a UBUNTU terminal (ctrl+alt+T):
-// cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_lunascope && neko TEMP_neko.n DUMMYdATA && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
+// cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_lunascope && neko TEMP_neko.n && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
 // cd ~/Desktop/AAA/hey_diddle/lunascope  && for i in scr_*.png; do convert "$i"  -fuzz 25% -transparent black trans_$i; done # TRANSPARENT
 // cd ~/Desktop/AAA/hey_diddle/lunascope  && haxe --neko TEMP_neko.n --main Lunascope_svg && neko TEMP_neko.n DUMMYdATA && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
 
@@ -39,50 +39,82 @@
 
 //const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/";              //>
   const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/hey_diddle/lunascope/" ;              //>
-
-  const                 g_a2vDOTS = //   0 1               2                     3         4     5      //> COPIED TO Lunascope_svg.hx
-      // (x,y) of dots       star name             desig      view  double duty info                    //> Table of Nebra Sky Disc dots and associated stars:
-      [[ 108.1498 ,18.1577  ,""                   ,"HR 1656" ,"p"                         ]             //> 1 m Tau
-      ,[ 126.3757 ,25.09133 ,""                   ,"HR 1554" ,"p"                         ]             //> 2
-      ,[ 70.83071 ,28.24098 ,""                   ,"HR 2891" , "g"                        ]             //> 3
-      ,[ 96.88832 ,31.32991 ,"Aldebaran"          ,"HR 1457" ,"p"                         ]             //> 4
-      ,[ 57.53873 ,40.46251 ,""                   ,"HR 2905" , "g"                        ]             //> 5
-      ,[ 83.44666 ,46.62984 ,""                   ,"HR 1239" ,"pg" ,""         ,"HR 2697" ]             //> 6
-      ,[ 112.1699 ,46.02002 ,""                   ,"HR 1256" ,"pg" ,""         ,"HR 2540" ]             //> 7
-      ,[ 124.5944 ,40.92313 ,"Pleiades: Asterope" ,"HR 1151" ,"P"                         ]             //> 8
-      ,[ 121.0292 ,48.75188 ,"Pleiades: Maia"     ,"HR 1149" ,"P"                         ]             //> 9
-      ,[ 131.831  ,50.85698 ,"Atik"               ,"HR 1203" ,"p"                         ]             //> 10
-      ,[ 112.4277 ,54.75468 ,"Pleiades: Alcyone"  ,"HR 1165" ,"P"                         ]             //> 11
-      ,[ 128.7177 ,58.49874 ,"Pleiades: Electra"  ,"HR 1142" ,"P"                         ]             //> 12
-      ,[ 120.2459 ,61.54713 ,"Pleiades: Merope"   ,"HR 1156" ,"P"                         ]             //> 13
-      ,[ 154.2186 ,44.34876 ,""                   ,""        ,""                          ]             //> 14
-      ,[ 53.85233 ,64.36998 ,""                   ,"HR 2777" , "g"                        ]             //> 15
-      ,[ 35.4     ,81.51411 ,""                   ,"HR 2763" , "g"                        ]             //> 16
-      ,[ 38.3646  ,81.51411 ,""                   ,""        ,""                          ]             //> 17
-      ,[ 123.5546 ,81.93696 ,"Bahrani"            ,"HR 838"  ,"p"                         ]             //> 18
-      ,[ 141.7191 ,78.15144 ,""                   ,"HR 840"  ,"p"                         ]             //> 19
-      ,[ 50.30947 ,98.89025 ,""                   ,"HR 2615" , "g"                        ]             //> 20
-      ,[ 119.1031 ,102.6168 ,"Hamal"              ,"HR 617"  ,"p"                         ]             //> 21
-      ,[ 47.5255  ,118.5022 ,""                   ,"HR 2484" , "g"                        ]             //> 22
-      ,[ 70.8448  ,117.6285 ,""                   ,"HR 489"  ,"pg" ,"Alhena"   ,"HR 2421" ]             //> 23
-      ,[ 95.72604 ,118.7353 ,"Alpherg"            ,"HR 437"  ,"pg" ,""         ,"HR 2216" ]             //> 24
-      ,[ 116.5119 ,127.7836 ,""                   ,"HR 360"  ,"p"                         ]             //> 25
-      ,[ 139.006  ,130.4405 ,""                   ,"HR 291"  ,"p"                         ]             //> 26
-      ,[ 156.8717 ,121.4289 ,""                   ,"HR 226"  ,"pg" ,"Elnath"   ,"HR 1791" ]             //> 27
-      ,[ 63.38372 ,133.7863 ,""                   ,"HR 392"  ,"pg" ,""         ,"HR 2287" ]             //> 28
-      ,[ 85.68202 ,138.646  ,""                   ,"HR 294"  ,"pg" ,""         ,"HR 2159" ]             //> 29
-      ,[ 101.2925 ,141.9865 ,""                   ,"HR 211"  ,"pg" ,""         ,"HR 1990" ]             //> 30
-      ,[ 123.8151 ,145.3032 ,"Tianguan"           ,"HR 1910" , "g"                        ]             //> 31
-//    ,[ 171.1209 ,60.48165 ,""                   ,""        ,""                          ]             //> 32
-//    ,[ 173.9899 ,93.61537 ,""                   ,""        ,""                          ]             //> 33
-                                          ];                                                            //>
-  const                 g_iDOTS_x       = 0;
-  const                 g_iDOTS_y       = 1;
-  const                 g_iDOTS_sName   = 2;
-  const                 g_iDOTS_sId     = 3;
-  const                 g_iDOTS_sView   = 4;
-  const                 g_iDOTS_sName2  = 5;
-  const                 g_iDOTS_sId2    = 6;
+  const                 g_iDOTS_x       = 0;                                                            //>
+  const                 g_iDOTS_y       = 1;                                                            //>
+  const                 g_iDOTS_sName   = 2;                                                            //>
+  const                 g_iDOTS_sId     = 3;                                                            //>
+  const                 g_iDOTS_sView   = 4;                                                            //>
+  const                 g_iDOTS_sName2  = 5;                                                            //>
+  const                 g_iDOTS_sId2    = 6;                                                            //>
+  const                 g_a2vDOTS       =                                                               //> COPIED TO Lunascope_svg.hx
+ //  0   1         2          3                    4          5     6      7                   8           9            10           11           12            13    //>
+ //  DOT (x,y) of dots        star name            desig      view  const  name2               id1         elat         elong        dec          RA            Mag   //> Table of Nebra Sky Disc dots and associated stars:
+   [[1  ,108.1498 ,18.1577  ,""                  ,"HR 1656" ,"p"  ,"Tau" ,"m Tau"            ,"HIP 23835" ,-4.22757736 ,77.53867299 ,18.64563797 ,76.872793943 ,4.90] //> 0  m Tau
+   ,[2  ,126.3757 ,25.09133 ,""                  ,"HR 1554" ,"p"  ,"Tau" ,"HIP 22697"        ,"HIP 22697" ,5.321147746 ,75.13733004 ,27.89789880 ,73.202952944 ,5.95] //> 1  
+   ,[3  ,70.83071 ,28.24098 ,"Castor"            ,"HR 2891" , "g" ,"Gem" ,"Castor"           ,"HIP 36850" ,10.09375094 ,110.2445114 ,31.88560856 ,113.65401298 ,1.90] //> 2  HR 2891   36850   α Gem   Gem     From its ancient Greek name Κάστωρ, a character in Greek mythology, the twin of Pollux (β Gem). Reapplied in Renaissance times. Greek   Kunitzsch, Paul; Smart, Tim (2006). A Dictionary of Modern star Names: A Short Guide to 254 Star Names and Their Derivations (2nd rev. ed.). Cambridge, Massachusetts: Sky Pub.
+   ,[4  ,96.88832 ,31.32991 ,"Aldebaran"         ,"HR 1457" ,"p"  ,"Tau" ,"Aldebaran"        ,"HIP 21421" ,-5.46902602 ,69.79493535 ,16.50842997 ,68.986323401 ,0.85] //> 3  HR 1457   21421   α Tau   Tau     Applied in medieval times from its ind-A name al-dabaran, possibly meaning "the Follower," alternatively used as the lunar mansion name for all the Hyades (or again for α Tau alone). The name is thought to refer to this star's following the Pleiades across the sky, or to the Hyades (or α Tau) coming after the Pleiades as a lunar mansion. "Aldebaran" is one of the oldest Arabic star names applied in the West, from the end of the 10th century A.D.       Arabic  Kunitzsch, Paul; Smart, Tim (2006). A Dictionary of Modern star Names: A Short Guide to 254 Star Names and Their Derivations (2nd rev. ed.). Cambridge, Massachusetts: Sky Pub.
+   ,[5  ,57.53873 ,40.46251 ,""                  ,"HR 2905" , "g" ,"Gem" ,"υ Gem"            ,"HIP 36962" ,5.214980108 ,111.3497335 ,26.89384299 ,113.98638207 ,4.05] //> 4  
+   ,[6  ,83.44666 ,46.62984 ,""                  ,"HR 1239" ,"p"  ,"Tau" ,"λ Tau"            ,"HIP 18724" ,-7.96025099 ,60.63957058 ,12.49090067 ,60.175190376 ,3.40] //> 5  
+   ,[6  ,-999     ,-999     ,""                  ,"HR 2697" , "g" ,"Gem" ,"τ Gem"            ,"HIP 34693" ,7.753792736 ,105.4497733 ,30.24383889 ,107.79100553 ,4.40] //> 6
+   ,[7  ,112.1699 ,46.02002 ,""                  ,"HR 1256" ,"p"  ,"Tau" ,"A1 Tau"           ,"HIP 19038" ,1.259198008 ,63.46112813 ,22.08241414 ,61.180044518 ,4.34] //> 7  
+   ,[7  ,-999     ,-999     ,""                  ,"HR 2540" , "g" ,"Gem" ,"θ Gem"            ,"HIP 33018" ,11.02960860 ,101.1293019 ,33.96015699 ,103.20412524 ,3.59] //> 8  
+   ,[8  ,124.5944 ,40.92313 ,"Pleiades: Asterope","HR 1151" ,"P"  ,"Tau" ,"Asterope"         ,"HIP 17579" ,4.567966892 ,59.74484169 ,24.55548105 ,56.482481616 ,5.75] //> 9  HR 1151   17579   21 Tau  Tau     These names were individually applied in Renaissance times from a family of characters in Greek mythology: Atlas, Pleione and their seven daughters, the Pleiades.
+   ,[9  ,121.0292 ,48.75188 ,"Pleiades: Maia"    ,"HR 1149" ,"P"  ,"Tau" ,"Maia"             ,"HIP 17573" ,4.389866533 ,59.68549106 ,24.36871969 ,56.462195999 ,3.84] //> 10
+   ,[10 ,131.831  ,50.85698 ,"Atik"              ,"HR 1203" ,"p"  ,"Per" ,"ζ Per"            ,"HIP 18246" ,11.33393540 ,63.12917675 ,31.88515447 ,58.538914573 ,2.80] //> 11
+   ,[11 ,112.4277 ,54.75468 ,"Pleiades: Alcyone" ,"HR 1165" ,"P"  ,"Tau" ,"Alcyone"          ,"HIP 17702" ,4.050899728 ,59.99748894 ,24.10618542 ,56.876600512 ,2.84] //> 12
+   ,[12 ,128.7177 ,58.49874 ,"Pleiades: Electra" ,"HR 1142" ,"P"  ,"Tau" ,"Electra"          ,"HIP 17499" ,4.189786908 ,59.41698059 ,24.11439627 ,56.224319838 ,3.70] //> 13
+   ,[13 ,120.2459 ,61.54713 ,"Pleiades: Merope"  ,"HR 1156" ,"P"  ,"Tau" ,"Merope"           ,"HIP 17608" ,3.955643081 ,59.70436670 ,23.94927508 ,56.587017801 ,4.09] //> 14
+   ,[14 ,154.2186 ,44.34876 ,""                  ,""        ,""                                                                                                     ] //> 15
+   ,[15 ,53.85233 ,64.36998 ,"Wasat"             ,"HR 2777" , "g" ,"Gem" ,"Wasat"            ,"HIP 35550" ,-0.17844208 ,108.5246902 ,21.98152794 ,110.03649036 ,3.5 ] //> 16 HR 2777  35550   δ Gem   Gem     From the Arabic word wasat, "middle," used by a sci-A commentator who was speculating on the meaning of the ind-A constellation name al-jauza'. Reference was made to al-jauza's being in the "middle" (wasat) of the sky (perhaps meaning the celestial equator). The reference was intended to apply to the ind-A figure located in today's Orion, however it was under the constellation which is today Gemini that the reference appeared (note the confusion between Orion and Gemini mentioned under α Ori). Therefore, after  transliteration into Latin, it was in Gemini (to δ) that the word "Wasat" was arbitrarily applied as a star name in recent times.  Arabic
+   ,[16 ,35.4     ,81.51411 ,""                  ,"HR 2763" , "g" ,"Gem" ,"λ Gem"            ,"HIP 35350" ,-5.63533629 ,108.7840055 ,16.53956000 ,109.52854314 ,3.55] //> 17
+   ,[17 ,38.3646  ,81.51411 ,""                  ,""        ,""                                                                                                     ] //> 18
+   ,[18 ,123.5546 ,81.93696 ,"Bahrani"           ,"HR 838"  ,"p"  ,"Ari" ,"Bharani"          ,"HIP 13209" ,10.44940709 ,48.20824285 ,27.26160756 ,42.501043704 ,3.59] //> 19 HR 838   6193    41  Ari Ari
+   ,[19 ,141.7191 ,78.15144 ,""                  ,"HR 840"  ,"p"  ,"Per" ,"16 Per"           ,"HIP 13254" ,20.94327211 ,51.84192759 ,38.32052223 ,42.653086066 ,4.20] //> 20
+   ,[20 ,50.30947 ,98.89025 ,""                  ,"HR 2615" , "g" ,"Gem" ,"41 Gem"           ,"HIP 33715" ,-6.60175956 ,104.5677183 ,16.07857180 ,105.07171491 ,5.70] //> 21
+   ,[21 ,119.1031 ,102.6168 ,"Hamal"             ,"HR 617"  ,"p"  ,"Ari" ,"Hamal"            ,"HIP 9884"  ,9.964961307 ,37.66700911 ,23.46380209 ,31.797982866 ,2   ] //> 22 HR 617   9884    α Ari   Ari     Applied in recent times from the Arabic constellation name, al-hamal, "the Lamb", for Aries. al-hamal seems to belong to those zodiacal constellation names already known in Arabic times.
+   ,[22 ,47.5255  ,118.5022 ,"Alzirr"            ,"HR 2484" , "g" ,"Gem" ,"Alzirr"           ,"HIP 32362" ,-10.1055159 ,101.2142292 ,12.89389186 ,101.32730563 ,3.34] //> 23 HR 2484  32362   ξ Gem   Gem
+   ,[23 ,70.8448  ,117.6285 ,""                  ,"HR 489"  ,"p"  ,"Psc" ,"ν Psc"            ,"HIP 7884"  ,-4.69444433 ,25.50897990 ,5.488188234 ,25.360276799 ,4.45] //> 24
+   ,[23 ,-999     ,-999     ,"Alhena"            ,"HR 2421" , "g" ,"Gem" ,"Alhena"           ,"HIP 31681" ,-6.74285099 ,99.11047785 ,16.39856993 ,99.433987651 ,1.90] //> 25  HR 2421 31681   γ Gem   Gem     Applied in recent times from the ind-A lunar mansion name al-bana, possibly meaning "the Mark on the Neck of a Camel," for γ and ξ Gem, or alternatively for γ, ξ, η, μ, and v Gem.     Arabic  Kunitzsch, Paul; Smart, Tim (2006). A Dictionary of Modern star Names: A Short Guide to 254 Star Names and Their Derivations (2nd rev. ed.). Cambridge, Massachusetts: Sky Pub.
+   ,[24 ,95.72604 ,118.7353 ,"Alpherg"           ,"HR 437"  ,"p"  ,"Psc" ,"Alpherg"          ,"HIP 7097"  ,5.378117061 ,26.81899773 ,15.34735745 ,22.873628886 ,7.50] //> 26
+   ,[24 ,-999     ,-999     ,"Propus"            ,"HR 2216" , "g" ,"Gem" ,"Propus"           ,"HIP 29655" ,-0.88798880 ,93.44149225 ,22.50679947 ,93.725164695 ,6.00] //> 27 HR 437   7097    η Psc   Psc              HR 2216        29655   η Gem   Gem     Applied in Renaissance times from the Greek word πρόπους, "forward foot", used by Ptolemy in the Almagest in describing this star.      Greek   Kunitzsch, Paul; Smart, Tim (2006). A Dictionary of Modern star Names: A Short Guide to 254 Star Names and Their Derivations (2nd rev. ed.). Cambridge, Massachusetts: Sky Pub.
+   ,[25 ,116.5119 ,127.7836 ,""                  ,"HR 360"  ,"p"  ,"Psc" ,"φ Psc"            ,"HIP 5742"  ,15.50440164 ,26.46211602 ,24.58583222 ,18.439532440 ,4.65] //> 28
+   ,[26 ,139.006  ,130.4405 ,""                  ,"HR 291"  ,"p"  ,"Psc" ,"σ Psc"            ,"HIP 4889"  ,23.08246361 ,27.21562523 ,31.80697757 ,15.706610523 ,5.5 ] //> 29
+   ,[27 ,156.8717 ,121.4289 ,""                  ,"HR 226"  ,"p"  ,"And" ,"ν And"            ,"HIP 3881"  ,32.56464840 ,29.15283671 ,41.08248596 ,12.455510973 ,4.5 ] //> 30
+   ,[27 ,-999     ,-999     ,"Elnath"            ,"HR 1791" , "g" ,"Tau" ,"Elnath"           ,"HIP 25428" ,5.383700043 ,82.58064369 ,28.60636790 ,81.579526761 ,1.65] //> 31 HR 1791  25428   β Tau   Tau
+   ,[28 ,63.38372 ,133.7863 ,""                  ,"HR 392"  ,"p"  ,"Cet" ,"HIP 6432"         ,"HIP 6432"  ,-6.46643162 ,19.73315074 ,1.726187942 ,20.656586845 ,6.20] //> 32
+   ,[28 ,-999     ,-999     ,""                  ,"HR 2287" , "g" ,"Ori" ,"HIP 30318"        ,"HIP 30318" ,-10.7591056 ,95.62021449 ,12.56987478 ,95.657125881 ,6.00] //> 33
+   ,[29 ,85.68202 ,138.646  ,""                  ,"HR 294"  ,"p"  ,"Psc" ,"ε Psc"            ,"HIP 4906"  ,1.094383099 ,17.52672400 ,7.891193773 ,15.736929963 ,4.25] //> 34
+   ,[29 ,-999     ,-999     ,""                  ,"HR 2159" , "g" ,"Ori" ,"ν Ori"            ,"HIP 29038" ,-8.65875821 ,91.85748091 ,14.76827729 ,91.899060953 ,4.40] //> 35
+   ,[30 ,101.2925 ,141.9865 ,""                  ,"HR 211"  ,"p"  ,"Psc" ,"57 Psc"           ,"HIP 3632"  ,9.642026823 ,16.77406568 ,15.47672950 ,11.638382861 ,5.34] //> 36
+   ,[30 ,-999     ,-999     ,""                  ,"HR 1990" , "g" ,"Tau" ,"130 Tau"          ,"HIP 27338" ,-5.67742169 ,86.99949122 ,17.72921298 ,86.865201882 ,5.45] //> 37
+   ,[31 ,123.8151 ,145.3032 ,"Tianguan"          ,"HR 1910" , "g" ,"Tau" ,"Tianguan"         ,"HIP 26451" ,-2.19574353 ,84.79039795 ,21.14263598 ,84.417365391 ,2.95] //> 38 HR 1910  26451   ζ Tau   Tau     Chinese single star asterism, a celestial pass along the ecliptic which opens and closes        Chinese Rufus+Tien (1945) on the Suzhou Map, Sun and Kistemaker (1997) evaluating Han sources, Sun Shuwei (2022) on the Su Song Map
+// ,[32 ,171.1209 ,60.48165 ,""                  ,""        ,""                                                                                                     ] //> 32
+// ,[33 ,173.9899 ,93.61537 ,""                  ,""        ,""                                                                                                     ] //> 33
+   ,[50 ,0        ,0        ,"Polaris"           ,"HIP 11767" ,"z","UMi" ,"Polaris"          ,"HIP 11767" ,66.10151875 ,88.58259182 ,89.26883221 ,38.253136404 ,1.95] //> Calendar
+   ,[51 ,0        ,0        ,"Vega"              ,"HIP 91262" ,"z","Lyr" ,"Vega"             ,"HIP 91262" ,61.73672951 ,285.3068417 ,38.78692090 ,-80.77167827 ,0   ] //> Calendar
+   ,[54 ,0        ,0        ,"Dubhe"             ,"HIP 54061" ,"z","UMa" ,"Big Dipper"       ,"HIP 54061" ,49.67750268 ,135.2017969 ,61.74708322 ,165.93325947 ,2   ] //> Calendar
+   ,[55 ,0        ,0        ,"Merak"             ,"HIP 53910" ,"z","UMa" ,"Big Dipper"       ,"HIP 53910" ,45.13027309 ,139.4407262 ,56.37781083 ,165.46409787 ,2.30] //> Calendar
+   ,[56 ,0        ,0        ,"Caph"              ,"HIP 746"   ,"z","Cas" ,"Caph"             ,"HIP 746"   ,51.22158910 ,35.12856093 ,59.15962753 ,2.2976013387 ,2.25] //> Calendar 
+   ,[57 ,0        ,0        ,"Capella"           ,"HIP 24608" ,"z","Aur" ,"Capella"          ,"HIP 24608" ,22.86115616 ,81.86497229 ,45.99540741 ,79.182016772 ,0.04] //> Calendar
+   ,[52 ,0        ,0        ,"Procyon"           ,"HIP 37279" ,"z","CMi" ,"Little Dog"       ,"HIP 37279" ,-16.0274910 ,115.7867482 ,5.217023103 ,114.82527538 ,0.40] //> Lunar Leap Year
+   ,[53 ,0        ,0        ,"Gomeisa"           ,"HIP 36188" ,"z","CMi" ,"Little Dog"       ,"HIP 36188" ,-13.4869151 ,112.1969295 ,8.288834367 ,111.79279198 ,2.84] //> Lunar Leap Year
+   ,[58 ,0        ,0        ,"Arcturus"          ,"HIP 69673" ,"z","Boo" ,"Arcturus"         ,"HIP 69673" ,30.71553411 ,204.2302913 ,19.16440114 ,-146.0959120 ,0.15] //> Bootes
+   ,[59 ,0        ,0        ,"Altair"            ,"HIP 97649" ,"z","Aql" ,"Altair"           ,"HIP 97649" ,29.30697265 ,301.7761452 ,8.871712428 ,-62.30515852 ,0.75] //> Eagle?
+   ,[60 ,0        ,0        ,"Asellus Australis" ,"HIP 42911" ,"z","Cnc" ,"Asellus Australis","HIP 42911" ,0.075414085 ,128.7268240 ,18.15134589 ,131.17567209 ,3.90] //> 1 Cancer
+   ,[61 ,0        ,0        ,"Regulus"           ,"HIP 49669" ,"z","Leo" ,"Regulus"          ,"HIP 49669" ,0.464502247 ,149.8300113 ,11.96657981 ,152.09367882 ,1.35] //> 2 Leo
+   ,[62 ,0        ,0        ,"Algenubi"          ,"HIP 47908" ,"z","Leo" ,"Algenubi"         ,"HIP 47908" ,9.714469470 ,140.7081828 ,23.77228787 ,146.46582854 ,2.95] //> 
+   ,[63 ,0        ,0        ,"Denebola"          ,"HIP 57632" ,"z","Leo" ,"Denebola"         ,"HIP 57632" ,12.26329780 ,171.6151954 ,14.56971764 ,177.26124965 ,2.09] //> 
+   ,[64 ,0        ,0        ,"Spica"             ,"HIP 65474" ,"z","Vir" ,"Spica"            ,"HIP 65474" ,-2.05468189 ,203.8387318 ,-11.1605214 ,-158.7043076 ,0.95] //> 3 Virgo
+   ,[44 ,0        ,0        ,"Syrma"             ,"HIP 69701" ,"z","Vir" ,"Syrma"            ,"HIP 69701" ,7.196383901 ,213.7945103 ,-6.00259379 ,-145.9999239 ,4.05] //> 
+   ,[65 ,0        ,0        ,"Zubenelgenubi"     ,"HIP 72622" ,"z","Lib" ,"Zubenelgenubi"    ,"HIP 72622" ,0.332309911 ,225.0778874 ,-16.0411028 ,-137.2853445 ,2.75] //> 4 Libra
+   ,[66 ,0        ,0        ,"Sadalmelik"        ,"HIP 109074","z","Aqr" ,"Sadalmelik"       ,"HIP 109074",10.66238731 ,333.3500316 ,-0.31993785 ,-28.55654312 ,2.95] //> 5 Aquarius
+   ,[44 ,0        ,0        ,"Ancha"             ,"HIP 110003","z","Aqr" ,"Ancha"            ,"HIP 110003",2.706448705 ,333.2617571 ,-7.78428350 ,-25.79298864 ,4.15] //> 
+   ,[67 ,0        ,0        ,"Deneb Algedi"      ,"HIP 107556","z","Cap" ,"Deneb Algedi"     ,"HIP 107556",-2.60371939 ,323.5401637 ,-16.1300069 ,-33.24145134 ,2.84] //> 6 Capricon
+   ,[44 ,0        ,0        ,"Dabih"             ,"HIP 100345","z","Cap" ,"Dabih"            ,"HIP 100345",4.588801104 ,304.0429685 ,-14.7822531 ,-54.75167582 ,3.05] //> 
+   ,[68 ,0        ,0        ,"Nunki"             ,"HIP 92855" ,"z","Sgr" ,"Nunki"            ,"HIP 92855" ,-3.45006572 ,282.3797355 ,-26.2977879 ,-76.18978347 ,2.05] //> 7 Sagitarius
+   ,[69 ,0        ,0        ,"Antares"           ,"HIP 80763" ,"z","Sco" ,"Antares"          ,"HIP 80763" ,-4.57000141 ,249.7567861 ,-26.4312042 ,-112.6541497 ,1.04] //> 8 Scorpio
+   ,[44 ,0        ,0        ,"Acrab"             ,"HIP 78820" ,"z","Sco" ,"Acrab"            ,"HIP 78820" ,1.007570026 ,243.1848227 ,-19.8046451 ,-118.6461626 ,2.59] //> 
+                                          ];                                                                                                                          //> 9 Pisces, 10 Aires, 11 Taurus, 12 Gemini
 
 //TODO: Use this. Convert sky position and time to an altitude/azimuth pair.
 //Greg Miller (gmiller@gregmiller.net) 2021
@@ -540,7 +572,7 @@ return [sDate +","+ a_nDay_jd +","+ s5( dSunSet_h     ) // .toFixed(4)          
 }//avTable_Basics/////////////////////////////////////////////////////////////////////////////////////////>
 
 
-function                                Table(////////////////////////////////////////////////////////////# Output table of info by date.
+function                                Go_DataTables_OneYear(////////////////////////////////////////////////////////////# Output table of info by date.
                                         a_nGo                                                           //> Given a year.
 ,                                       a_sPath                                                         //> Path to save results.
 ){                                      //////////////////////////////////////////////////////////////////>
@@ -613,7 +645,27 @@ function                                Table(//////////////////////////////////
    core.output( sRow );                                                                                 //>
   }//for dNoon                                                                                          //>
   core.saveOutputAs( a_sPath + "table015_"+ a_nGo +".csv" );                                            //> Write results to file system.
-}//Table//////////////////////////////////////////////////////////////////////////////////////////////////>
+}//Go_DataTables_OneYear//////////////////////////////////////////////////////////////////////////////////////////////////>
+
+
+function                                Go_DataTables(////////////////////////////////////////////////////>
+){                                      //////////////////////////////////////////////////////////////////>
+  var                                 sPATH = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> Path to output directory.
+// Just do the time-consuming stuff in this Stellarium code, generating CSV files for use by other code...
+  for( let iYear = 1900; iYear < 2000; iYear += 1 ){ Go_DataTables_OneYear( iYear ,sPATH ); }
+
+//.   let                                   r_s                     =
+//.   "file,min,year,days,max,year,days,N,N,Mean,year,days,Deviation,year,days";                        //> Overall summary of trial runs.
+//. //                       GO  ,END ,a_sFirstQuarter,a_nCountDays,a_sPath                             //>
+//.   r_s += "\n"+ sSimulate(2000,2100,"MOON"         ,8           ,sPATH);                             //>
+//.   r_s += "\n"+ sSimulate(2000,2100,"VEGA"         ,8           ,sPATH);                             //>
+//.   r_s += "\n"+ sSimulate(2000,2100,"MOON"         ,7           ,sPATH);                             //>
+//.   r_s += "\n"+ sSimulate(2000,2100,"VEGA"         ,7           ,sPATH);                             //>
+//. //r_s += "\n"+ sSimulate(2000,2010,"VEGA"         ,8           ,sPATH);                             //>
+//.   core.resetOutput();                                                                               //> Clear output file buffer.
+//.   core.output( r_s );                                                                               
+//.   core.saveOutputAs( sPATH + "output_Summary.csv" );                                                //> Write output to a file.
+}//Go_DataTables//////////////////////////////////////////////////////////////////////////////////////////>
 
 
 // core.output( core.mapToString(mapInfo ) );                                                           //> Info available from Stellarium:   https://stellarium.org/doc/0.15/classStelMainScriptAPI.html#ad831d70086a1ad8f64d8377672fd143c
@@ -732,10 +784,16 @@ function                                Table(//////////////////////////////////
 
 
  function                               Go_ScreenSnaps(///////////////////////////////////////////////////>
-                                        sView
+                                        sView                                                           //>
  ){                                     //////////////////////////////////////////////////////////////////>
-  MarkerMgr      .deleteAllMarkers();                                                                   //> https://stellarium.org/doc/23.0/classMarkerMgr.html
-  StelSkyDrawer.setCustomStarMagnitudeLimit( 5. );                                                      //> Turn off stars.
+  const                                 cosE                    = CosD( 23. + 27./60. );                //> Convert ecliptic coords to equatorial.
+  const                                 sinE                    = SinD( 23. + 27./60. );                //> tanL = ( sinAcosE + TanDsinE )/cosA       https://en.wikipedia.org/wiki/Astronomical_coordinate_systems#Equatorial_.E2.86.90.E2.86.92_ecliptic
+                                                                                                        //>
+  var                                   sinL                    = 0;                                    //> sinB = SinDcosE  - CosDsinEsinA
+  var                                   cosL                    = 0;                                    //> A = Right Ascention
+                                                                                                        //>
+  MarkerMgr       .deleteAllMarkers();                                                                  //> https://stellarium.org/doc/23.0/classMarkerMgr.html
+  StelSkyDrawer   .setCustomStarMagnitudeLimit( 5. );                                                   //> Turn off stars.
   ConstellationMgr.setFlagArt(false); ConstellationMgr.setFlagLines(false);                             //>
                                                                                 Snap('stars' ,sView);   //>   https://stellarium.org/doc/23.0/classConstellationMgr.html
   StelSkyDrawer.setCustomStarMagnitudeLimit( -99. );                                                    //> Turn off stars.
@@ -756,12 +814,12 @@ function                                Table(//////////////////////////////////
                                            Mark( av[g_iDOTS_sId2] ,"circle" ,"#00FF00" , 6 ); //. Mark( av[g_iDOTS_sId2] ,""+(i+1) ,"#00FF00" ,15 ); //> green circle (and number) for 2nd dot.
                                                                                               //.                                                    //>
     }else                                { Mark( av[g_iDOTS_sId ] ,"circle" ,"#FF0000" ,12 ); //. Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#FF0000" ,30 ); //> Otherwise a red circle (and number).
-  }}}//if//if//for i                                                                                  //>
+  }}}//if//if//for i                                                                                    //>
  // GridLinesMgr    .setFlagEclipticJ2000Grid(false);                                                   //> Turn off Ecliptic Grid of J2000.0.
-                                                                                Snap('dots'  ,sView);     //>
+                                                                                Snap('dots'  ,sView);   //>
                                                                                                         //>
   MarkerMgr      .deleteAllMarkers();                                                                   //> https://stellarium.org/doc/23.0/classMarkerMgr.html
-  ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );    Snap('art'  ,sView);     //>
+  ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );    Snap('art'  ,sView);    //>
                                                                                                         //>
   ConstellationMgr.setFlagArt(false); ConstellationMgr.setArtIntensity( 0 );                            //>
   for( iPass = -1; iPass <= 1; iPass++ ){                                                               //> D = Declination
@@ -802,24 +860,23 @@ function                                Go(/////////////////////////////////////
   NebulaMgr       .setFlagShow(                 false );                                                //>
   MilkyWay        .setFlagShow(                 false );                                                //> Don't show Milky Way.   https://stellarium.org/doc/24.0/classMilkyWay.html#ac365cf02f2019b6485337a6c48cec5cb   core.setMilkyWayVisible( false );                                                                     //>
                                                                                                         //>
-  const                                 cosE                    = CosD( 23. + 27./60. );                //> Convert ecliptic coords to equatorial.
-  const                                 sinE                    = SinD( 23. + 27./60. );                //> tanL = ( sinAcosE + TanDsinE )/cosA       https://en.wikipedia.org/wiki/Astronomical_coordinate_systems#Equatorial_.E2.86.90.E2.86.92_ecliptic
-  var                                   sinL                    = 0;                                    //> sinB = SinDcosE  - CosDsinEsinA
-  var                                   cosL                    = 0;                                    //> A = Right Ascention
-  Look( 90 - 51.17886594 + 23.43602467002239  ,180              ,100 ,3 );                              //> Look South, up to ecliptic.
-  Go_ScreenSnaps("south"   );                                                                           //>
-  let                                   map                     = mapSelect("HR 1165");                 //> Alcyone - Brightest of 7 sisters.
-  Look( map["altitude"]                       ,map["azimuth"]   ,100 ,3 );                              //> Look at Seven Sisters, sky view, slow.
-  Go_ScreenSnaps("pleiades");                                                                           //>
+//.  Look( 90 - 51.17886594 + 23.43602467002239  ,180              ,100 ,3 );                              //> Look South, up to ecliptic.
+//.  Go_ScreenSnaps("south"   );                                                                           //>
+//.  let                                   map                     = mapSelect("HR 1165");                 //> Alcyone - Brightest of 7 sisters.
+//.  Look( map["altitude"]                       ,map["azimuth"]   ,100 ,3 );                              //> Look at Seven Sisters, sky view, slow.
+//.  Go_ScreenSnaps("pleiades");                                                                           //>
+//.                                                                                                        //>
+//.  core.setSelectedObjectInfo('AllInfo');                                                                //> Reset this for benefit of user.
+//.  core.output("Th-th-that's all folks." );                                                              //>
+//.                                                                                                        //>
+//.  core.saveOutputAs( g_sPATHsHOTS + "output.txt" );                                                     //> Write results to file system, same directory as the screen shots.
                                                                                                         //>
-  core.setSelectedObjectInfo('AllInfo');                                                                //> Reset this for benefit of user.
-  core.output("Th-th-that's all folks." );                                                              //>
+  Go_DataTables();                                                                                      //>
                                                                                                         //>
-  core.saveOutputAs( g_sPATHsHOTS + "output.txt" );                                                     //> Write results to file system, same directory as the screen shots.
 }//Go(){}/////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
-Go();
+Go();                                                                                                   //>
 
 
 

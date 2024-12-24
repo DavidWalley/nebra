@@ -1,0 +1,347 @@
+// MakeDataFiles.ssc - Stellarium script for generating daily data tables. v015
+// Name: Lunascope
+// License: (c)2024 David C. Walley
+// Author: David C. Walley
+// Version: 0.1
+// Description: Daily Lunar Horoscope
+
+// Start stellarium
+// In a UBUNTU terminal (ctrl+alt+T):
+// cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_MakeDataFiles && neko TEMP_neko.n && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
+// cd ~/Desktop/AAA/hey_diddle/lunascope  && for i in scr_*.png; do convert "$i"  -fuzz 25% -transparent black trans_$i; done # TRANSPARENT
+// cd ~/Desktop/AAA/hey_diddle/lunascope  && haxe --neko TEMP_neko.n --main Lunascope_svg && neko TEMP_neko.n DUMMYdATA && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
+
+//const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/";              //>
+  const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/hey_diddle/lunascope/" ;              //>
+
+
+function                                NAP(){ core.wait(0.01); }                                       //> Short pause. Delay to allow for asynchronous updates in Stellarium.
+
+
+function                                mapSelect(////////////////////////////////////////////////////////# Select a celestial object and report a map of info about it.
+                                        a_sObject                                                       //> Object e.g. "Moon"
+){                                      //////////////////////////////////////////////////////////////////>
+  core.selectObjectByName(a_sObject ,false);                                                     NAP(); //>
+  var                                   map                     = core.getSelectedObjectInfo();         //> https://stellarium.org/doc/0.15/classStelMainScriptAPI.html#a2dc0768e3a57abf27cddaebe0b52dc97
+return map;                                                                                             //>
+}//mapSelect//////////////////////////////////////////////////////////////////////////////////////////////>
+
+
+function                                Look(/////////////////////////////////////////////////////////////# Aim view at given point, with given zoom.
+                                        a_Alt                                                           //>
+,                                       a_Azi                                                           //>
+,                                       a_Fov                                                           //> Field of view
+,                                       a_take                                                          //> Length of time to animate.
+){                                      //////////////////////////////////////////////////////////////////>
+  core.moveToAltAzi(      a_Alt, a_Azi ,a_take );                                                       //>
+  StelMovementMgr.zoomTo( a_Fov        ,a_take );                                                       //>
+  core.wait(                            a_take );                                                       //>
+}//Look///////////////////////////////////////////////////////////////////////////////////////////////////>
+
+
+function                                Reset(////////////////////////////////////////////////////////////> Set up our own default "reset" state:
+){                                      //////////////////////////////////////////////////////////////////>
+  core                  .clear("natural");                                                              //> Clear the display options. natural: azimuthal mount, atmosphere, landscape, no lines, labels or markers.   "starchart"   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
+  core                  .setProjectionMode(                                                             //> https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
+                                           "ProjectionStereographic"                                    //>
+                                        // "ProjectionPerspective"                                      //> Perspective projection - did not work as well.
+                                        // "ProjectionEqualArea"                                        //>
+                                        // "ProjectionFisheye"                                          //>
+                                        // "ProjectionHammer"                                           //>
+                                        // "ProjectionCylinder"                                         //>
+                                        // "ProjectionMercator"                                         //>
+                                        // "ProjectionOrthographic"                                     //>
+                                        // "ProjectionSinusoidal"                                       //>
+                                        // "ProjectionMiller"                                           //>
+                        );                                                                              //>
+  core                  .setTimeRate(                           0   );                                  //> Paused.
+  core                  .setTimezone(                    "UTC-00:00");                                  //>   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
+  ConstellationMgr      .setArtIntensity(                       0.6 );                                  //>
+  ConstellationMgr      .setFlagArt(                           true );                                  //>   https://stellarium.org/doc/23.0/classConstellationMgr.html
+  ConstellationMgr      .setFlagBoundaries(                   false );                                  //> Constellation boundaries lines will not be displayed.
+  ConstellationMgr      .setFlagIsolateSelected(               true );                                  //> Selected constellation displayed alone.
+  ConstellationMgr      .setFlagLabels(                       false );                                  //> Constellation names will not be displayed.
+  ConstellationMgr      .setFlagLines(                         true );                                  //> Constellation lines.
+  ConstellationMgr      .deselectConstellations(                    );                                  //>
+  GridLinesMgr          .setFlagAzimuthalGrid(                false );                                  //> Shows or hides the grid for the horizontal coordinate system.   https://stellarium.org/doc/23.0/classGridLinesMgr.html
+  GridLinesMgr          .setFlagEclipticJ2000Grid(            false );                                  //> Display Ecliptic Grid of J2000.0.
+  GridLinesMgr          .setFlagEclipticGrid(                 false );                                  //> Display Ecliptic Grid of Date.
+  GridLinesMgr          .setFlagEclipticLine(                 false );                                  //> ???
+  GridLinesMgr          .setFlagEquatorGrid(                  false );                                  //> Centered on north pole.
+  GridLinesMgr          .setFlagEquatorJ2000Grid(             false );                                  //> Display Equatorial J2000 Grid.
+  GridLinesMgr          .setFlagFixedEquatorGrid(             false );                                  //> Display the Fixed Equatorial Grid (Hour angle/declination).
+  GridLinesMgr          .setFlagGalacticGrid(                 false );                                  //> Display Galactic Grid.
+  GridLinesMgr          .setFlagMeridianLine(                 false );                                  //> North-south line?
+  GridLinesMgr          .setFlagSupergalacticGrid(            false );                                  //> Display Supergalactic Grid.
+  LabelMgr              .deleteAllLabels(                           );                                  //> Delete text boxes. LabelMgr.labelScreen - adds text to the scene.   https://stellarium.org/doc/0.20/classLabelMgr.html
+  LandscapeMgr          .setFlagAtmosphere(                    true );                                  //> https://stellarium.org/doc/23.0/classLandscapeMgr.html
+  LandscapeMgr          .setFlagCardinalPoints(                true );                                  //>
+  LandscapeMgr          .setFlagFog(                          false );                                  //>
+  LandscapeMgr          .setFlagLandscape(                     true );                                  //> Turn on Landscape,
+  LandscapeMgr          .setFlagLandscapeUseTransparency(      true );                                  //> Determine if a transparency should be used.
+  LandscapeMgr          .setLandscapeTransparency(              0.2 );                                  //> Value of transparency, 1 = fully transparent
+  MarkerMgr             .deleteAllMarkers(                          );                                  //> https://stellarium.org/doc/23.0/classMarkerMgr.html
+  SolarSystem           .setFlagMoonScale(                    false );                                  //> Determines if Earth's moon is scaled or not.
+  SolarSystem           .setMoonScale(                           1  );                                  //> Set the display scaling factor for Earth's moon.
+  SolarSystem           .setFlagDrawMoonHalo(                  true );                                  //> Glare around moon.
+  SporadicMeteorMgr     .setFlagShow(                         false );                                  //> No meteors.   https://stellarium.org/doc/23.0/classSporadicMeteorMgr.html
+  StelSkyDrawer         .setFlagTwinkle(                      false );                                  //> No star twinkle.   https://stellarium.org/doc/23.0/classStelSkyDrawer.html
+  StelSkyDrawer         .setFlagLuminanceAdaptation(          false );                                  //> Set the value of the eye adaptation flag.
+}//Reset//////////////////////////////////////////////////////////////////////////////////////////////////>
+
+
+function                                SetTimeToVegaKiss(////////////////////////////////////////////////> Set time to when Vega kisses the horizon.
+                                        a_nDayI                                                         //>
+){                                      //////////////////////////////////////////////////////////////////>
+  core.setJDay( a_nDayI );                                                                              //>
+  let                                   map                     = mapSelect("6 Lyr");                   //> mapSelect the star near Vega (but south of it, so it sets and rises again).
+  let                                   dSet_h                  = map["set-dhr" ];                      //>
+  let                                   dRise_h                 = map["rise-dhr"];                      //>
+  if(  dSet_h < 12   ||   dRise_h < 12 ){                                                               //>
+   core.setJDay( a_nDayI + 1 );                                                                 NAP();  //> Next day:
+   map = core.getSelectedObjectInfo();                                                                  //>
+   if( dSet_h  < 12 ){   dSet_h  = map["set-dhr" ]; if(dSet_h  < 12){dSet_h  += 24;}   }                // r_s +=" S:"+ dSet_h ;   } //>
+   if( dRise_h < 12 ){   dRise_h = map["rise-dhr"]; if(dRise_h < 12){dRise_h += 24;}   }                // r_s +=" R:"+ dRise_h;   } //>
+  }//if                                                                                                 //>
+  core.setJDay(  a_nDayI-0.5+( (dSet_h + dRise_h)/2 - 8/60 )/24   );                                    //> At time of Vega kiss (small fudge factor because we are using a nearby star)...
+}//SetTimeToVegaKiss//////////////////////////////////////////////////////////////////////////////////////>
+
+
+function                                s5(///////////////////////////////////////////////////////////////# Round output numbers. Currently disabled due to uncertain accuracy.
+                                        a                                                               //>
+){                                      //////////////////////////////////////////////////////////////////>
+return a;
+// let                                  r_s                     = a +"      ";                          //>
+// let                                  i                       = r_s.indexOf(".");                     //>
+// if( i < 0 ){                                                                           return a +"";}//>
+//return r_s.slice(0 ,i) +"."+ r_s.slice(i+1 ,i+6);                                                     //>
+}//s5/////////////////////////////////////////////////////////////////////////////////////////////////////>
+
+
+function                                avTable_Basics(///////////////////////////////////////////////////> Start output line with basic info about a date.
+                                        a_nDay_jd                                                       //> Julian day number.
+){                                      //////////////////////////////////////////////////////////////////>
+  core.setJDay( a_nDay_jd );                                                                            //> Set the display to the day in question.
+  let                                   sDate                   = core.getDate();                       //> Get ISO representation of the date.
+  let                                   mapSun                  = mapSelect("Sun" );                    //>
+  let                                   mapMoon                 = mapSelect("Moon");                    //>
+  let                                   dSunSet_h               = mapSun[ "set-dhr" ];                  //> Select the sun so we can get time of sunset.
+  let                                   r_dMoonRise_h           = mapMoon["rise-dhr"];                  //> Select the moon so we can get the time of sunrise.
+  let                                   r_dMoonSet_h            = -1;                                   //>
+  if(       isNaN(r_dMoonRise_h)         ){ r_dMoonRise_h = -1;                                         //> If unable to get the moonrise then flag this.
+  }else{                                    r_dMoonSet_h  = mapMoon["set-dhr" ];                        //> If no problem, then get the time of moonset.
+   if(      isNaN(r_dMoonSet_h)          ){ r_dMoonSet_h = -1; }                                        //> If unable to get the moonset then flag this,
+   else if( r_dMoonSet_h < r_dMoonRise_h ){ r_dMoonSet_h = -1; }                                        //> or if the moonset is before the moonrise, then we will want to try again.
+   else if( r_dMoonSet_h < dSunSet_h     ){ r_dMoonSet_h = -1; r_dMoonRise_h = -1; }                    //> If moonset is before sunset, then we will want to try again.
+  }//if                                                                                                 //> .
+                                                                                                        //>
+  core.setJDay( a_nDay_jd + 1 );                                                                        //> Next day:
+  let                                   dSunRise_h              = -1;                                   //> The time of the runrise
+  mapSun  = mapSelect("Sun" ); dSunRise_h  = mapSun[ "rise-dhr"] + 24;                                  //> Select the sun so we can find sunrise, the end of the night.
+  mapMoon = mapSelect("Moon");                                                                          //> Select the moon.
+  if( r_dMoonRise_h < 0 ){                                                                              //> If we still need the moonrise, then
+   r_dMoonRise_h = mapMoon["rise-dhr"];                                                                 //> get it now.
+   if(   isNaN(r_dMoonRise_h)      ){ r_dMoonRise_h = -1; }                                             //> If there is a problem, then flag it as unavailable.
+   else{                                                                                                //> otherwise,
+    r_dMoonRise_h += 24;                                                                                //> remember we are past midnight.
+    if( dSunRise_h < r_dMoonRise_h ){ r_dMoonRise_h = -1; }                                             //> If the moonrise is after sunrise, then flag it as unavailable.
+  }}//if//if                                                                                            //>
+return [sDate +","+ a_nDay_jd +","+ s5( dSunSet_h     ) // .toFixed(4)                                  //> Output what we have so far.
+                              +","+ s5( dSunRise_h    ) // .toFixed(4)                                  //>
+                              +","+ s5( r_dMoonRise_h ) // .toFixed(4)                                  //>
+       ,r_dMoonSet_h                                                                                    //>
+       ,r_dMoonRise_h                                                                                   //>
+       ];                                                                                               //>
+}//avTable_Basics/////////////////////////////////////////////////////////////////////////////////////////>
+
+
+function                                Go_DataTables_OneYear(////////////////////////////////////////////# Output table of info by date.
+                                        a_nGo                                                           //> Given a year.
+,                                       a_sPath                                                         //> Path to save results.
+){                                      //////////////////////////////////////////////////////////////////>
+  Reset();                                                                                              //> Reset Stellarium to known state, or best possible.
+  core.resetOutput();                                                                                   //> Clear output file buffer.
+  core.output("Moon data");                                                                             //>
+  core.setObserverLocation( -1.82618827 ,51.17886594 ,0 ,0 ,"Stonehenge" ,"Earth" );                    //> Stonehenge = 51.17886594 ,-1.82618827   Cool location
+  core.setTimezone("LMST");                                                                             //> "LMST" = Local Mean Solar Time    https://stellarium.org/doc/23.0/classStelMainScriptAPI.html#abc7e6a709ec2670b6581ce4b51db3185
+  core.setDate( a_nGo +"-01-01T00:00:00" ,"LMST" );                                                     //> Before early start of year.
+  let                                   nDay                    = Math.floor( core.getJDay() );         //> Get the count of days, the noon before midnight.
+  Look( 90,  180  ,180 ,0.1 );                                                                          //> Look straight up, south at bottom, whole sky view, quick.
+  core.output( "sDate,a_nDay_jd,dSunSet_h,dSunRise_h,r_dMoonRise_h"                                     //> Column header row
+  +           ",dMoonSet_h"                                                                             //> "
+  +           ",Moon_sDate,dLit_100,dRa,dDec"                                                           //> "
+  +           ",MidN_sDate,dLit_100,dRa,dDec"                                                           //> "
+  +           ",Vega_sDate,dLit_100,dRa,dDec"                                                           //> "
+  );                                                                                                    //> .
+  let                                   dNoon                   = 0;                                    //>
+  let                                   nEnd                    = nDay + 365 + 7;                       //> A year and a bit of overlap with next year.
+  for( dNoon = nDay; dNoon < nEnd; dNoon++ ){                                                           //> For a number of years (plus a bit of slop)...
+   let                                  av                      = avTable_Basics(dNoon);                //>
+   sRow =                               av[0];                                                          //>
+   let                  dMoonSet_h    = av[1];                                                          //>
+   let                  dMoonRise_h   = av[2];                                                          //>
+                                                                                                        //> But, if we have a moonrise time, then not a new moon, so...
+   let                                  m                       = mapSelect("Moon");         // NAP();  //> Refresh info about the moon.
+   if( dMoonSet_h < 0 ){ dMoonSet_h  = m["set-dhr" ] + 24; }                                            //> MOST ROWS: If still looking for the moonset, then get it now, including day we have skipped in hours.
+   sRow += ","+s5(dMoonSet_h);                                                                          //> Output moonset time (may be greater than 24, ie, the next day).
+   core.setJDay( dNoon - 0.5 + dMoonSet_h/24             );   m = mapSelect("Moon");                    //> MOON: At time of moonset...
+   sRow += ","+core.getDate()+","+s5(m["illumination"])                                                 //>
+                             +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
+   core.setJDay( dNoon + 0.5                             );   m = mapSelect("Moon");                    //> TIME: At Midnight...
+   sRow += ","+core.getDate()+","+s5(m["illumination"])                                                 //>
+                             +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
+   SetTimeToVegaKiss(     dNoon                          );   m = mapSelect("Moon");                    //> VEGA: When Vega kisses horizon...
+   sRow += ","+    core.getDate()                                                                       //>
+          +","+ s5(m["illumination"               ]) //  = 49.395606994628906                           //> Illumination.
+          +","+ s5(m["raJ2000"                    ])                                                    //> Right ascension.
+          +","+ s5(m["decJ2000"                   ])                                                    //> Declination.
+          ;                                                                                             //>
+   sRow += ","+ s5(m["age"                        ]) // = "7.39"                                        //> OTHER MISC DATA: Days since new moon (as a text string).
+          +","+ s5(m["distance-km"                ]) // =       369768.4086876776                       //> Distance away
+          +","+ s5(m["size-dd"                    ]) // =       0.538417844468446                       //> angular size (diameter) in decimal degrees.
+          +","+ s5(m["ecliptic-obliquity"         ]) // =       23.43602467002239                       //> Mean ecliptic obliquity of date in decimal degrees. Tilt to ecliptic plane?
+          +","+ s5(m["elat"                       ]) // =       0.9802472441514729                      //> Ecliptic latitude in decimal degrees (on Earth only!).
+          +","+ s5(m["elong"                      ]) // =       16.099170863692454                      //> Ecliptic longitude in decimal degrees (on Earth only!).
+          +","+ s5(m["glat"                       ]) // =       -55.74854664443656                      //> Galactic latitude in decimal degrees.
+          +","+ s5(m["glong"                      ]) // =       125.16802876836043                      //> Galactic longitude in decimal degrees.
+          +","+ s5(m["phase-angle-deg"            ]) // = "90.6926°"                                    //> Phase angle in degrees?
+          +","+ s5(m["hourAngle-dd"               ]) // =       90.53513052049566                       //> hour angle in decimal degrees.
+          +","+ s5(m["parallacticAngle"           ]) // =       39.02943920059663                       //> parallactic angle in decimal degrees (for non-star objects only).
+          +","+ s5(m["sglat"                      ]) // =       1.5611897617043844                      //> supergalactic latitude in decimal degrees.
+          +","+ s5(m["sglong"                     ]) // =       303.3886362267623                       //> supergalactic longitude in decimal degrees.
+          +","+ s5(m["size-deg"                   ]) // = "0.53842°"                                    //> angular size (diameter) in decimal degrees (formatted string).
+          +","+ s5(m["transit-dhr"                ]) // =       17.684444444444445                      //> Length of moon's journey across sky?.
+          +","+ s5(m["albedo"                     ]) // =       0.11999999731779099                     //> Reflectivity?
+          +","+ s5(m["ecl-elongation-deg"         ]) // = "89.1690°"                                    //>
+          +","+ s5(m["elongation-deg"             ]) // = "89.1634°"                                    //> \ Sum to 360?
+          +","+ s5(m["subsolar_l"                 ]) // =       270.8518849754954                       //> / Sum to 360?
+          +","+ s5(m["subsolar_b"                 ]) // = -1.4695135977094504                           //>
+          +","+ s5(m["heliocentric-distance"      ]) // =       0.9833453385096099                      //> A.U.?
+          +","+ s5(m["libration_l"                ]) // =       -0.7270627059426571                     //> What part of moon is facing earth?
+          +","+ s5(m["libration_b"                ]) // =       -1.8491122451938982                     //> What part of moon is facing earth?
+          +","+ s5(m["pa_axis"                    ]) // =       338.875856539514                        //> Phase angle? parallactic angle Axis? angle between the great circle through a celestial object and the zenith, and the hour circle of the object.?
+          +","+ s5(m["penumbral-eclipse-magnitude"]) // =       0                                       //> + for solar eclipse?
+          +","+ s5(m["umbral-eclipse-magnitude"   ]) // =       0                                       //> - for lunar eclipse?
+          +","+ s5(m["heliocentric-velocity"      ]) // = "[  -0.016947  , -0.00439356 , 5.1898e-05]"   //> A.U.?
+          +","+ s5(m["velocity"                   ]) // = "[-0.000178199 , 0.000581518 , 5.15247e-05]"  //> ?
+          +","+ s5(m["velocity-kms"               ]) // = "1.05686"                                     //> km/s relative to Earth?
+   ;                                                                                                    //>
+   core.output( sRow );                                                                                 //>
+  }//for dNoon                                                                                          //>
+  core.saveOutputAs( a_sPath + "table015_"+ a_nGo +".csv" );                                            //> Write results to file system.
+}//Go_DataTables_OneYear//////////////////////////////////////////////////////////////////////////////////>
+
+
+// core.output( core.mapToString(mapInfo ) );                                                           //> Info available from Stellarium:   https://stellarium.org/doc/0.15/classStelMainScriptAPI.html#ad831d70086a1ad8f64d8377672fd143c
+//  "above-horizon"                               = true                                                //> if celestial body is above horizon or not.
+//  "age"                                         = "7.39"                                              //> Days since new moon (as a text string).
+//  "ra"                                          = 14.452152444215272                                  //> right ascension angle (current date frame) in decimal degrees.
+//  "dec"                                         = 7.236755908534366                                   //> declination angle (current date frame) in decimal degrees.
+//  "raJ2000"                                     = 14.127531922456178                                  //> right ascension angle (J2000 frame) in decimal degrees.
+//  "decJ2000"                                    = 7.101178328122015                                   //> declination angle (J2000 frame) in decimal degrees.
+//  "airmass"                                     = 9.636439323425293                                   //> number of airmasses the object's light had to pass through the atmosphere. For negative altitudes this number may be meaningless.
+//  "altitude"                                    = 5.450075121719055                                   //> apparent altitude angle in decimal degrees.
+//  "altitude-geometric"                          = 5.2979817159715                                     //> geometric altitude angle in decimal degrees.
+//  "azimuth"                                     = 274.9656032787159                                   //> apparent azimuth angle in decimal degrees.
+//  "azimuth-geometric"                           = 274.9656032787159                                   //> geometric azimuth angle in decimal degrees.
+//  "distance-km"                                 = 369768.4086876776                                   //> *
+//  "iauConstellation"                            = "Psc"                                               //> 3-letter abbreviation of IAU constellation (string).
+//  "illumination"                                = 49.395606994628906                                  //> Illumination.
+//  "is-waning"                                   = false                                               //>
+//  "phase"                                       = 0.493956059217453                                   //> Phase (same as illumination?).
+//  "size-dd"                                     = 0.538417844468446                                   //> angular size (diameter) in decimal degrees.
+//  "vmag"                                        = -10.438417434692383                                 //> Visual magnitude.
+//  "ecliptic-obliquity"                          = 23.43602467002239                                   //> Mean ecliptic obliquity of date in decimal degrees.
+//  "elat"                                        = 0.9802472441514729                                  //> Ecliptic latitude in decimal degrees (on Earth only!).
+//  "elong"                                       = 16.099170863692454                                  //> Ecliptic longitude in decimal degrees (on Earth only!).
+//  "elatJ2000"                                   = 0.9784186668209234                                  //> Ecliptic latitude (Earth's J2000 frame) in decimal degrees.
+//  "elongJ2000"                                  = 15.749719928149947                                  //> Ecliptic longitude (Earth's J2000 frame) in decimal degrees.
+//  "glat"                                        = -55.74854664443656                                  //> Galactic latitude in decimal degrees.
+//  "glong"                                       = 125.16802876836043                                  //> Galactic longitude in decimal degrees.
+//  "hourAngle-dd"                                = 90.53513052049566                                   //> hour angle in decimal degrees.
+//  "hourAngle-hms"                               = "6h02m08.4s"                                        //> hour angle in HMS format (formatted string).
+//  "localized-name"                              = "Moon"                                              //> localized name.
+//  "meanSidTm"                                   = "6h59m56.9s"                                        //> mean sidereal time, in decimal degrees (on Earth only!).
+//  "appSidTm"                                    = "6h59m56.9s"                                        //> mean sidereal time, in decimal degrees (on Earth only!).
+//  "name"                                        = "Moon"                                              //> english name of the object.
+//  "object-type"                                 = "moon"                                              //> English lowercase name of the type of the object..
+//  "parallacticAngle"                            = 39.02943920059663                                   //> parallactic angle in decimal degrees (for non-star objects only).
+//  "phase-angle"                                 = 1.5828844738759689                                  //> radians?
+//  "phase-angle-deg"                             = "90.6926°"                                          //> degrees?
+//  "phase-name"                                  = "First Quarter"                                     //> Phase name.
+//  "rise"                                        = "11h07m"                                            //> time of rise in HM format.
+//  "rise-dhr"                                    = 11.116666666666667                                  //> time of rise in decimal hours.
+//  "set"                                         = "---"                                               //> time of set in HM format.  Doesn't set on this day?.
+//   set-dhr                                                                                            //> time of set in decimal hours.
+//  "sglat"                                       = 1.5611897617043844                                  //> supergalactic latitude in decimal degrees.
+//  "sglong"                                      = 303.3886362267623                                   //> supergalactic longitude in decimal degrees.
+//  "size"                                        = 0.00939716413746512                                 //> angular size (diameter) in radians.
+//  "size-deg"                                    = "0.53842°"                                          //> angular size (diameter) in decimal degrees (formatted string).
+//  "size-dms"                                    = "+0°32'18.30""                                      //> angular size (diameter) in DMS format.
+//  "transit"                                     = "17h41m"                                            //> time of transit in HM format.
+//  "transit-dhr"                                 = 17.684444444444445                                  //> Time of transit in decimal hours   Length of moon's journey across sky?.
+//  "type"                                        = "Planet"                                            //> type of object' class.
+//  "vmage"                                       = -9.1894016265869                                    //> Visual magnitude (after atmospheric extinction).
+//  "albedo"                                      = 0.11999999731779099                                 //>
+//  "central_b"                                   = -1.8491122451938982                                 //>
+//  "central_l"                                   = 0.7270627059426571                                  //>
+//  "colongitude"                                 = 90.0825062023456                                    //>
+//  "distance"                                    = 0.0024717491430840486                               //>
+//  "ecl-elongation"                              = 1.5562933695571008                                  //>
+//  "ecl-elongation-deg"                          = "89.1690°"                                          //>
+//  "ecl-elongation-dms"                          = "+89°10'09""                                        //>
+//  "elongation"                                  = 1.5561948325101131                                  //>
+//  "elongation-deg"                              = "89.1634°"                                          //>
+//  "elongation-dms"                              = "+89°09'48""                                        //>
+//  "found"                                       = true                                                //>
+//  "heliocentric-distance"                       = 0.9833453385096099                                  //>
+//  "heliocentric-distance-km"                    = 147106368.79495826                                  //>
+//  "heliocentric-velocity"                       = "[-0.016947, -0.00439356, 5.1898e-05]"              //>
+//  "heliocentric-velocity-kms"                   = "30.31324"                                          //>
+//  "libration_b"                                 = -1.8491122451938982                                 //>
+//  "libration_l"                                 = -0.7270627059426571                                 //>
+//  "pa_axis"                                     = 338.875856539514                                    //>
+//  "penumbral-eclipse-magnitude"                 = 0                                                   //>
+//  "phase-angle-dms"                             = "+90°41'33""                                        //>
+//  "scale"                                       = 1                                                   //>
+//  "umbral-eclipse-magnitude"                    = 0                                                   //>
+//  "velocity"                                    = "[-0.000178199, 0.000581518, 5.15247e-05]"          //>
+//  "velocity-kms"                                = "1.05686"                                           //>
+//  "subsolar_b"                                  = -1.4695135977094504                                 //>
+//  "subsolar_l"                                  = 270.8518849754954                                   //>
+
+
+function                                Go(///////////////////////////////////////////////////////////////> Create screen snapshots of celestial sphere with various features turned on.
+){                                      //////////////////////////////////////////////////////////////////>
+  core.resetOutput();                                                                                   //> Clear output file buffer.
+  Reset();                                                                                              //> Clear Stellarium to known state.
+                                                                                                        //>
+  core.setObserverLocation( -1.82618827 ,51.17886594 ,0 ,0 ,"Stonehenge" ,"Earth" );                    //> Stonehenge = 51.17886594 ,-1.82618827   Cool location
+  core.setTimezone("LMST" ,1);                                                                          //> "LMST" = Local Mean Solar Time    https://stellarium.org/doc/23.0/classStelMainScriptAPI.html#abc7e6a709ec2670b6581ce4b51db3185
+  core.setDate( "2026-12-21T00:00:00" ,"LMST" );                                        core.wait(0.1); //> Winter solstice, midnight.
+  let                                   nDay                    = Math.floor( core.getJDay() );         //> Get the count of days, the noon before midnight.
+                                                                                                        //>
+  ConstellationMgr.setFlagArt(                  false );                                                //> No constellation images.   https://stellarium.org/doc/23.0/classConstellationMgr.html
+  ConstellationMgr.setFlagLines(                 true );                                                //> Constellation lines on.
+  LandscapeMgr    .setFlagAtmosphere(           false );                                                //> No atmosphere effects.   https://stellarium.org/doc/23.0/classLandscapeMgr.html
+  SolarSystem     .setFlagPlanets (             false );                                                //> Don't show planets.
+  StelSkyDrawer   .setAbsoluteStarScale(          2.0 );                                                //> Set the absolute star brightness scale.
+  StelSkyDrawer   .setFlagDrawBigStarHalo(      false );                                                //> Set flag for drawing a halo around bright stars.
+  StelSkyDrawer   .setFlagStarMagnitudeLimit(   true  );                                                //> Toggle the application of user-defined star magnitude limit.
+  StelSkyDrawer   .setCustomStarMagnitudeLimit(   5.0 );                                                //> Sets a lower limit for star magnitudes (anything fainter (greater) is ignored).
+  StelSkyDrawer   .setFlagLuminanceAdaptation(  false );                                                //> Set the value of the eye adaptation flag.
+  NebulaMgr       .setFlagShow(                 false );                                                //>
+  MilkyWay        .setFlagShow(                 false );                                                //> Don't show Milky Way.   https://stellarium.org/doc/24.0/classMilkyWay.html#ac365cf02f2019b6485337a6c48cec5cb   core.setMilkyWayVisible( false );                                                                     //>
+                                                                                                        //>
+  var                                   sPATH = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> Path to output directory.
+                                                                                                        //>
+// Just do the time-consuming stuff in this Stellarium code, generating CSV files for use by other code...
+  for( let iYear = 1392; iYear < 1400; iYear += 1 ){ Go_DataTables_OneYear( iYear ,sPATH ); }           //>
+  for( let iYear =    0; iYear < 1000; iYear += 1 ){ Go_DataTables_OneYear( iYear ,sPATH ); }           //>
+}//Go(){}/////////////////////////////////////////////////////////////////////////////////////////////////>
+
+
+Go();                                                                                                   //>
+
+
+//End of file
