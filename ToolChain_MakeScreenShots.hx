@@ -24,6 +24,9 @@ class ToolChain_MakeScreenShots ////////////////////////////////////////////////
  function               new(//////////////////////////////////////////////////////////////////////////////> Construct a new object of this class (and run appropriate processing).
  )                                :Void {/////////////////////////////////////////////////////////////////>
   var                   content   :String = sys.io.File.getContent(_sPathMoney +'MakeScreenShots.ssc'); //> Copy from money source directory
+
+
+
   try{                                                                                                  //> to
    sys.io.File.saveContent(                                   _sPathStellarium +'MakeScreenShots.ssc'   //> a directory slightly easier to reload from within Stellarium
    ,                    content                                                                         //> "
