@@ -1,4 +1,4 @@
-// ToolChain_MakeScreenShots.hx - Haxe language BODGE code to run Stellarium script (currently just copies it to a directory).
+// ToolChain_MakeScreenShots.hx - Haxe language BODGE code to create/copy Stellarium script (currently just copies it to a directory).
 // (c)2024 David C. Walley
 
 // THE FOLLOWING IS NOT SOURCE CODE. THESE ARE MY NOTES!

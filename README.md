@@ -53,34 +53,19 @@ Other code generates graphics files from Stellarium, of stars and constellations
 ## Files and Directories
 | File / Folder name     | Contents                                                                            |
 |-----------------------|-------------------------------------------------------------------------------|
-| README.md              | This file.                                                                          |
-| lunascope.ssc          | Stellarium script for generating sun and moon data files.                           |
-| TestProcedures.hx      | Haxe code for reading data files and testing various lunar sync systems.            |
-| ToolChain_lunascope.hx | Haxe BODGE code to run Stellarium script (currently just copies it to a directory). |
-| trials/                | Results of running lunascope.ssc, and input to TestProcedures.hx                    |
-| trials/YYYY_yyyy/      | CSV files of results for a range of years.                                          |
-| YYYY_yyyy/table012_*   | CSV files of results for a years, from a particular version of code.                |
-
-
-/alignment
-/daily_data
-    README.md                   | This file.
-    hey001.csv
-    LICENSE
-    lunascope.ssc
-    MakeDataFiles.ssc
-    MakeScreenShots.ssc
-    Nebra_disc_1.svg
-    NebraDiscAlignment_svg.hx
-    Notepad.session
-    output.txt
-    stars.csv
-    TEMP_neko.n
-    TestProcedures.hx
-    ToolChain_lunascope.hx
-    ToolChain_MakeDataFiles.hx
-    ToolChain_MakeScreenShots.hx
-    TryMultiYearRuns.hx
+| /alignment                   | Files used to find and verify alignment of stars and Nebra Sky Disc                                   |
+| /daily_data                  | CSV results files of long running Stellarium code, and input to TestProcedures.hx                     |
+| README.md                    | This file.                                                                                            |
+| LICENSE                      |                                                                                                       |
+| TakeScreenShots.ssc          | Stellarium script for checking Nebra calendar and generating sky disc views.                          |
+| MakeDataFiles.ssc            | Stellarium script for generating daily data tables, AND possibly star data file. v016                 |
+| MakeScreenShots.ssc          | Stellarium script for generating sky disc views suitable for use as imports to InkScape. v015         |
+| NebraDiscAlignment_svg.hx    | Bodge code to create SVG file for showing Nebra Sky Disc alignments.                                  |
+| Notepad.session              |                                                                                                       |
+| TestProcedures.hx            | Try various procedures for syncing lunar calendar, reading pre-calculated data files.                 |
+| ToolChain_MakeDataFiles.hx   | Haxe language BODGE code to create/copy Stellarium script (currently just copies it to a directory).  |
+| ToolChain_MakeScreenShots.hx | Haxe language BODGE code to create/copy Stellarium script (currently just copies it to a directory).  |
+| TryMultiYearRuns.hx          | Try various procedures for syncing lunar calendar, reading pre-calculated data files.                 |
 
 ## License
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
