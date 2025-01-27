@@ -7,6 +7,7 @@
 // In a UBUNTU terminal (ctrl+alt+T):
 // cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_MakeScreenShots && neko TEMP_neko.n && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
 
+
 // Stellarium
 // ==========
 // Stellarium is able to run close to JavaScript scripts. Unfortunately it seems some graphics
@@ -18,7 +19,7 @@ class ToolChain_MakeScreenShots ////////////////////////////////////////////////
 {/////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
   var                   _sPathStellarium  :String     ="/home/dave/Desktop/";                           //> ???Hard-coded? Root directory of stellarium script - "source code"
-  var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/"; //> ???Hard-coded? Money code directory.
+  var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/NEBRA/code/nebra/";      //> ???Hard-coded? Money code directory.
 
 
  function               new(//////////////////////////////////////////////////////////////////////////////> Construct a new object of this class (and run appropriate processing).

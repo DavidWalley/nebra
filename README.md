@@ -61,6 +61,27 @@ Other code generates graphics files from Stellarium, of stars and constellations
 | trials/YYYY_yyyy/      | CSV files of results for a range of years.                                          |
 | YYYY_yyyy/table012_*   | CSV files of results for a years, from a particular version of code.                |
 
+
+/alignment
+/daily_data
+    README.md                   | This file.
+    hey001.csv
+    LICENSE
+    lunascope.ssc
+    MakeDataFiles.ssc
+    MakeScreenShots.ssc
+    Nebra_disc_1.svg
+    NebraDiscAlignment_svg.hx
+    Notepad.session
+    output.txt
+    stars.csv
+    TEMP_neko.n
+    TestProcedures.hx
+    ToolChain_lunascope.hx
+    ToolChain_MakeDataFiles.hx
+    ToolChain_MakeScreenShots.hx
+    TryMultiYearRuns.hx
+
 ## License
 Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 

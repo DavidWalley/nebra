@@ -5,6 +5,9 @@
 // Version: 0.1
 // Description: Daily Lunar Horoscope
 
+//const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/";              //>
+  const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/NEBRA/code/nebra/alignment/";         //>
+
 // Start stellarium.
 // In a UBUNTU terminal (ctrl+alt+T):
 // cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_MakeScreenShots && neko TEMP_neko.n && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
@@ -37,8 +40,6 @@
 //.                         - Near winter solstice, this voyage is from Pisces to Taurus or Gemini.
 
 
-//const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/";              //>
-  const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/hey_diddle/lunascope/" ;              //>
   var                   g_iDOTS_dot                             = 0 ;                                   //>
   var                   g_iDOTS_x                               = 1 ;                                   //>
   var                   g_iDOTS_y                               = 2 ;                                   //>
@@ -377,39 +378,7 @@ function                                Go(/////////////////////////////////////
 }//Go(){}/////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
-function                                Go_StarsInfo(/////////////////////////////////////////////////////>
-){                                      //////////////////////////////////////////////////////////////////>
-  core.resetOutput();                                                                                   //> Clear output file buffer.
-  Reset();                                                                                              //> Clear Stellarium to known state.
-  core.setObserverLocation( -1.82618827 ,51.17886594 ,0 ,0 ,"Stonehenge" ,"Earth" );                    //> Stonehenge = 51.17886594 ,-1.82618827   Cool location
-  core.setTimezone("LMST" ,1);                                                                          //> "LMST" = Local Mean Solar Time    https://stellarium.org/doc/23.0/classStelMainScriptAPI.html#abc7e6a709ec2670b6581ce4b51db3185
-  core.setDate( "2026-12-21T00:00:00" ,"LMST" );                                                NAP();  //> Winter solstice, midnight.
-                                                                                                        //>
-  for( let i = 0; i < g_a2vDOTS.length; i++ ){                                                          //>
-   var                                  av                      = g_a2vDOTS[i];                         //>
-   if( "" != av[g_iDOTS_sId] ){                                                                         //>
-    var                                 map                     = mapSelect( av[g_iDOTS_sId] );         //>
-//core.output( core.mapToString(map) );
-    var                                 s                       = "";                                   //>
-    s +=    '"'+ av[g_iDOTS_sId]         +'"'                                                           //>
-        +'\t,"'+ map["iauConstellation"] +'"'                                                           //>
-        +'\t,"'+ map["localized-name"  ] +'"'                                                           //>
-        +'\t,"'+ map["name"            ] +'"'                                                           //>
-        +'\t,"'+ map["elatJ2000"       ] +'"'                                                           //>
-        +'\t,"'+ map["elongJ2000"      ] +'"'                                                           //>
-        +'\t,"'+ map["decJ2000"        ] +'"'                                                           //>
-        +'\t,"'+ map["raJ2000"         ] +'"'                                                           //>
-        +'\t,"'+ map["vmag"            ] +'"'                                                           //>
-    ;                                                                                                   //>
-    core.output( s );                                                                                   //>
-  }}//if//for i                                                                                         //>
-                                                                                                        //>
-  core.saveOutputAs( g_sPATHsHOTS + "output.txt" );                                                     //> Write results to file system, same directory as the screen shots.
-}//Go_StarsInfo///////////////////////////////////////////////////////////////////////////////////////////>
-
-
-//Go();           
-Go_StarsInfo();                                                                                         //>
+Go();           
 
 
 //End of file

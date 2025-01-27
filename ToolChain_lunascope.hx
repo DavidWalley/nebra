@@ -72,11 +72,11 @@ class ToolChain_lunascope //////////////////////////////////////////////////////
 
   var                   _sPathStellarium  :String     ="/home/dave/Desktop/";                           //> ???Hard-coded? Root directory of stellarium script - "source code"
 //var                   _sPathStellarium  :String     ="/home/dave/";                                   //> This should be simpler to use, but isn't because folders get in the way of the file listing when selecting the file.
-  var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/"; //> ???Hard-coded? Money code directory.
+  var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/NEBRA/code/nebra/";      //> ???Hard-coded? Money code directory.
 
 
  function               new_ToProject(////////////////////////////////////////////////////////////////////> Create source from $ code, replacing macros.
- ){                     //////////////////////////////////////////////////////////////////////////////////>
+ ){                                     //////////////////////////////////////////////////////////////////>
   var                   content         :String = sys.io.File.getContent(_sPathMoney +'lunascope.ssc'); //> Copy from money source directory
   try{                                                                                                  //> to
    sys.io.File.saveContent(                                        _sPathStellarium  +'lunascope.ssc'   //> a directory slightly easier to reload from within Stellarium
@@ -86,7 +86,7 @@ class ToolChain_lunascope //////////////////////////////////////////////////////
    trace(e.message);                                                                                    //> report it
    trace(e.stack);                                                                                      //> "
   }//try                                                                                                //> .
-  trace("That should be it.");
+  trace("That should be it.");                                                                          //>
  }//new_ToProject/////////////////////////////////////////////////////////////////////////////////////////>
 
 

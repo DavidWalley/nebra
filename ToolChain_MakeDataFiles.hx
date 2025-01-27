@@ -5,11 +5,11 @@
 
 // Start stellarium
 // In a UBUNTU terminal (ctrl+alt+T):
-// cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_MakeDataFiles && neko TEMP_neko.n DUMMYdATA && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
+// cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_MakeDataFiles && neko TEMP_neko.n && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
 
 // Stellarium
 // ==========
-// Stellarium is able to run close to JavaScript scripts. Unfortunately it seems some graphics
+// Stellarium is able to run close-to-JavaScript scripts. Unfortunately it seems some graphics
 // generation has to be done to get some values to update, and this requires some waiting for async
 // code to run. To help with this problem, we create data look-up files ahead of time.
 
@@ -17,15 +17,15 @@
 class ToolChain_MakeDataFiles ////////////////////////////////////////////////////////////////////////////> For a stellarium script:
 {/////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
-  var                   _sPathStellarium  :String     ="/home/dave/Desktop/";                           //> ???Hard-coded? Root directory of stellarium script - "source code"
-  var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/"; //> ???Hard-coded? Money code directory.
-
+  var                   _sPathStellarium  :String          ="/home/dave/Desktop/";                      //> ???Hard-coded? Root directory of stellarium script - "source code"
+  var                   _sPathMoney       :String          ="/home/dave/Desktop/AAA/NEBRA/code/nebra/"; //> ???Hard-coded? Money code directory.
+                                                                  
 
  function               new(//////////////////////////////////////////////////////////////////////////////> Construct a new object of this class (and run appropriate processing).
  )                                  :Void {///////////////////////////////////////////////////////////////>
-  var                   content     :String = sys.io.File.getContent(_sPathMoney +'MakeDataFiles.ssc'); //> Copy from money source directory
+  var                   content     :String = sys.io.File.getContent(_sPathMoney +"MakeDataFiles.ssc"); //> Copy from money source directory
   try{                                                                                                  //> to
-   sys.io.File.saveContent(                                     _sPathStellarium +'MakeDataFiles.ssc'   //> a directory slightly easier to reload from within Stellarium
+   sys.io.File.saveContent(                                     _sPathStellarium +"MakeDataFiles.ssc"   //> a directory slightly easier to reload from within Stellarium
    ,                    content                                                                         //> "
    );                                                                                                   //> .
   }catch( e:haxe.Exception ){                                                                           //> If there is a problem, then

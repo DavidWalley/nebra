@@ -1,18 +1,17 @@
-// MakeDataFiles.ssc - Stellarium script for generating daily data tables. v015
+// MakeDataFiles.ssc - Stellarium script for generating daily data tables, AND possibly star data file. v016
 // Name: Lunascope
 // License: (c)2024 David C. Walley
 // Author: David C. Walley
 // Version: 0.1
-// Description: Daily Lunar Horoscope
+// Description: In Stellarium, pre-calculate daily info about the Moon and important stars, because it takes all day because of the many pauses inserted to avoid race conditions in Stellarium.
 
 // Start stellarium
 // In a UBUNTU terminal (ctrl+alt+T):
-// cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_MakeDataFiles && neko TEMP_neko.n && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
-// cd ~/Desktop/AAA/hey_diddle/lunascope  && for i in scr_*.png; do convert "$i"  -fuzz 25% -transparent black trans_$i; done # TRANSPARENT
-// cd ~/Desktop/AAA/hey_diddle/lunascope  && haxe --neko TEMP_neko.n --main Lunascope_svg && neko TEMP_neko.n DUMMYdATA && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
+//  cd ~/Desktop/AAA/NEBRA/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_MakeDataFiles && neko TEMP_neko.n && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
+//x cd ~/Desktop/AAA/NEBRA/lunascope  && for i in scr_*.png; do convert "$i"  -fuzz 25% -transparent black trans_$i; done # TRANSPARENT
+//x cd ~/Desktop/AAA/NEBRA/lunascope  && haxe --neko TEMP_neko.n --main Lunascope_svg && neko TEMP_neko.n DUMMYdATA && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
 
-//const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/";              //>
-  const                 g_sPATHsHOTS    = "/home/dave/Desktop/AAA/hey_diddle/lunascope/" ;              //>
+const                  g_sPATHfILEoUT = "/home/dave/Desktop/AAA/NEBRA/code/nebra/daily_data/table017_"; //> Path and file name template, to output root directory.
 
 
 function                                NAP(){ core.wait(0.01); }                                       //> Short pause. Delay to allow for asynchronous updates in Stellarium.
@@ -94,16 +93,18 @@ function                                SetTimeToVegaKiss(//////////////////////
                                         a_nDayI                                                         //>
 ){                                      //////////////////////////////////////////////////////////////////>
   core.setJDay( a_nDayI );                                                                              //>
-  let                                   map                     = mapSelect("6 Lyr");                   //> mapSelect the star near Vega (but south of it, so it sets and rises again).
-  let                                   dSet_h                  = map["set-dhr" ];                      //>
+  let                                   map                     = mapSelect("6 Lyr"); core.wait(0.1);   //> mapSelect the star near Vega (but south of it, so it sets and rises again). Nasr Alwaki I
+  let                                   dSet_h                  = map["set-dhr" ];                      //> 
   let                                   dRise_h                 = map["rise-dhr"];                      //>
   if(  dSet_h < 12   ||   dRise_h < 12 ){                                                               //>
-   core.setJDay( a_nDayI + 1 );                                                                 NAP();  //> Next day:
+   core.setJDay( a_nDayI + 1 );                                                       core.wait(0.1);   //> Next day:
    map = core.getSelectedObjectInfo();                                                                  //>
    if( dSet_h  < 12 ){   dSet_h  = map["set-dhr" ]; if(dSet_h  < 12){dSet_h  += 24;}   }                // r_s +=" S:"+ dSet_h ;   } //>
    if( dRise_h < 12 ){   dRise_h = map["rise-dhr"]; if(dRise_h < 12){dRise_h += 24;}   }                // r_s +=" R:"+ dRise_h;   } //>
   }//if                                                                                                 //>
-  core.setJDay(  a_nDayI-0.5+( (dSet_h + dRise_h)/2 - 8/60 )/24   );                                    //> At time of Vega kiss (small fudge factor because we are using a nearby star)...
+  // Nasr Alwaki I   18h45m42.98        37 38 07.3              0 28 31                                 //>
+  // Vega            18h37m51.70        38 48 39.4              0 20 41                                 //>
+  core.setJDay(  a_nDayI-0.5+( (dSet_h + dRise_h)/2 - 7.85/60 )/24   );                                 //> At time of Vega kiss (small fudge factor because we are using a nearby star that rises and sets)...
 }//SetTimeToVegaKiss//////////////////////////////////////////////////////////////////////////////////////>
 
 
@@ -123,22 +124,22 @@ function                                avTable_Basics(/////////////////////////
 ){                                      //////////////////////////////////////////////////////////////////>
   core.setJDay( a_nDay_jd );                                                                            //> Set the display to the day in question.
   let                                   sDate                   = core.getDate();                       //> Get ISO representation of the date.
-  let                                   mapSun                  = mapSelect("Sun" );                    //>
-  let                                   mapMoon                 = mapSelect("Moon");                    //>
-  let                                   dSunSet_h               = mapSun[ "set-dhr" ];                  //> Select the sun so we can get time of sunset.
-  let                                   r_dMoonRise_h           = mapMoon["rise-dhr"];                  //> Select the moon so we can get the time of sunrise.
+  let                                   mapSun                  = mapSelect("Sun" );                    //> Get data about the Sun.
+  let                                   mapMoon                 = mapSelect("Moon");                    //> Get data about the Moon.
+  let                                   dSunSet_h               = mapSun[ "set-dhr" ];                  //> Time of sunset.
+  let                                   r_dMoonRise_h           = mapMoon["rise-dhr"];                  //> Time of moonrise.
   let                                   r_dMoonSet_h            = -1;                                   //>
   if(       isNaN(r_dMoonRise_h)         ){ r_dMoonRise_h = -1;                                         //> If unable to get the moonrise then flag this.
   }else{                                    r_dMoonSet_h  = mapMoon["set-dhr" ];                        //> If no problem, then get the time of moonset.
-   if(      isNaN(r_dMoonSet_h)          ){ r_dMoonSet_h = -1; }                                        //> If unable to get the moonset then flag this,
-   else if( r_dMoonSet_h < r_dMoonRise_h ){ r_dMoonSet_h = -1; }                                        //> or if the moonset is before the moonrise, then we will want to try again.
-   else if( r_dMoonSet_h < dSunSet_h     ){ r_dMoonSet_h = -1; r_dMoonRise_h = -1; }                    //> If moonset is before sunset, then we will want to try again.
+   if(      isNaN(r_dMoonSet_h)          ){ r_dMoonSet_h = -1;                     }                    //> If unable to get the moonset then flag this,
+   else if( r_dMoonSet_h < r_dMoonRise_h ){ r_dMoonSet_h = -1;                     }                    //> or if the moonset is before the moonrise, then we will want to try again.
+   else if( r_dMoonSet_h < dSunSet_h     ){ r_dMoonSet_h = -1; r_dMoonRise_h = -1; }                    //> If moonset is before sunset (start of night), then we will want to try again.
   }//if                                                                                                 //> .
                                                                                                         //>
   core.setJDay( a_nDay_jd + 1 );                                                                        //> Next day:
-  let                                   dSunRise_h              = -1;                                   //> The time of the runrise
-  mapSun  = mapSelect("Sun" ); dSunRise_h  = mapSun[ "rise-dhr"] + 24;                                  //> Select the sun so we can find sunrise, the end of the night.
-  mapMoon = mapSelect("Moon");                                                                          //> Select the moon.
+  let                                   dSunRise_h              = -1;                                   //> The time of the sunrise
+  mapSun  = mapSelect("Sun" ); dSunRise_h  = mapSun[ "rise-dhr"] + 24;                                  //> Find sunrise, the end of the night.
+  mapMoon = mapSelect("Moon");                                                                          //> Get updated data for the Moon.
   if( r_dMoonRise_h < 0 ){                                                                              //> If we still need the moonrise, then
    r_dMoonRise_h = mapMoon["rise-dhr"];                                                                 //> get it now.
    if(   isNaN(r_dMoonRise_h)      ){ r_dMoonRise_h = -1; }                                             //> If there is a problem, then flag it as unavailable.
@@ -167,36 +168,50 @@ function                                Go_DataTables_OneYear(//////////////////
   core.setDate( a_nGo +"-01-01T00:00:00" ,"LMST" );                                                     //> Before early start of year.
   let                                   nDay                    = Math.floor( core.getJDay() );         //> Get the count of days, the noon before midnight.
   Look( 90,  180  ,180 ,0.1 );                                                                          //> Look straight up, south at bottom, whole sky view, quick.
-  core.output( "sDate,a_nDay_jd,dSunSet_h,dSunRise_h,r_dMoonRise_h"                                     //> Column header row
+  core.output( "sDate,a_nDay_jd,dSunSet_h,dSunRise_h,r_dMoonRise_h"                                     //> Column header row - text returned from avTable_Basics
   +           ",dMoonSet_h"                                                                             //> "
-  +           ",Moon_sDate,dLit_100,dRa,dDec"                                                           //> "
+  +           ",Moon_sDate,dLit_100,dRa,dDec"                                                           //> " Time of moonset as ISO, illumination at moonset, location at moonset
   +           ",MidN_sDate,dLit_100,dRa,dDec"                                                           //> "
   +           ",Vega_sDate,dLit_100,dRa,dDec"                                                           //> "
+  +",age"                        +",distance-km"             +",size-dd"         +",ecliptic-obliquity" //>     
+  +",elat"                       +",elong"                   +",glat"                 +",glong"         //>          
+  +",phase-angle-deg"            +",hourAngle-dd"            +",parallacticAngle"     +",sglat"         //>          
+  +",sglong"                     +",size-deg"                +",transit-dhr"          +",albedo"        //>          
+  +",ecl-elongation-deg"         +",elongation-deg"          +",subsolar_l"           +",subsolar_b"    //>          
+  +",heliocentric-distance"      +",libration_l"             +",libration_b"          +",pa_axis"       //>          
+  +",penumbral-eclipse-magnitude"+",umbral-eclipse-magnitude"+",heliocentric-velocity"+",velocity"      //>          
+  +",velocity-kms"                                                                                      //>
   );                                                                                                    //> .
   let                                   dNoon                   = 0;                                    //>
   let                                   nEnd                    = nDay + 365 + 7;                       //> A year and a bit of overlap with next year.
-  for( dNoon = nDay; dNoon < nEnd; dNoon++ ){                                                           //> For a number of years (plus a bit of slop)...
+  for( dNoon = nDay; dNoon < nEnd; dNoon++ ){                                                           //> For each day in the year (with a week of extra data)...
    let                                  av                      = avTable_Basics(dNoon);                //>
    sRow =                               av[0];                                                          //>
    let                  dMoonSet_h    = av[1];                                                          //>
    let                  dMoonRise_h   = av[2];                                                          //>
                                                                                                         //> But, if we have a moonrise time, then not a new moon, so...
-   let                                  m                       = mapSelect("Moon");         // NAP();  //> Refresh info about the moon.
+   let                                  m                       = mapSelect("Moon");            NAP();  //> Refresh info about the moon.
    if( dMoonSet_h < 0 ){ dMoonSet_h  = m["set-dhr" ] + 24; }                                            //> MOST ROWS: If still looking for the moonset, then get it now, including day we have skipped in hours.
    sRow += ","+s5(dMoonSet_h);                                                                          //> Output moonset time (may be greater than 24, ie, the next day).
-   core.setJDay( dNoon - 0.5 + dMoonSet_h/24             );   m = mapSelect("Moon");                    //> MOON: At time of moonset...
+
+   core.setJDay( dNoon - 0.5 + dMoonSet_h/24             );                             core.wait(0.1); //>
+                                                              m = mapSelect("Moon");            NAP();  //> MOON: At time of moonset...
    sRow += ","+core.getDate()+","+s5(m["illumination"])                                                 //>
                              +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
-   core.setJDay( dNoon + 0.5                             );   m = mapSelect("Moon");                    //> TIME: At Midnight...
+
+   core.setJDay( dNoon + 0.5                             );                             core.wait(0.1); //> TIME: At Midnight...
+                                                              m = mapSelect("Moon");            NAP();  
    sRow += ","+core.getDate()+","+s5(m["illumination"])                                                 //>
                              +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
-   SetTimeToVegaKiss(     dNoon                          );   m = mapSelect("Moon");                    //> VEGA: When Vega kisses horizon...
+   SetTimeToVegaKiss(     dNoon                          );                             core.wait(0.1);
+                                                              m = mapSelect("Moon");            NAP();  //> VEGA: When Vega kisses horizon...
    sRow += ","+    core.getDate()                                                                       //>
           +","+ s5(m["illumination"               ]) //  = 49.395606994628906                           //> Illumination.
           +","+ s5(m["raJ2000"                    ])                                                    //> Right ascension.
           +","+ s5(m["decJ2000"                   ])                                                    //> Declination.
           ;                                                                                             //>
-   sRow += ","+ s5(m["age"                        ]) // = "7.39"                                        //> OTHER MISC DATA: Days since new moon (as a text string).
+                                                                                                        //> OTHER MISC DATA: 
+   sRow += ","+ s5(m["age"                        ]) // = "7.39"                                        //> Days since new moon (as a text string).
           +","+ s5(m["distance-km"                ]) // =       369768.4086876776                       //> Distance away
           +","+ s5(m["size-dd"                    ]) // =       0.538417844468446                       //> angular size (diameter) in decimal degrees.
           +","+ s5(m["ecliptic-obliquity"         ]) // =       23.43602467002239                       //> Mean ecliptic obliquity of date in decimal degrees. Tilt to ecliptic plane?
@@ -228,7 +243,7 @@ function                                Go_DataTables_OneYear(//////////////////
    ;                                                                                                    //>
    core.output( sRow );                                                                                 //>
   }//for dNoon                                                                                          //>
-  core.saveOutputAs( a_sPath + "table015_"+ a_nGo +".csv" );                                            //> Write results to file system.
+  core.saveOutputAs( a_sPath + a_nGo +".csv" );                                            //> Write results to file system.
 }//Go_DataTables_OneYear//////////////////////////////////////////////////////////////////////////////////>
 
 
@@ -311,10 +326,57 @@ function                                Go_DataTables_OneYear(//////////////////
 //  "subsolar_l"                                  = 270.8518849754954                                   //>
 
 
+  var                   g_iDOTS_sId                             = 4 ;                                   //>
+  const                 g_asDOTS                                =                                       //>
+  ["HR 1656"  ,"HR 1554"   ,"HR 1457"  ,"HR 2905"   ,"HR 1239"  ,"HR 2697"    ,"HR 1256"   ,"HR 2540"   //>
+  ,"HR 1151"  ,"HR 1149"   ,"HR 1203"  ,"HR 1165"   ,"HR 1142"  ,"HR 1156"    ,"HR 2777"   ,"HR 2763"   //> 
+  ,"HR 838"   ,"HR 840"    ,"HR 2615"  ,"HR 617"    ,"HR 2484"  ,"HR 489"     ,"HR 2421"                //>
+  ,"HR 437"   ,"HR 2216"   ,"HR 360"   ,"HR 291"    ,"HR 226"   ,"HR 1791"    ,"HR 392"    ,"HR 2287"   //> 
+  ,"HR 294"   ,"HR 2159"   ,"HR 211"   ,"HR 1990"   ,"HR 1910"  ,"HIP 11767"  ,"HIP 91262" ,"HIP 37279" //> 
+  ,"HIP 36188","HIP 54061" ,"HIP 53910","HIP 746"   ,"HIP 24608","HIP 69673"  ,"HIP 97649" ,"HIP 42911" //> 
+  ,"HIP 49669","HIP 47908" ,"HIP 57632","HIP 65474" ,"HIP 72622","HIP 109074" ,"HIP 107556","HIP 92855" //> 
+  ,"HIP 80763","HIP 80763" ,"Syrma"    ,"Acrab"     ,"Dabih"    ,"Ancha"                                //>
+  ];                                                                                                    //>
+
+
+function                                Go_StarsInfo(/////////////////////////////////////////////////////> Generat info about a list of stars.
+){                                      //////////////////////////////////////////////////////////////////>
+  core.resetOutput();                                                                                   //> Clear output file buffer.
+  Reset();                                                                                              //> Clear Stellarium to known state.
+  core.setObserverLocation( -1.82618827 ,51.17886594 ,0 ,0 ,"Stonehenge" ,"Earth" );                    //> Stonehenge = 51.17886594 ,-1.82618827   Cool location
+  core.setTimezone("LMST" ,1);                                                                          //> "LMST" = Local Mean Solar Time    https://stellarium.org/doc/23.0/classStelMainScriptAPI.html#abc7e6a709ec2670b6581ce4b51db3185
+
+  core.setDate( "2026-12-21T00:00:00" ,"LMST" );                                                NAP();  //> Winter solstice, midnight.
+  var                                   s                       = "";                                   //>
+  s += 'sId'+',Const'+',name'+',name2'+',elatJ2000'+',elongJ2000'+',decJ2000'+',raJ2000'+',vmag';       //>
+  core.output( s );
+  for( let i = 0; i < g_asDOTS.length; i++ ){                                                           //>
+   var                                  sId                     = g_asDOTS[i];                          //>
+   if( "" != sId ){                                                                                     //>
+    var                                 map                     = mapSelect( sId );                     //>
+    s  =  '"'+ sId                     +'"'                                                             //>
+        +',"'+ map["iauConstellation"] +'"'                                                             //>
+        +',"'+ map["localized-name"  ] +'"'                                                             //>
+        +',"'+ map["name"            ] +'"'                                                             //>
+        +',' + map["elatJ2000"       ] + ''                                                             //>
+        +',' + map["elongJ2000"      ] + ''                                                             //>
+        +',' + map["decJ2000"        ] + ''                                                             //>
+        +',' + map["raJ2000"         ] + ''                                                             //>
+        +',' + map["vmag"            ] + ''                                                             //>
+    ;                                                                                                   //>
+    core.output( s );                                                                                   //>
+  }}//if//for i                                                                                         //>
+                                                                                                        //>
+  core.saveOutputAs( g_sPATHfILEoUT + "output.csv" );                                                       //> Write results to file system, same directory as the screen shots.
+}//Go_StarsInfo///////////////////////////////////////////////////////////////////////////////////////////>
+
+
 function                                Go(///////////////////////////////////////////////////////////////> Create screen snapshots of celestial sphere with various features turned on.
 ){                                      //////////////////////////////////////////////////////////////////>
   core.resetOutput();                                                                                   //> Clear output file buffer.
   Reset();                                                                                              //> Clear Stellarium to known state.
+                                                                                                        //>
+//Go_StarsInfo();                                                                                       //> Generat info about a list of stars.
                                                                                                         //>
   core.setObserverLocation( -1.82618827 ,51.17886594 ,0 ,0 ,"Stonehenge" ,"Earth" );                    //> Stonehenge = 51.17886594 ,-1.82618827   Cool location
   core.setTimezone("LMST" ,1);                                                                          //> "LMST" = Local Mean Solar Time    https://stellarium.org/doc/23.0/classStelMainScriptAPI.html#abc7e6a709ec2670b6581ce4b51db3185
@@ -333,15 +395,12 @@ function                                Go(/////////////////////////////////////
   NebulaMgr       .setFlagShow(                 false );                                                //>
   MilkyWay        .setFlagShow(                 false );                                                //> Don't show Milky Way.   https://stellarium.org/doc/24.0/classMilkyWay.html#ac365cf02f2019b6485337a6c48cec5cb   core.setMilkyWayVisible( false );                                                                     //>
                                                                                                         //>
-  var                                   sPATH = "/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> Path to output directory.
-                                                                                                        //>
 // Just do the time-consuming stuff in this Stellarium code, generating CSV files for use by other code...
-  for( let iYear = 1392; iYear < 1400; iYear += 1 ){ Go_DataTables_OneYear( iYear ,sPATH ); }           //>
-  for( let iYear =    0; iYear < 1000; iYear += 1 ){ Go_DataTables_OneYear( iYear ,sPATH ); }           //>
+//for( let iYear = 1392; iYear < 1400; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
+  for( let iYear = 1400; iYear < 2100; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
 }//Go(){}/////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
 Go();                                                                                                   //>
-
 
 //End of file

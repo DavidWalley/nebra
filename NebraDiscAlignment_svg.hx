@@ -1,16 +1,13 @@
 // NebraDiscAlignment_svg.hx - Bodge code to create SVG file for showing Nebra Sky Disc alignments.
 // (c)2024 David C. Walley
 
+// CREATE THE SVG FILE OF ALIGNMENTS:
 // In UBUNTU terminal (ctrl+alt+T): This code file (in this path) is pre-processed and run using the following, (some hard-coding follows):
-// cd ~/Desktop/AAA/hey_diddle/code/nebra && haxe --neko TEMP_neko.n --main NebraDiscAlignment_svg && neko TEMP_neko.n && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
+// cd ~/Desktop/AAA/NEBRA/code/nebra      && haxe --neko TEMP_neko.n --main NebraDiscAlignment_svg && neko TEMP_neko.n && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
 
-// Start Stellarium.
-// In a UBUNTU terminal (ctrl+alt+T):
-// cd ~/Desktop/AAA/hey_diddle/code/lunascope  && haxe --neko TEMP_neko.n --main NebraDiscAlignment_svg && neko TEMP_neko.n && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
 
-// cd ~/Desktop/AAA/hey_diddle/lunascope && convert scr_*.png -fuzz 25% -transparent black trans.png
-
-final                 _sPATHsVGoUT     :String ="/home/dave/Desktop/AAA/hey_diddle/lunascope/"        ; //> ???Hard-coded? Directory with images.
+final                   _sPATHsVGoUT    :String = "/home/dave/Desktop/AAA/NEBRA/code/nebra/alignment/"; //> ???Hard-coded? Directory with images, BUT ALSO the output directory.
+final                   _sSVGoUT        :String = "lunascope_align.svg";                                //> File name of result.
 
 
 class NebraDiscAlignment_svg /////////////////////////////////////////////////////////////////////////////> For a stellarium script:
@@ -136,7 +133,21 @@ class NebraDiscAlignment_svg ///////////////////////////////////////////////////
        +  ' inkscape:window-x="0"'         +' inkscape:window-y="0"'                                    //>
        +  ' inkscape:window-maximized="1"' +' inkscape:current-layer="'        +'layer'+ sId +'"'       //>
        +  '/>'                                                                                          //>
-       +  '<defs id="defs2" />'                                                                         //>
+//     +  '<defs id="defs2" />'                                                                         //>
+       +  '<defs id="defs2">'                                   
+       +   '<filter id="'+ "filterWhiteLines" +'"'                                                      //> Filter to turn lines into bright lines.
+       +   ' style="color-interpolation-filters:sRGB;"'
+       +   ' inkscape:label="Colorize" x="0" y="0" width="1" height="1"'
+       +   '>'
+       +    '<feComposite   in2="SourceGraphic" operator="arithmetic" k1="0" k2="9.6" result="composite1" id="feComposite3422" />'
+       +    '<feColorMatrix in="composite1" values="1" type="saturate" result="colormatrix1" id="feColorMatrix3424" />'
+       +    '<feFlood flood-opacity="1" flood-color="rgb(240,255,197)" result="flood1" id="feFlood3426" />'
+       +    '<feBlend in="flood1" in2="colormatrix1" mode="lighten" result="blend1" id="feBlend3428" />'
+       +    '<feBlend in2="blend1" mode="screen" result="blend2" id="feBlend3430" />'
+       +    '<feColorMatrix in="blend2" values="1" type="saturate" result="colormatrix2" id="feColorMatrix3432" />'
+       +    '<feComposite in="colormatrix2" in2="SourceGraphic" operator="in" k2="1" result="composite2" id="feComposite3434" />'
+       +   '</filter>'
+       +  '</defs>'
  ;                                                                                                      //>
  }//sSvgFile_/////////////////////////////////////////////////////////////////////////////////////////////>
  function               sSvgFile_close(///////////////////////////////////////////////////////////////////> End the SVG file.
@@ -173,43 +184,57 @@ class NebraDiscAlignment_svg ///////////////////////////////////////////////////
                         a_sFile         :String                                                         //>
  ,                      a_sLayer        :String                                                         //> Layer name in Inkscape.
  ,                      a_sView         :String                                                         //> View name in Inkscape.
+ ,                      a_sAttribute    :String                                                         //> Extra tag attribute.
  )                                      :String {/////////////////////////////////////////////////////////>
   var                                   sSvg                    = "";                                   //>
   sSvg += sSvgLayer_g( a_sLayer +"_"+ a_sView ,"" );                                                    //>
 //sSvg += '<g id="layer'+ iId() +'" inkscape:label="scr_'+ a_sPass +'" inkscape:groupmode="layer"'      //>
 //       +' style="'                    +'display:none' +';opacity:0.5"'                                //>
 //       +'>';                                                                                          //>
-  sSvg +=  '<image id="image'+ iId() +'"'                                                               //>
-         + ' xlink:href="'   +'./'+ a_sFile   +'"';                                                     //> Same directory as SVG output file, i.e. _sPATHsVGoUT
-       //+ ' width="'                       + 356.3036     +'"'                                         //> For stereoscopic projection
-       //+ ' height="'                      + 196.9876     +'"'                                         //>
-       //+ ' x="'                           + -75.61064    +'"'                                         //>
-       //+ ' y="'                           + -170.2824    +'"'                                         //>
-       //+ ' transform="rotate('            + 60.89087     +')"'                                        //>
-       //+ ' inkscape:transform-center-x="' + 0.03870656   +'"'                                         //>
-       //+ ' inkscape:transform-center-y="' + 0.1698319    +'"'                                         //>
-  if( "south" == a_sView ){                                                                             //> For stereoscopic projection, looking South.
-   sSvg += ' width="'                       + 857.5414     +'"'                                         //> Co-ordinates to move Stellarium generated images to align with disc photo.
-          +' height="'                      + 474.1041     +'"'                                         //>
-          +' x="'                           + -253.2147    +'"'                                         //>
-          +' y="'                           + -220.8342    +'"'                                         //>
-          +' transform="rotate('            + 40.46659     +')"'                                        //>
-          +' inkscape:transform-center-x="' + 35.14639     +'"'                                         //>
-          +' inkscape:transform-center-y="' + 6.423362     +'"'                                         //>
+  var                   dX              :Float                  = 0.;
+  var                   dY              :Float                  = 0.;
+  for( iPass in 0...4 ){                                                                                //>
+   switch( iPass ){
+   case 0: dX = 0. ; dY = 0. ;
+   case 1: dX = 0. ; dY = 0.2;
+   case 2: dX = 0.2; dY = 0. ;
+   case 3: dX = 0.2; dY = 0.2;
+   }//switch
+   sSvg +=  '<image id="image'+ iId() +'"'                                                              //>
+          + ' '+ a_sAttribute                                                                           //> 'style="filter:url(#'+ "filterWhiteLines" +')"'
+          + ' xlink:href="'   +'./'+ a_sFile   +'"';                                                    //> Same directory as SVG output file, i.e. _sPATHsVGoUT
+        //+ ' width="'                       + 356.3036     +'"'                                        //> For stereoscopic projection
+        //+ ' height="'                      + 196.9876     +'"'                                        //>
+        //+ ' x="'                           + -75.61064    +'"'                                        //>
+        //+ ' y="'                           + -170.2824    +'"'                                        //>
+        //+ ' transform="rotate('            + 60.89087     +')"'                                       //>
+        //+ ' inkscape:transform-center-x="' + 0.03870656   +'"'                                        //>
+        //+ ' inkscape:transform-center-y="' + 0.1698319    +'"'                                        //>
+   if( "south" == a_sView ){                                                                            //> For stereoscopic projection, looking South.
+    sSvg += ' width="'                       + 857.5414        +'"'                                     //> Co-ordinates to move Stellarium generated images to align with disc photo.
+           +' height="'                      + 474.1041        +'"'                                     //>
+           +' x="'                           + (-253.2147 +dX) +'"'                                     //>
+           +' y="'                           + (-220.8342 +dY) +'"'                                     //>
+           +' transform="rotate('            + 40.46659        +')"'                                    //>
+           +' inkscape:transform-center-x="' + 35.14639        +'"'                                     //>
+           +' inkscape:transform-center-y="' + 6.423362        +'"'                                     //>
+          ;                                                                                             //>
+   }else{// "pleiades"                                                                                  //>
+    sSvg += ' width="'                       + 382.0232        +'"'                                     //> For stereoscopic projection
+           +' height="'                      + 211.207         +'"'                                     //>
+           +' x="'                           + (-88.46108 +dX) +'"'                                     //>
+           +' y="'                           + (-177.3837 +dY) +'"'                                     //>
+           +' transform="rotate('            + 60.89087        +')"'                                    //>
+           +' inkscape:transform-center-x="' + 0.04149154      +'"'                                     //>
+           +' inkscape:transform-center-y="' + 0.1820972       +'"'                                     //>
+          ;                                                                                             //>
+   }//if                                                                                                //>
+   sSvg +=  ' preserveAspectRatio="'         + "none"          +'"'                                     //>
+          + '/>'                                                                                        //>
          ;                                                                                              //>
-  }else{// "pleiades"                                                                                   //>
-   sSvg += ' width="'                       + 382.0232     +'"'                                         //> For stereoscopic projection
-          +' height="'                      + 211.207      +'"'                                         //>
-          +' x="'                           + -88.46108    +'"'                                         //>
-          +' y="'                           + -177.3837    +'"'                                         //>
-          +' transform="rotate('            + 60.89087     +')"'                                        //>
-          +' inkscape:transform-center-x="' + 0.04149154   +'"'                                         //>
-          +' inkscape:transform-center-y="' + 0.1820972    +'"'                                         //>
-         ;                                                                                              //>
-  }//if                                                                                                 //>
-  sSvg +=  ' preserveAspectRatio="'         + "none"       +'"'                                         //>
-         + '/>'                                                                                         //>
-        ;                                                                                               //>
+   if( "lines" != a_sLayer ){                                                                    break;}//>
+  }//for iPass                                                                                          //>
+                                                                                                        //>
   sSvg += '</g>';                                                                                       //>
  return sSvg;                                                                                           //>
  }//New_sSvgLayer_Image///////////////////////////////////////////////////////////////////////////////////>
@@ -412,16 +437,18 @@ class NebraDiscAlignment_svg ///////////////////////////////////////////////////
  function               sNew_SvgSkyDiscLayers(////////////////////////////////////////////////////////////> Create SVG file showing alignments between Nebra Sky Disk and starts near Taurus and Gemini.
  )                                      :String {/////////////////////////////////////////////////////////>
   var                                   r_s                     = "";                                   //>
-  r_s = sNew_SvgLayer_Image( "trans_scr_"+"stars"+"_"+"south"   +".png"   ,"stars" ,"south"    ) + r_s; //> Add layer containing an image (generated by stellarium script lunascope.ssc) - stars, looking south.
-  r_s = sNew_SvgLayer_Image( "trans_scr_"+"lines"+"_"+"south"   +".png"   ,"lines" ,"south"    ) + r_s; //> " - constellation lines,
-  r_s = sNew_SvgLayer_Image( "trans_scr_"+"path" +"_"+"south"   +".png"   ,"path"  ,"south"    ) + r_s; //> " - Moon's ecliptic
-  r_s = sNew_SvgLayer_Image( "trans_scr_"+"dots" +"_"+"south"   +".png"   ,"dots"  ,"south"    ) + r_s; //> " - stars believed to be shown on Nebra Sky Disk,
-  r_s = sNew_SvgLayer_Image(       "scr_"+"art"  +"_"+"south"   +".png"   ,"art"   ,"south"    ) + r_s; //> " - constellation artwork.
-  r_s = sNew_SvgLayer_Image( "trans_scr_"+"stars"+"_"+"pleiades"+".png"   ,"stars" ,"pleiades" ) + r_s; //> " - Stars, when looking at the Pleiades...
-  r_s = sNew_SvgLayer_Image( "trans_scr_"+"lines"+"_"+"pleiades"+".png"   ,"lines" ,"pleiades" ) + r_s; //> " - constellation lines,
-  r_s = sNew_SvgLayer_Image( "trans_scr_"+"path" +"_"+"pleiades"+".png"   ,"path"  ,"pleiades" ) + r_s; //> " - Moon's ecliptic
-  r_s = sNew_SvgLayer_Image( "trans_scr_"+"dots" +"_"+"pleiades"+".png"   ,"dots"  ,"pleiades" ) + r_s; //> " - stars believed to be shown on Nebra Sky Disk,
-  r_s = sNew_SvgLayer_Image(       "scr_"+"art"  +"_"+"pleiades"+".png"   ,"art"   ,"pleiades" ) + r_s; //> " - constellation artwork.
+  r_s = sNew_SvgLayer_Image( "trans_scr_"+"stars"+"_"+"south"   +".png"  ,"stars" ,"south"   ,"") +r_s; //> Add layer containing an image (generated by stellarium script lunascope.ssc) - stars, looking south.
+  r_s = sNew_SvgLayer_Image( "trans_scr_"+"lines"+"_"+"south"   +".png"  ,"lines" ,"south"              //>
+                                                ,'style="filter:url(#'+ "filterWhiteLines" +')"') +r_s; //> " - constellation lines,
+  r_s = sNew_SvgLayer_Image( "trans_scr_"+"path" +"_"+"south"   +".png"  ,"path"  ,"south"   ,"") +r_s; //> " - Moon's ecliptic
+  r_s = sNew_SvgLayer_Image( "trans_scr_"+"dots" +"_"+"south"   +".png"  ,"dots"  ,"south"   ,"") +r_s; //> " - stars believed to be shown on Nebra Sky Disk,
+  r_s = sNew_SvgLayer_Image(       "scr_"+"art"  +"_"+"south"   +".png"  ,"art"   ,"south"   ,"") +r_s; //> " - constellation artwork.
+  r_s = sNew_SvgLayer_Image( "trans_scr_"+"stars"+"_"+"pleiades"+".png"  ,"stars" ,"pleiades","") +r_s; //> " - Stars, when looking at the Pleiades...
+  r_s = sNew_SvgLayer_Image( "trans_scr_"+"lines"+"_"+"pleiades"+".png"  ,"lines" ,"pleiades"           //>
+                                                ,'style="filter:url(#'+ "filterWhiteLines" +')"') +r_s; //> " - constellation lines,
+  r_s = sNew_SvgLayer_Image( "trans_scr_"+"path" +"_"+"pleiades"+".png"  ,"path"  ,"pleiades","") +r_s; //> " - Moon's ecliptic
+  r_s = sNew_SvgLayer_Image( "trans_scr_"+"dots" +"_"+"pleiades"+".png"  ,"dots"  ,"pleiades","") +r_s; //> " - stars believed to be shown on Nebra Sky Disk,
+  r_s = sNew_SvgLayer_Image(       "scr_"+"art"  +"_"+"pleiades"+".png"  ,"art"   ,"pleiades","") +r_s; //> " - constellation artwork.
   r_s = sNew_SvgLayer_Holes(                                                                   ) + r_s; //> Add layer to SVG file, showing the perimeter holes.
   r_s = sNew_SvgLayers_Dots(                                                                   ) + r_s; //> Add layers to SVG file, highlighting dots believed to be in various sets.
   r_s = sNew_SvgLayer_Numbers(                                                                 ) + r_s; //> Add layer to SVG file, containing numbers for the dots.
@@ -440,7 +467,7 @@ class NebraDiscAlignment_svg ///////////////////////////////////////////////////
   sSvg += sNew_SvgSkyDiscLayers();                                                                      //> Create SVG for showing constellation alignments on Nebra Sky Disc.
                                                                                                         //>
   try{                                                                                                  //>
-   sys.io.File.saveContent( _sPATHsVGoUT +'lunascope.svg' ,sSvg );                                      //> Save the generated SVG file.
+   sys.io.File.saveContent( _sPATHsVGoUT +_sSVGoUT ,sSvg );                                             //> Save the generated SVG file.
   }catch( e:haxe.Exception ){                                                                           //> If there is a problem, then
    trace(e.message);   trace(e.stack);                                                                  //> report it
   }//try                                                                                                //> .

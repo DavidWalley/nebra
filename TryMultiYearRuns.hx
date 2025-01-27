@@ -4,7 +4,7 @@
 // This code file is pre-processed and run using the following, in a UBUNTU terminal (ctrl+alt+T) (some hard-coding follows):
 // cd ~/Desktop/AAA/hey_diddle/code/nebra                                                               # Where I keep this file.
 // timedatectl set-timezone Africa/Abidjan && haxe --neko TEMP_neko.n --main TryMultiYearRuns && neko TEMP_neko.n && timedatectl set-timezone America/Chicago
-
+// Output is to stdout (trace()).
 
 class TryMultiYearRuns ///////////////////////////////////////////////////////////////////////////////////> For a stellarium script:
 {/////////////////////////////////////////////////////////////////////////////////////////////////////////>
@@ -249,7 +249,7 @@ class TryMultiYearRuns /////////////////////////////////////////////////////////
   case "Long": d_360 =  90 - Std.parseFloat( asDaysData[iRa ] ); if( 180 < d_360 ){ d_360 -= 360; }     //> See if full moon has crossed 90 degree right ascension.
   case "Lon2": d_360 = 120 - Std.parseFloat( asDaysData[iRa ] ); if( 180 < d_360 ){ d_360 -= 360; }     //> See if full moon has crossed 120 degree right ascension.
   }//switch                                                                                             //>
-  r_s += " ,ovr:,"+ (d_360+"     ").substr(0,5); // +",?,"+ n_jd;                                       //>
+  r_s += " ,ovr:,"+ (d_360+"     ").substr(0,5); // +",?,"+ n_jd;                                       //> Amount over the Canis Minor line.
 return [r_s ,d_360 ,n_jd];                                                                              //>
  }//avWinterLooks_Row_Over_Full///////////////////////////////////////////////////////////////////////////>
 

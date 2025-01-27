@@ -2,15 +2,14 @@
 // (c)2024 David C. Walley
 
 // This code file is pre-processed and run using the following, in a UBUNTU terminal (ctrl+alt+T) (some hard-coding follows):
-// cd ~/Desktop/AAA/hey_diddle/code/nebra                                                               # Where I keep this file.
-// timedatectl set-timezone Africa/Abidjan && haxe --neko TEMP_neko.n --main TestProcedures && neko TEMP_neko.n DUMMYdATA && timedatectl set-timezone America/Chicago
+// cd ~/Desktop/AAA/NEBRA/code/nebra && timedatectl set-timezone Africa/Abidjan && haxe --neko TEMP_neko.n --main TestProcedures && neko TEMP_neko.n DUMMYdATA && timedatectl set-timezone America/Chicago
 
 
 class TestProcedures /////////////////////////////////////////////////////////////////////////////////////> For a stellarium script:
 {/////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
-  var                   _sPATHdATA     :String ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> ???Hard-coded? Pre-calculated data files.
-  var                   _sPATHoUT      :String ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> ???Hard-coded? Results output to here.
+  var                   _sPATHdATA     :String ="/home/dave/Desktop/AAA/NEBRA/code/nebra/trials/";      //> ???Hard-coded? Pre-calculated data files.
+//var                   _sPATHoUT      :String ="/home/dave/Desktop/AAA/NEBRA/code/nebra/trials/";      //> ???Hard-coded? Results output to here.
 
   var                   _dYEAR_days      :Float                 = 365.242189;                           //> Mean tropical year (Laskar's expression)
   var                   _dMONTH_days     :Float                 = 29 + 12/24 + 44/60/24 + 2.9/60/60/24; //> Synodic month.
@@ -461,7 +460,7 @@ return [r_s ,d_360 ,n_jd];                                                      
   var                   dOver           :Float                  = 0.;                                   //> Over-line amount (between Gemini and Taurus)
   var                   nFullMoon_jd    :Int                    = 0 ;                                   //> Julian day of big night - offset from some date-of-the-Gregorian-year to prevent discontinuity of new year.
 //var                   nNextYear_days  :Int                    = 0 ;                                   //> number of days till next run of procedure.
-  for( dYearRun in 0...30 ){                                                                           //> Run observations for 100 years in a row  (hoping they converge on a winter date)...
+  for( dYearRun in 0...30 ){                                                                            //> Run observations for 100 years in a row  (hoping they converge on a winter date)...
    if( 0 == nNights_days ){                                                                             //> If the math-based procedure is being tried, then
     dMoons_days += 12*_dMONTH_days - _dYEAR_days;                                                       //>
     if( dMoons_days < 0 ){ dOver =  1; dMoons_days += _dMONTH_days; }                                   //>
@@ -494,10 +493,10 @@ return [r_s ,d_360 ,n_jd];                                                      
     if(    d < dMin ){ dMin = d; }                                                                      //>
     if( dMax < d    ){ dMax = d; }                                                                      //>
     sPattern      += sLeap;                                                                             //>
-    sReport       += "\nsRow: "+ sRow.substr(0,50) +"   d:"+ d;                                                 //>
+    sReport       += "\nsRow: "+ sRow.substr(0,50) +"   d:"+ d;                                         //>
    }//if                                                                                                //>
   }//for dYearRun                                                                                       //>
-  trace( nNights_days  +" "+  sWhenGibbous  +" "+  sWhereLook
+  trace( nNights_days  +" "+  sWhenGibbous  +" "+  sWhereLook                                           //> Output to stdout
         +"\n |"+ sPattern.substr(    0 ,19) +"|"                                                        //>
         +"\n |"+ sPattern.substr(   19 ,19) +"|"                                                        //>
         +"\n |"+ sPattern.substr(2 *19 ,19) +"|"                                                        //>
@@ -523,7 +522,7 @@ return [r_s ,d_360 ,n_jd];                                                      
   );                                                                                                    //>
   trace( sReport );                                                                                     //>
 //  }//for dYear0                                                                                       //>
- }//Go_MultiYearRun//////////////////////////////////////////////////////////////////////////////////////////////////>
+ }//Go_MultiYearRun///////////////////////////////////////////////////////////////////////////////////////>
 
 
  function               Go(///////////////////////////////////////////////////////////////////////////////> Main execution starts here.
