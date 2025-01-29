@@ -193,17 +193,17 @@ function                                Go_DataTables_OneYear(//////////////////
    let                                  m                       = mapSelect("Moon");            NAP();  //> Refresh info about the moon.
    if( dMoonSet_h < 0 ){ dMoonSet_h  = m["set-dhr" ] + 24; }                                            //> MOST ROWS: If still looking for the moonset, then get it now, including day we have skipped in hours.
    sRow += ","+s5(dMoonSet_h);                                                                          //> Output moonset time (may be greater than 24, ie, the next day).
-
+                                                                                                        //>
    core.setJDay( dNoon - 0.5 + dMoonSet_h/24             );                             core.wait(0.1); //>
                                                               m = mapSelect("Moon");            NAP();  //> MOON: At time of moonset...
    sRow += ","+core.getDate()+","+s5(m["illumination"])                                                 //>
                              +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
-
+                                                                                                        //>
    core.setJDay( dNoon + 0.5                             );                             core.wait(0.1); //> TIME: At Midnight...
-                                                              m = mapSelect("Moon");            NAP();  
+                                                              m = mapSelect("Moon");            NAP();  //>
    sRow += ","+core.getDate()+","+s5(m["illumination"])                                                 //>
                              +","+s5(m["raJ2000"     ])+","+s5(m["decJ2000"]);                          //>
-   SetTimeToVegaKiss(     dNoon                          );                             core.wait(0.1);
+   SetTimeToVegaKiss(     dNoon                          );                             core.wait(0.1); //>
                                                               m = mapSelect("Moon");            NAP();  //> VEGA: When Vega kisses horizon...
    sRow += ","+    core.getDate()                                                                       //>
           +","+ s5(m["illumination"               ]) //  = 49.395606994628906                           //> Illumination.
@@ -243,7 +243,7 @@ function                                Go_DataTables_OneYear(//////////////////
    ;                                                                                                    //>
    core.output( sRow );                                                                                 //>
   }//for dNoon                                                                                          //>
-  core.saveOutputAs( a_sPath + a_nGo +".csv" );                                            //> Write results to file system.
+  core.saveOutputAs( a_sPath + a_nGo +".csv" );                                                         //> Write results to file system.
 }//Go_DataTables_OneYear//////////////////////////////////////////////////////////////////////////////////>
 
 
@@ -397,7 +397,9 @@ function                                Go(/////////////////////////////////////
                                                                                                         //>
 // Just do the time-consuming stuff in this Stellarium code, generating CSV files for use by other code...
 //for( let iYear = 1392; iYear < 1400; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
-  for( let iYear = 1400; iYear < 2100; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
+//for( let iYear = 1400; iYear < 2100; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
+  for( let iYear =  400; iYear < 1400; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
+  for( let iYear = 1700; iYear < 2100; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
 }//Go(){}/////////////////////////////////////////////////////////////////////////////////////////////////>
 
 

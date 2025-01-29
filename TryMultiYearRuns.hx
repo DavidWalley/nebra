@@ -483,7 +483,7 @@ return [r_s ,d_360 ,r_jd];                                                      
  }//avWinterLooks_Row_Over_Full///////////////////////////////////////////////////////////////////////////>
 
 
- function               New_MultiYearRun(//////////////////////////////////////////////////////////////////>
+ function               New_MultiYearRun(/////////////////////////////////////////////////////////////////>
                         a_jd            :Int             //= Math.floor( dJDayOfYms_jd( 1000,12,31 ) ); //> Convert Gregorian date to a Julian Day, the number of days that have passed since the Julian Date Epoch.  Gregorian Year,
  ,                      a_nNights       :Int                                                            //> Parameters to test in this pass - the count from first quarter moon to full.
  ,                      a_sWhenGibbous  :String                                                         //> When during night to apply the crescent/gibbous test.
@@ -550,9 +550,9 @@ return [r_s ,d_360 ,r_jd];                                                      
   //                                                    ###4="Moon", "MidN", or "Vega".                              //>
   //            ###0   ,###1      ,###3                ,###4,###5                ,###7  ,###8    ,###9       ,###10  //> ,###6   
   r_s = "\nLen ,JDay   ,LastMonth ,GibbousMoonsetLMST  ,What,WhenBigNight        ,Declin,RtAscen ,OverL ,L   ,stats" //> ,illumin
-       + r_s;                                                                                   //>
-  trace(""                                                                                            //>
-  +"\n\n\nRun for: "+ a_nNights +" when:"+ a_sWhenGibbous +" look:"+ a_sWhereLook                             //>
+       + r_s;                                                                                           //>
+  trace(""                                                                                              //>
+  +"\n\n\nRun for: "+ a_nNights +" when:"+ a_sWhenGibbous +" look:"+ a_sWhereLook                       //>
                                   +" min:"+ a_nMinJump_yr +" max:"+ a_nMaxJump_yr +" years:"+ a_nRun_yr //> Show pattern in a 19-year grid:
   +(   !_bYEARLY  ?"" :r_s    )                                                                         //>
   +(   !_bPATTERN ?"" :( "\n |"+ sPattern.substr(    0 ,19) +"|"                                        //>
@@ -582,38 +582,11 @@ return [r_s ,d_360 ,r_jd];                                                      
  function               new(//////////////////////////////////////////////////////////////////////////////> Construct a new object of this class (and run appropriate processing).
  )                                      :Void {///////////////////////////////////////////////////////////>
   if( 0 != Go_TESTs() ){                                                                        return;}//>
-
-//.  8 Moon Long min:-99999 max:99999 years:132,  Max-min,59.26    ,Ave,12-05 14:24:27 ,StDev, 13.52       //> Results of various trials (TODO - RERUN)
-//.  8 MidN Lon2 min:-99999 max:99999 years:132,  Max-min,61.32    ,Ave,01-08 21:41:10 ,StDev, 13.38       //>
-//.  8 Vega Lon2 min:-99999 max:99999 years:132,  Max-min,61.78    ,Ave,01-17 14:00:50 ,StDev, 13.34       //>
-//.  8 Moon Lon2 min:-99999 max:99999 years:132,  Max-min,66.77    ,Ave,01-04 02:00:50 ,StDev, 13.24       //>
-//.  8 MidN Long min:-99999 max:99999 years:132,  Max-min,59.65    ,Ave,12-07 13:01:49 ,StDev, 13.15       //>
-//.  7 Moon Lon2 min:-99999 max:99999 years:132,  Max-min,62.78    ,Ave,01-18 00:50:01 ,StDev, 12.73       //>
-//.  8 Vega Long min:-99999 max:99999 years:132,  Max-min,55.74    ,Ave,12-17 16:57:53 ,StDev, 12.54       //>
-//.  7 MidN Long min:-99999 max:99999 years:132,  Max-min,58.19    ,Ave,12-19 15:11:40 ,StDev, 11.95       //>
-//.  7 MidN Lon2 min:-99999 max:99999 years:132,  Max-min,55.74    ,Ave,01-22 03:47:04 ,StDev, 11.90       //>
-//.  7 Vega Lon2 min:-99999 max:99999 years:132,  Max-min,56.13    ,Ave,01-29 21:52:58 ,StDev, 11.85       //>
-//.  7 Moon Long min:-99999 max:99999 years:132,  Max-min,51.54    ,Ave,12-18 15:47:04 ,StDev, 11.83       //>
-//.  7 Vega Long min:-99999 max:99999 years:132,  Max-min,52.14    ,Ave,12-30 00:02:48 ,StDev, 11.81       //>
-                                                                                                           //>
-//.  8 MidN Cani min:-99999 max:99999 years:132,  Max-min,65.91    ,Ave,12-14 13:37:14 ,StDev, 14.16       //>
-//.  8 Moon Cani min:-99999 max:99999 years:132,  Max-min,63.85    ,Ave,12-12 20:53:57 ,StDev, 14.15       //>
-//.  8 Vega Cani min:-99999 max:99999 years:132,  Max-min,62.78    ,Ave,12-24 00:26:25 ,StDev, 13.35       //>
-//.  7 Moon Cani min:-99999 max:99999 years:132,  Max-min,59.65    ,Ave,12-24 11:27:24 ,StDev, 13.25       //>
-//.  7 Vega Cani min:-99999 max:99999 years:132,  Max-min,63.99    ,Ave,01-05 01:25:26 ,StDev, 12.97       //>
-//.  7 MidN Cani min:-99999 max:99999 years:132,  Max-min,59.65    ,Ave,12-24 23:03:47 ,StDev, 12.96       //>
-                                                                                                           //>
-//.  7 Vega Cani min:     1 max:99999 years:132,  Max-min,57.74    ,Ave,01-01 15:35:16 ,StDev, 11.17       //>
-//.  7 Vega Cani min:     1 max:    2 years:132,  Max-min,45.43    ,Ave,01-11 02:00:50 ,StDev, 10.09       //> <-- Use this one!
-//.  0 Math      min:-99999 max:99999 years:132,  Max-min,28.46    ,Ave,12-21 22:18:43 ,StDev,  8.54       //>
                                                                                                         //> Main execution starts here.
   New_ReadData();                                                                                       //> READING DATA:
                                                                                                         //> RUNNING TRIALS:
-
-  //                startWatch                               ,days ,a_sWhenGibbous ,a_sWhereLook ,Min_yr,nMax_yr ,a_nRun_yr
-  New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,7    ,"Vega"       ,"Cani"     ,1     ,2       ,150     );
-  New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,8    ,"Vega"       ,"Cani"     ,1     ,2       ,150     );
-
+  New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,7 ,"Vega" ,"Cani" ,1 ,2 ,150 );            //>
+  New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,8 ,"Vega" ,"Cani" ,1 ,2 ,150 );            //>
   trace("Done");                                                                                        //>
  }//new///////////////////////////////////////////////////////////////////////////////////////////////////>
 
