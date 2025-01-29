@@ -2,7 +2,7 @@
 // (c)2024 David C. Walley
 
 // This code file is pre-processed and run using the following, in a UBUNTU terminal (ctrl+alt+T) (some hard-coding follows):
-// cd ~/Desktop/AAA/hey_diddle/code/nebra                                                               # Where I keep this file.
+// cd ~/Desktop/AAA/NEBRA/code/nebra                                                                    # Where I keep this file.
 // timedatectl set-timezone Africa/Abidjan && haxe --neko TEMP_neko.n --main TryMultiYearRuns && neko TEMP_neko.n && timedatectl set-timezone America/Chicago
 // Output is to stdout (trace()).
 
@@ -13,32 +13,31 @@ class TryMultiYearRuns /////////////////////////////////////////////////////////
   var           _bPATTERN               :Bool                   = true ;                                //> Graphic for leap-year pattern.
   var           _bSTATS                 :Bool                   = true ;                                //>
 
-  var                   _sPATHdATA     :String ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> ???Hard-coded? Pre-calculated data files.
-  var                   _sPATHoUT      :String ="/home/dave/Desktop/AAA/hey_diddle/code/nebra/trials/"; //> ???Hard-coded? Results output to here.
+  var                   _sPATHdATA     :String = "/home/dave/Desktop/AAA/NEBRA/code/nebra/daily_data/"; //> ???Hard-coded? Pre-calculated data files.
+  var                   _sPATHoUT      :String = "/home/dave/Desktop/AAA/NEBRA/code/nebra/daily_data/"; //> ???Hard-coded? Results output to here.
 
   var                   _dYEAR_days      :Float                 = 365.242189;                           //> Mean tropical year (Laskar's expression)
   var                   _dMONTH_days     :Float                 = 29 + 12/24 + 44/60/24 + 2.9/60/60/24; //> Synodic month.
   var                   _dGREGORIANePOCH :Float                 = 1721425.5;                            //> ??? https://dzucconi.github.io/calendrical/docs/calendrical.calendar.constants.html
-
   var                   _mapasDaysData                          = new Map<String,Array<String>>();      //> Table of data for Sun, Moon and Vega for each day (night), read from files.
-  var                    _iDAYSdATA_sDate            :Int       =  0;                                   //> Table column indexes. [2000-02-15T12:00:00      First cell is nYear as text in ISO format yyyy-mm-dd.
-  var                    _iDAYSdATA_nDay_jd          :Int       =  1;                                   //>                       ,2451590                  Numeric version of key.
-  var                    _iDAYSdATA_dSunSet_h        :Int       =  2;                                   //>                       ,17.242222222222225       Hours (UTC, since last midnight)
-  var                    _iDAYSdATA_dSunRise_h       :Int       =  3;                                   //>                       ,31.211111111111112       24+ because this is the number of hours from UTC start of day, to end of one continuous night.
-  var                    _iDAYSdATA_dMoonRise_h      :Int       =  4;                                   //>                       ,12.511944444444444       Rises just after noon in this case
-  var                    _iDAYSdATA_dMoonSet_h       :Int       =  5;                                   //>                       ,28.874722222222225       24+ because this is the number of hours from UTC start of day, to moonset during the night.
-  var                    _iDAYSdATA_Moon_sDate       :Int       =  6;                                   //>                       ,2000-02-16T04:52:29      Moonset time
-  var                    _iDAYSdATA_Moon_dLit_100    :Int       =  7;                                   //>                       ,83.7523193359375         83% - we missed 1st quarter moon.
-  var                    _iDAYSdATA_Moon_dRa         :Int       =  8;                                   //>                       ,99.84598216989706
-  var                    _iDAYSdATA_Moon_dDec        :Int       =  9;                                   //>                       ,20.129735102040208
-  var                    _iDAYSdATA_MidN_sDate       :Int       = 10;                                   //>                       ,2000-02-16T00:00:00     Earlier at midnight...
-  var                    _iDAYSdATA_MidN_dLit_100    :Int       = 11;                                   //>                       ,82.00177001953125       1% less illumination
-  var                    _iDAYSdATA_MidN_dRa         :Int       = 12;                                   //>                       ,96.78695239100111       3 degrees movement 5 hours?
-  var                    _iDAYSdATA_MidN_dDec        :Int       = 13;                                   //>                       ,20.314673377009978
-  var                    _iDAYSdATA_Vega_sDate       :Int       = 14;                                   //>                       ,2000-02-15T20:58:59
-  var                    _iDAYSdATA_Vega_dLit_100    :Int       = 15;                                   //>                       ,81.1370849609375
-  var                    _iDAYSdATA_Vega_dRa         :Int       = 16;                                   //>                       ,95.28642241319756       5 degrees movement in 8 hours?
-  var                    _iDAYSdATA_Vega_dDec        :Int       = 17;                                   //>                       ,20.313803702885604
+  var                    _iDAYSdATA_sDate            :Int       =  0;                                   //> Table column indexes in daily data file. [2000-02-15T12:00:00      First cell is nYear as text in ISO format yyyy-mm-dd.
+  var                    _iDAYSdATA_nDay_jd          :Int       =  1;                                   //> ,2451590                  Numeric version of key.
+  var                    _iDAYSdATA_dSunSet_h        :Int       =  2;                                   //> ,17.242222222222225       Hours (UTC, since last midnight)
+  var                    _iDAYSdATA_dSunRise_h       :Int       =  3;                                   //> ,31.211111111111112       24+ because this is the number of hours from UTC start of day, to end of one continuous night.
+  var                    _iDAYSdATA_dMoonRise_h      :Int       =  4;                                   //> ,12.511944444444444       Rises just after noon in this case
+  var                    _iDAYSdATA_dMoonSet_h       :Int       =  5;                                   //> ,28.874722222222225       24+ because this is the number of hours from UTC start of day, to moonset during the night.
+  var                    _iDAYSdATA_Moon_sDate       :Int       =  6;                                   //> ,2000-02-16T04:52:29      Moonset time
+  var                      _iDAYSdATA_Moon_dLit      :Int       =  7;                                   //> ,83.7523193359375         83% - we missed 1st quarter moon.
+  var                      _iDAYSdATA_Moon_dRa       :Int       =  8;                                   //> ,99.84598216989706        
+  var                      _iDAYSdATA_Moon_dDec      :Int       =  9;                                   //> ,20.129735102040208       
+  var                    _iDAYSdATA_MidN_sDate       :Int       = 10;                                   //> ,2000-02-16T00:00:00      Earlier at midnight...
+  var                      _iDAYSdATA_MidN_dLit      :Int       = 11;                                   //> ,82.00177001953125        1% less illumination
+  var                      _iDAYSdATA_MidN_dRa       :Int       = 12;                                   //> ,96.78695239100111        3 degrees movement 5 hours?
+  var                      _iDAYSdATA_MidN_dDec      :Int       = 13;                                   //> ,20.314673377009978       
+  var                    _iDAYSdATA_Vega_sDate       :Int       = 14;                                   //> ,2000-02-15T20:58:59      
+  var                      _iDAYSdATA_Vega_dLit      :Int       = 15;                                   //> ,81.1370849609375         
+  var                      _iDAYSdATA_Vega_dRa       :Int       = 16;                                   //> ,95.28642241319756        5 degrees movement in 8 hours?
+  var                      _iDAYSdATA_Vega_dDec      :Int       = 17;                                   //> ,20.313803702885604
 
 
  function               nMod(/////////////////////////////////////////////////////////////////////////////> Fix the modulus function (% is the remainder function in this language?)
@@ -48,43 +47,51 @@ class TryMultiYearRuns /////////////////////////////////////////////////////////
  return ( Math.floor(a)%m + m )%m;                                                                      //>
  }//nMod//////////////////////////////////////////////////////////////////////////////////////////////////>
 
+ function               cosR(a:Float) :Float{ return Math.cos(         a      ); }
+ function               sinR(a:Float) :Float{ return Math.sin(         a      ); }
+ function               cosD(a:Float) :Float{ return Math.cos( Math.PI*a/180. ); }
+ function               sinD(a:Float) :Float{ return Math.sin( Math.PI*a/180. ); }
+
 
  function               dOverLine_360(////////////////////////////////////////////////////////////////////> Test which side of great circle defined by Canis Minor, a given celestial point is.
-                        a_Qlat_360      :Float                                                          //> Declination and
- ,                      a_Qlong_360     :Float                                                          //> Right Ascension of point to test.
+                        a_latQ_360      :Float                                                          //> Declination and
+ ,                      a_longQ_360     :Float                                                          //> Right Ascension of point to test.
  )                                      :Float{///////////////////////////////////////////////////////////>
- // let                 latA            :Float                  = a_Alat_360 *Math.PI/180;              //> Code to find constants for Procyon (star in Canis Minor). Polar coordinates (latitude and
- // let                 longA           :Float                  = a_Along_360*Math.PI/180;              //> longitude of the first point.
- // let                 xA              :Float                  = Math.cos(latA)*Math.cos(longA);       //>
- // let                 yA              :Float                  = Math.cos(latA)*Math.sin(longA);       //>
- // let                 zA              :Float                  = Math.sin(latA)                ;       //>
-  var                   xA              :Float                  = -0.41812783213741955;                 //> Pre-calculated values for Procyon
-  var                   yA              :Float                  =  0.9038249325942993 ;                 //> "
-  var                   zA              :Float                  =  0.09093738072416822;                 //> ,
- // let                 latB            :Float                  = a_Blat_360 *Math.PI/180;              //> Code to find constants for Gomeisa (star in Canis Minor). Polar coordinates (latitude and
- // let                 longB           :Float                  = a_Blong_360*Math.PI/180;              //> longitude of the second point.
- // let                 xB              :Float                  = Math.cos(latB)*Math.cos(longB);       //>
- // let                 yB              :Float                  = Math.cos(latB)*Math.sin(longB);       //>
- // let                 zB              :Float                  = Math.sin(latB)                ;       //>
- // core.output( "dOverLine_360, "+ xA +", "+  yA +", "+  zA );                                         //>
- // core.output( "dOverLine_360, "+ xB +", "+  yB +", "+  zB );                                         //>
-  var                   xB              :Float                  = -0.36737866131120084;                 //> Pre-calculated values for Gomeisa
-  var                   yB              :Float                  =  0.91883139318759   ;                 //> "
-  var                   zB              :Float                  =  0.14415890574689555;                 //> .
-                                                                                                        //>
-  var                   latQ            :Float                  = a_Qlat_360 *Math.PI/180;              //> Polar coordinates (latitude/declination and
-  var                   longQ           :Float                  = a_Qlong_360*Math.PI/180;              //> longitude/right-ascension) of the point.
-  var                   xQ              :Float                  = Math.cos(latQ)*Math.cos(longQ);       //> Convert to 3-D co-ords of unit vector
-  var                   yQ              :Float                  = Math.cos(latQ)*Math.sin(longQ);       //> "
-  var                   zQ              :Float                  = Math.sin(latQ)                ;       //> .
-  var                   xS              :Float                  =  yA*zB - zA*yB;                       //> a2b3 - a3b2   Cross product.
-  var                   yS              :Float                  =  zA*xB - xA*zB;                       //> a3b1 - a1b3
-  var                   zS              :Float                  =  xA*yB - yA*xB;                       //> a1b2 - a2b1
-  var                   dDotQS          :Float                  =            xS*xQ + yS*yQ + zS*zQ  ;   //>               Dot product.
-  var                   dS              :Float                  = Math.sqrt( xS*xS + yS*yS + zS*zS );   //>               Magnitude.
+  var                   longA_360       :Float              = 360.*(  6.+(55.+  8.58   /60.)/60.)/24. ; //> Gomeisa RA=6 55  8.58        =  0.; //      
+  var                   latA_360        :Float              =         9.+(17.+ 57.9    /60.)/60.      ; //>        DEC=9 17 57.9         =  0.; //     
+  var                   longB_360       :Float              = 360.*(  7.+( 8.+ 23.14   /60.)/60.)/24. ; //> Procyon RA=7  8 23.14        =  0.; //     
+  var                   latB_360        :Float              =         6.+(34.+ 22.1    /60.)/60.      ; //>        DEC=6 34 22.1         = 10.; //      
+  var                   xA              :Float                  = cosD(  latA_360)*cosD(  longA_360);   //>
+  var                   yA              :Float                  = cosD(  latA_360)*sinD(  longA_360);   //>
+  var                   zA              :Float                  = sinD(  latA_360)                  ;   //> trace(longA_360 +" , "+ latA_360 +"  "+ xA +"  "+ yA +"  "+ zA); //> -0.41812783213741955  0.9038249325942993  0.09093738072416822;
+  var                   xB              :Float                  = cosD(  latB_360)*cosD(  longB_360);   //>
+  var                   yB              :Float                  = cosD(  latB_360)*sinD(  longB_360);   //>
+  var                   zB              :Float                  = sinD(  latB_360)                  ;   //> trace(longB_360 +" , "+ latB_360 +"  "+ xB +"  "+ yB +"  "+ zB); //>-0.36737866131120084   0.91883139318759    0.14415890574689555;
+  var                   xQ              :Float                  = cosD(a_latQ_360)*cosD(a_longQ_360);   //> Polar coordinates (latitude/declination and  
+  var                   yQ              :Float                  = cosD(a_latQ_360)*sinD(a_longQ_360);   //> longitude/right-ascension) of the point.     
+  var                   zQ              :Float                  = sinD(a_latQ_360)                  ;   //> .
+  var                   xS              :Float                  =  yA*zB - zA*yB;                       //> Cross product. a2b3 - a3b2
+  var                   yS              :Float                  =  zA*xB - xA*zB;                       //>                a3b1 - a1b3
+  var                   zS              :Float                  =  xA*yB - yA*xB;                       //>                a1b2 - a2b1
+  var                   dDotQS          :Float                  =            xS*xQ + yS*yQ + zS*zQ  ;   //> Dot product.
+  var                   dS              :Float                  = Math.sqrt( xS*xS + yS*yS + zS*zS );   //> Magnitude.
   var                   r_d_360         :Float                  = Math.asin(dDotQS/dS)*180/Math.PI  ;   //> core.output( "Q.S, "+ r_d ); //> Distance from point to dividing line.
+  //trace( a_latQ_360 +" "+ a_longQ_360 +" "+ r_d_360 );
  return r_d_360;                                                                                        //> Report distance from point to dividing line defined by Canis Minor, in degrees.
  }//dOverLine_360/////////////////////////////////////////////////////////////////////////////////////////>
+ function               TEST_dOverLine_360(///////////////////////////////////////////////////////////////>
+ )                                      :Int {////////////////////////////////////////////////////////////>
+  var                   l               :Float                  = 0.;                                   //>
+  var                   d               :Float                  = 0.;
+  var                   r               :Float                  = 0.;
+  r= 360*( 6.+( 55.+  8.58  /60.)/60.)/24.;d=   9.+(17.+ 57.9   /60.)/60.;   l = dOverLine_360(d,r); if( l < -0.001 ||  0.001 < l ){ trace("TEST_dOverLine_360 "+ d +","+ r +" = "+ l); return 1;}      
+  r= 360*( 7.+(  8.+ 23.14  /60.)/60.)/24.;d=   6.+(34.+ 22.1   /60.)/60.;   l = dOverLine_360(d,r); if( l < -0.001 ||  0.001 < l ){ trace("TEST_dOverLine_360 "+ d +","+ r +" = "+ l); return 1;}      
+                                                                                                                       
+  r= 360*( 6.+( 21.+ 23.23  /60.)/60.)/24.;d=  13.+(44.+  1.8   /60.)/60.;   l = dOverLine_360(d,r); if( l < -1.8   || -1.7   < l ){ trace("TEST_dOverLine_360 "+ d +","+ r +" = "+ l); return 1;}      
+  r= 360*( 6.+( 41.+ 38.70  /60.)/60.)/24.;d=  12.+(56.+ 34.6   /60.)/60.;   l = dOverLine_360(d,r); if( l <  0.73  ||  0.74  < l ){ trace("TEST_dOverLine_360 "+ d +","+ r +" = "+ l); return 1;}      
+
+ return 0;                                                                                              //>
+ }//TEST_dOverLine_360////////////////////////////////////////////////////////////////////////////////////>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////>
@@ -161,7 +168,7 @@ class TryMultiYearRuns /////////////////////////////////////////////////////////
 
  function               sYmd(/////////////////////////////////////////////////////////////////////////////> Convert Julian Day to ISO date string.
                         a_jd            :Float                                                          //> Julian Day (immediately rounded down to previous midnight).
- ){                                     //////////////////////////////////////////////////////////////////>
+ )                                      :String {/////////////////////////////////////////////////////////>
   var                   an              :Array<Int>             = anYmdOfJd( a_jd );                    //>
  return an[0]   +"-"+ ( "0"+an[1] ).substr(-2)   +"-"+   ( "0"+an[2] ).substr(-2);                      //>
  }//sYmd//////////////////////////////////////////////////////////////////////////////////////////////////>
@@ -170,7 +177,7 @@ class TryMultiYearRuns /////////////////////////////////////////////////////////
  function               sYmdHms(//////////////////////////////////////////////////////////////////////////> Convert Julian Day to ISO date PLUS time string.
                         a_jd            :Float                                                          //> Julian Day (noon-night-noon)
  )                                      :String {/////////////////////////////////////////////////////////>
-  var                   n_jd            :Int   = Math.floor(a_jd);                                      //> .0 = noon, -0.5 = start of (normal Gregorian) day.
+  var                   n_jd            :Int   = Math.floor(a_jd);                                      //> .0 = noon, subtract 0.5 to get (normal) start of day.
   var                   d               :Float = a_jd - n_jd;              d =            24*d - 12. ;  //> -12 = noon, 0 = midnight, 12 = next noon
   if( d < 0 ){ d += 24; }                                                                               //> Basically fixing modulus issue?
   var                   nH              :Int   = Math.floor( d ); d -= nH; d =            60*d       ;  //>
@@ -178,80 +185,6 @@ class TryMultiYearRuns /////////////////////////////////////////////////////////
  return sYmd(a_jd) +" "+ ("0"+nH).substr(-2) +":"+ ("0"+nM).substr(-2) +":"+ ("0"+d).substr(-2);        //>
  }//sYmdHms///////////////////////////////////////////////////////////////////////////////////////////////>
 
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////>
-//////////////////////////////////////////////////////////////////////////////////////////////////////////>
-//////////////////////////////////////////////////////////////////////////////////////////////////////////>
-
-
- function               avWinterLooks_Row_Over_Full(//////////////////////////////////////////////////////> Run the "Hey Diddle Diddle" observational procedure from one date.
-                        n_jd            :Int                                                            //> Julian Day to start on (start waiting for the new moon)
- ,                      a_nNights_days  :Int                                                            //> 7 or 8 count from last gibbous to full.
- ,                      a_sWhenLook     :String                                                         //> "Moon", "MidN", or "Vega".
- ,                      a_sWhereLook    :String                                                         //> "Cani","Long"
- )                                      :Array<Dynamic> {/////////////////////////////////////////////////> Report text row, Over-line amount, Julian day of big night, number of days till next run of procedure.
-  var                   asDaysData      :Array<String>          = _mapasDaysData[ n_jd +"jd" ];         //>
-  if( null == asDaysData ){                   return ["*0 no data >"+ (n_jd +"jd") +"< "+ sYmd(n_jd) ];}//> Look up data for the given day. If there is a problem, like date isn't in table, then quit.
-                                                                                                        //> trace("avWinterLooks_Row_Over_Full "+ a_sGo +" "+ n_jd +" "+ asDaysData);//>
-  var                   whenGo_jd       :Int                    = n_jd;                                 //> Keep a copy of start day.
-  var                   isStep          :Int                    = 0;                                    //> Step in Hey Diddle algorithm.
-  var                   r_s             :String                 = "";                                   //> Output text, start from scratch.
-  for( iNotUsed_Limit in 0...99 ){                                                                      //> Loop we promise to break out of, with a limit just in case.
-   asDaysData    = _mapasDaysData[ n_jd +"jd" ];                                                        //> Look up data for the given date.
-   if( null == asDaysData ){               trace("???"); return ["*1 no data "+ n_jd +" "+ sYmd(n_jd)];}//>
-                                                                                                        //>  trace( asDaysData );
-   if(       0 == isStep ){   isStep = 1;                                                               //> The very first time only...
-    r_s    = asDaysData[ _iDAYSdATA_sDate ]                                                             //> +" = "+ sYmdHms( n_jd ) DEBUG    //> Report date and
-             + ", mset,"
-               +sYmdHms(  n_jd +Std.parseFloat( asDaysData[_iDAYSdATA_dMoonSet_h] )/24 -0.5  ).substr(4) //> date/time of the moon set.
-           //+       ","+                                asDaysData[_iDAYSdATA_Moon_sDate]              //>
-            ;                                                                                           //>
-   }//if                                                                                                //>
-   if(       1 == isStep ){                                                                             //> If in first stage of algorithm...
-    if(       Std.parseFloat( asDaysData[_iDAYSdATA_Moon_dLit_100] ) < 2   ){                           //> Look for new moon, if seeing it, go to next stage.
-     isStep = 2;                                                                                        //>
-    }//if                                                                                               //>
-   }else{//  2 == isStep                                                                                //> In 2nd stage of algorithm, look
-    if( 50 <= Std.parseFloat( asDaysData[_iDAYSdATA_Moon_dLit_100] )       ){                           //> for first gibbous illumination (50%+), when
-     r_s +=     ", gib,"//+sYmdHms(  n_jd +Std.parseFloat( asDaysData[_iDAYSdATA_dMoonSet_h] )/24 -0.5  ) //>
-           //+       ","
-             +                                             asDaysData[_iDAYSdATA_Moon_sDate]        ;   //>
-  break;//for                                                                                           //> get out of this loop
-   }}//if//if                                                                                           //> .
-   n_jd++;                                                                                              //> If staying in loop, then skip ahead.
-  }//for                                                                                                //> .
-                                                                                                        //>
-  n_jd += a_nNights_days;                                                                               //> we skip ahead to the big night.
-  asDaysData    = _mapasDaysData[ n_jd +"jd" ];                                                         //> Look up data for the given date.
-  if( null == asDaysData ){                         trace("???");         return ["*2 no data "+ n_jd];}//>
-                                                                                                        //>
-  var                                   iDate                   = 0;                                    //> Indexes
-  var                                   iDec                    = 0;                                    //> to use depending on
-  var                                   iRa                     = 0;                                    //> the scheme we are testing.
-  var                                   iLit                    = 0;                                    //>
-  switch( a_sWhenLook ){                                                                                //> Depending on the scheme we are testing....
-  case "Moon": iDate = _iDAYSdATA_Moon_sDate;  iDec = _iDAYSdATA_Moon_dDec;  iRa = _iDAYSdATA_Moon_dRa; iLit = _iDAYSdATA_Moon_dLit_100; //> Moonset
-  case "MidN": iDate = _iDAYSdATA_MidN_sDate;  iDec = _iDAYSdATA_MidN_dDec;  iRa = _iDAYSdATA_MidN_dRa; iLit = _iDAYSdATA_MidN_dLit_100; //> Modern midnight
-  case "Vega": iDate = _iDAYSdATA_Vega_sDate;  iDec = _iDAYSdATA_Vega_dDec;  iRa = _iDAYSdATA_Vega_dRa; iLit = _iDAYSdATA_Vega_dLit_100; //> Vega kissing the horizon
-  }//switch                                                                                             //> ...
-  r_s += ", ful,"+ a_sWhenLook +","+ asDaysData[iDate]                                                  //>
-        + ",lit,"+ (asDaysData[iLit]+"       ").substr(0,7)                                             //>
-        + ",dec,"+ (asDaysData[iDec]+"       ").substr(0,7)                                             //>
-        +  ",ra,"+ (asDaysData[ iRa]+"       ").substr(0,7)                                             //>
-       // , full,   Moon          ,2000-03-22T07:19:46    ,-6.721736286863378    ,-152.88917086184642   //>
-       ;                                                                                                //>
-  var                   d_360           :Float                  = 0;                                    //> See if full moon has crossed from Taurus to Gemini.
-  switch( a_sWhereLook ){                                                                               //>
-  case "Cani": d_360 = dOverLine_360( Std.parseFloat( asDaysData[iDec] )                                //> See if full moon has crossed "little dog" line or not.
-                       ,              Std.parseFloat( asDaysData[iRa ] )                                //>
-                       );                                                                               //>
-  case "Long": d_360 =  90 - Std.parseFloat( asDaysData[iRa ] ); if( 180 < d_360 ){ d_360 -= 360; }     //> See if full moon has crossed 90 degree right ascension.
-  case "Lon2": d_360 = 120 - Std.parseFloat( asDaysData[iRa ] ); if( 180 < d_360 ){ d_360 -= 360; }     //> See if full moon has crossed 120 degree right ascension.
-  }//switch                                                                                             //>
-  r_s += " ,ovr:,"+ (d_360+"     ").substr(0,5); // +",?,"+ n_jd;                                       //> Amount over the Canis Minor line.
-return [r_s ,d_360 ,n_jd];                                                                              //>
- }//avWinterLooks_Row_Over_Full///////////////////////////////////////////////////////////////////////////>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////>
@@ -324,7 +257,7 @@ return [r_s ,d_360 ,n_jd];                                                      
                                                                   ,                an[1]                //> Month. Jan = 1, Dec = 12
                                                                   ,                an[2]                //> Day. 1st = 1
                                                                   );                                    //>
-   if( 0 == d%50000 ){ trace( sYmd(d) +" "+ an ); }                                                     //> Progress indication.
+   if( 0 == d%100000 ){ trace( "Progress: "+ sYmd(d) +" "+ an ); }                                      //> Progress indication.
    if( d != d1 ){                                         trace("mismatch "+ d +" "+ d1); return d+100;}//>
   }//for d                                                                                              //>
  return 0;                                                                                              //>
@@ -382,25 +315,30 @@ return [r_s ,d_360 ,n_jd];                                                      
  }//TEST_sYMDhms(){}//////////////////////////////////////////////////////////////////////////////////////>
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////>
-//////////////////////////////////////////////////////////////////////////////////////////////////////////>
-//////////////////////////////////////////////////////////////////////////////////////////////////////////>
-
-
  function               Go_TESTs(/////////////////////////////////////////////////////////////////////////>
  )                                      :Int {////////////////////////////////////////////////////////////>
-  if( 0 < TEST_dDate_jd()  ){                                                                 return 1;}//> TESTS:
-  if( 0 < TEST_nYearOfJd() ){                                                                 return 1;}//>
-  if( 0 < TEST_anYmdOfJd() ){                                                                 return 1;}//>
-  if( 0 < TEST_sYmd()      ){                                                                 return 1;}//> Test: Convert Julian Day to ISO date string.
-  if( 0 < TEST_sYMDhms()   ){                                                                 return 1;}//>
+//if( 0 < TEST_dDate_jd()      ){                                                             return 1;}//> TESTS:
+//if( 0 < TEST_nYearOfJd()     ){                                                             return 2;}//>
+//if( 0 < TEST_anYmdOfJd()     ){                                                             return 3;}//>
+//if( 0 < TEST_sYmd()          ){                                                             return 4;}//> Test: Convert Julian Day to ISO date string.
+//if( 0 < TEST_sYMDhms()       ){                                                             return 5;}//>
+  if( 0 < TEST_dOverLine_360() ){                                                             return 6;}//>
  return 0;                                                                                              //>
  }//Go_TESTs//////////////////////////////////////////////////////////////////////////////////////////////>
 
 
- function               New_ReadMapasDataOfFile(///////////////////////////////////////////////////////////> Get data from one file, add to global table (map).
+//////////////////////////////////////////////////////////////////////////////////////////////////////////>
+//////////////////////////////////////////////////////////////////////////////////////////////////////////>
+//////////////////////////////////////////////////////////////////////////////////////////////////////////>
+
+
+ function               New_ReadMapasDataOfFile(//////////////////////////////////////////////////////////> Get data from one file, add to global table (map).
                         a_sFile                                                                         //> Name of file within input directory.
  )                                      :Void {///////////////////////////////////////////////////////////> Report nothing. Add to _mapasDaysData.
+  if(   !sys.FileSystem.exists( _sPATHdATA + a_sFile )   ){   
+   trace("No file >"+ _sPATHdATA + a_sFile +"<");
+ return;
+  }//if
   var                   sData           :String         = sys.io.File.getContent(_sPATHdATA + a_sFile); //> Get contents of input data file.
   var                   asLines         :Array<String>  = sData.split('\n');                            //> Split file into rows (one per date).
   var                   n               :Int            = asLines.length;                               //> Get number of rows.
@@ -411,55 +349,149 @@ return [r_s ,d_360 ,n_jd];                                                      
   for( i in 2...n ){                                                                                    //> Move to RAM: Skip first 2 lines, and then process each file line...
    asCell   = asLines[i].split(",");                                                                    //> Split line on commas.
    sKeyJDay =   asCell[ 1] +"jd";                                                                       //> List key is the Julian Day.
-   asRow    = [ asCell[ 0]              // _iDAYSdATA_sDate         =  0;                               //> sDate         ,1999-12-31T12:00:00  First cell is nYear as text in ISO format yyyy-mm-dd.
-              , asCell[ 1]              // _iDAYSdATA_nDay_jd       =  1;                               //> a_nDay_jd     ,2451544              Numeric version of key.
-              , asCell[ 2]              // _iDAYSdATA_dSunSet_h     =  2;                               //> dSunSet_h     ,16.026944444444442
-              , asCell[ 3]              // _iDAYSdATA_dSunRise_h    =  3;                               //> dSunRise_h    ,32.06888888888889
-              , asCell[ 4]              // _iDAYSdATA_dMoonRise_h   =  4;                               //> r_dMoonRise_h ,26.668333333333333
-              , asCell[ 5]              // _iDAYSdATA_dMoonSet_h    =  5;                               //> dMoonSet_h    ,37.220555555555556
-              , asCell[ 6]              // _iDAYSdATA_Moon_sDate    =  6;                               //> Moon_sDate    ,2000-01-01T13:13:14
-              , asCell[ 7]              // _iDAYSdATA_Moon_dLit_100 =  7;                               //> dLit_100      ,22.799720764160156
-              , asCell[ 8]              // _iDAYSdATA_Moon_dRa      =  8;                               //> dRa           ,-137.51418852173234
-              , asCell[ 9]              // _iDAYSdATA_Moon_dDec     =  9;                               //> dDec          ,-11.811177408287486
-              , asCell[10]              // _iDAYSdATA_MidN_sDate    = 10;                               //> MidN_sDate    ,2000-01-01T00:00:00
-              , asCell[11]              // _iDAYSdATA_MidN_dLit_100 = 11;                               //> dLit_100      ,26.628517150878906
-              , asCell[12]              // _iDAYSdATA_MidN_dRa      = 12;                               //> dRa           ,-142.82009664343948
-              , asCell[13]              // _iDAYSdATA_MidN_dDec     = 13;                               //> dDec          ,-9.647356542776926
-              , asCell[14]              // _iDAYSdATA_Vega_sDate    = 14;                               //> Vega_sDate    ,1999-12-31T23:59:50
-              , asCell[15]              // _iDAYSdATA_Vega_dLit_100 = 15;                               //> dLit_100      ,26.629600524902344
-              , asCell[16]              // _iDAYSdATA_Vega_dRa      = 16;                               //> dRa           ,-142.82155355617718
-              , asCell[17]              // _iDAYSdATA_Vega_dDec     = 17;                               //> dDec          ,-9.646872946743024
+   asRow    = [ asCell[ 0]       //  0        sDate             // _iDAYSdATA_sDate         =  0;      1399-12-31T12:00:00   //> sDate         ,1999-12-31T12:00:00  First cell is nYear as text in ISO format yyyy-mm-dd.
+              , asCell[ 1]       //  1     ,a_nDay_jd           // _iDAYSdATA_nDay_jd       =  1;   ,2232407                 //> a_nDay_jd     ,2451544              Numeric version of key.
+              , asCell[ 2]       //  2     ,  dSunSet_h         // _iDAYSdATA_dSunSet_h     =  2;     ,16.210833333333333    //> dSunSet_h     ,16.026944444444442
+              , asCell[ 3]       //  3     ,  dSunRise_h        // _iDAYSdATA_dSunRise_h    =  3;     ,32.00333333333333     //> dSunRise_h    ,32.06888888888889
+              , asCell[ 4]       //  4     ,r_dMoonRise_h       // _iDAYSdATA_dMoonRise_h   =  4;   ,9.402222222222223       //> r_dMoonRise_h ,26.668333333333333
+              , asCell[ 5]       //  5     ,  dMoonSet_h        // _iDAYSdATA_dMoonSet_h    =  5;     ,20.462777777777777    //> dMoonSet_h    ,37.220555555555556
+              , asCell[ 6]       //  6     ,  Moon_sDate        // _iDAYSdATA_Moon_sDate    =  6;     ,1399-12-31T20:27:46   //> Moon_sDate    ,2000-01-01T13:13:14
+              , asCell[ 7]       //  7     ,  dLit_100          // _iDAYSdATA_Moon_dLit =  7;     ,13.873039245605469    //> dLit_100      ,22.799720764160156
+              , asCell[ 8]       //  8     ,  dRa               // _iDAYSdATA_Moon_dRa      =  8;     ,-19.4712266310741     //> dRa           ,-137.51418852173234
+              , asCell[ 9]       //  9     ,  dDec              // _iDAYSdATA_Moon_dDec     =  9;     ,-4.219550841570022    //> dDec          ,-11.811177408287486
+              , asCell[10]       //  10    ,  MidN_sDate        // _iDAYSdATA_MidN_sDate    = 10;     ,1400-01-01T00:00:00   //> MidN_sDate    ,2000-01-01T00:00:00
+              , asCell[11]       //  11    ,  dLit_100          // _iDAYSdATA_MidN_dLit = 11;     ,14.93198299407959     //> dLit_100      ,26.628517150878906
+              , asCell[12]       //  12    ,  dRa               // _iDAYSdATA_MidN_dRa      = 12;     ,-17.693637879029943   //> dRa           ,-142.82009664343948
+              , asCell[13]       //  13    ,  dDec              // _iDAYSdATA_MidN_dDec     = 13;     ,-3.578822285176965    //> dDec          ,-9.647356542776926
+              , asCell[14]       //  14    ,  Vega_sDate        // _iDAYSdATA_Vega_sDate    = 14;     ,1399-12-31T23:03:40   //> Vega_sDate    ,1999-12-31T23:59:50
+              , asCell[15]       //  15    ,  dLit_100          // _iDAYSdATA_Vega_dLit = 15;     ,14.62572956085205     //> dLit_100      ,26.629600524902344
+              , asCell[16]       //  16    ,  dRa               // _iDAYSdATA_Vega_dRa      = 16;     ,-18.20596665525843    //> dRa           ,-142.82155355617718
+              , asCell[17]       //  17    ,  dDec              // _iDAYSdATA_Vega_dDec     = 17;     ,-3.7472010079806166   //> dDec          ,-9.646872946743024
+                                 //  18    ,  age                                                     ,3.73                                    
+                                 //  19    ,  distance-km                                             ,408161.29651962605                      
+                                 //  20    ,  size-dd                                                 ,0.4877732710136179                      
+                                 //  21    ,  ecliptic-obliquity                                      ,23.51721493600158                       
+                                 //  22    ,  elat                                                    ,3.693187727162013                       
+                                 //  23    ,  elong                                                   ,333.41763178710016                      
+                                 //  24    ,  glat                                                    ,-52.23369523560149                      
+                                 //  25    ,  glong                                                   ,65.71202390759264                       
+                                 //  26    ,  phase-angle-deg                                         ,135.0307°                               
+                                 //  27    ,  hourAngle-dd                                            ,118.22678759555845                      
+                                 //  28    ,  parallacticAngle                                        ,36.8034293236707                        
+                                 //  29    ,  sglat                                                   ,29.391412707762264                      
+                                 //  30    ,  sglong                                                  ,282.77951939034534                      
+                                 //  31    ,  size-deg                                                ,0.48777°                                
+                                 //  32    ,  transit-dhr                                             ,14.859444444444444                      
+                                 //  33    ,  albedo                                                  ,0.11999999731779099                     
+                                 //  34    ,  ecl-elongation-deg                                      ,44.7428°                                
+                                 //  35    ,  elongation-deg                                          ,44.8570°                                
+                                 //  36    ,  subsolar_l                                              ,226.64938088549144                      
+                                 //  37    ,  subsolar_b                                              ,1.5298619259101536                      
+                                 //  38    ,  heliocentric-distance                                   ,0.9818250348776882                      
+                                 //  39    ,  libration_l                                             ,-1.0173694823111317                     
+                                 //  40    ,  libration_b                                             ,-5.424631020251859                      
+                                 //  41    ,  pa_axis                                                 ,337.50836228320014                      
+                                 //  42    ,  penumbral-eclipse-magnitude                             ,0                                       
+                                 //  43    ,  umbral-eclipse-magnitude                                ,0                                       
+                                 //  44    ,  heliocentric-velocity                                   ,[-0.0154388, -0.00734661, -3.90024e-05] 
+                                 //  45    ,  velocity                                                ,[0.000170595, 0.000531719, -2.6824e-05] 
+                                 //  46    ,  velocity-kms                                            ,0.96799                                 
               ];                                                                                        //>
    _mapasDaysData[ sKeyJDay ] = asRow;                                                                  //> Keep row of data in RAM table, keyed with ISO format date.
   }//for i                                                                                              //>
- }//New_ReadMapasDataOfFile////////////////////////////////////////////////////////////////////////////////>
+ }//New_ReadMapasDataOfFile///////////////////////////////////////////////////////////////////////////////>
 
 
- function               New_ReadData(//////////////////////////////////////////////////////////////////////>
+ function               New_ReadData(/////////////////////////////////////////////////////////////////////>
  )                                      :Void {///////////////////////////////////////////////////////////>
 //for( y in 1000...1100 ){   New_ReadMapasDataOfFile( '1000_1099/table012_'+ y +'.csv' );   }            //> For a century... Get data from each file, put in global table.
 //for( y in 1100...1200 ){   New_ReadMapasDataOfFile( '1100_1199/table012_'+ y +'.csv' );   }            //> "
 //for( y in 1200...1300 ){   New_ReadMapasDataOfFile( '1200_1299/table012_'+ y +'.csv' );   }            //> "
 //for( y in 1300...1379 ){   New_ReadMapasDataOfFile( '1300_1399/table012_'+ y +'.csv' );   }            //> "
 //for( y in 1379...1400 ){   New_ReadMapasDataOfFile( '1300_1399/table013_'+ y +'.csv' );   }            //> " Format change?
-//for( y in 1400...1500 ){   New_ReadMapasDataOfFile( '1400_1499/table013_'+ y +'.csv' );   }            //> " Format change?
-  for( y in 1800...1900 ){   New_ReadMapasDataOfFile(      '1800/table015_'+ y +'.csv' );   }            //>
-  for( y in 1900...2000 ){   New_ReadMapasDataOfFile(      '1900/table015_'+ y +'.csv' );   }            //>
-  for( y in 2000...2100 ){   New_ReadMapasDataOfFile(      '2000/table015_'+ y +'.csv' );   }            //>
+  for( y in 1400...1500 ){   New_ReadMapasDataOfFile( '1400/table017_'+ y +'.csv' );   }                //>
+  for( y in 1500...1558 ){   New_ReadMapasDataOfFile( '1500/table017_'+ y +'.csv' );   }                //>
+//for( y in 1800...1900 ){   New_ReadMapasDataOfFile(      '1800/table015_'+ y +'.csv' );   }            //>
+//for( y in 1900...2000 ){   New_ReadMapasDataOfFile(      '1900/table015_'+ y +'.csv' );   }            //>
+//for( y in 2000...2100 ){   New_ReadMapasDataOfFile(      '2000/table015_'+ y +'.csv' );   }            //>
  }//New_ReadData///////////////////////////////////////////////////////////////////////////////////////////>
 
 
+ function               avWinterLooks_Row_Over_Full(//////////////////////////////////////////////////////> Run the "Hey Diddle Diddle" observational procedure from one date.
+                        r_jd            :Int                                                            //> Julian Day to start on (start waiting for the new moon)
+ ,                      a_nNights       :Int                                                            //> 7 or 8 count from last gibbous to full.
+ ,                      a_sWhenLook     :String                                                         //> "Moon", "MidN", or "Vega".
+ ,                      a_sWhereLook    :String                                                         //> Boundary line: "Cani", "Long" or "Lon2"
+ )                                      :Array<Dynamic> {/////////////////////////////////////////////////> Report text row, Over-line amount, Julian day of big night, number of days till next run of procedure.
+  var                   asDaysData      :Array<String>          = _mapasDaysData[ r_jd +"jd" ];         //>
+  if( null == asDaysData ){            trace( "??? "+ "*0 no data >"+ (r_jd +"jd") +"< "+ sYmd(r_jd) ); //>
+                                              return ["*0 no data >"+ (r_jd +"jd") +"< "+ sYmd(r_jd) ];}//> Look up data for the given day. If there is a problem, like date isn't in table, then quit.
+                                                                                                        //> trace("avWinterLooks_Row_Over_Full "+ a_sGo +" "+ r_jd +" "+ asDaysData);//>
+  var                   whenGo_jd       :Int                    = r_jd;                                 //> Keep a copy of start day.
+  var                   isStep          :Int                    = 0;                                    //> Step in Hey Diddle algorithm.
+  var                   r_s             :String                 = "";                                   //> Output text, start from scratch.
+  for( iNotUsed_Limit in 0...99 ){                                                                      //> Loop we promise to break out of, with a limit just in case.
+   asDaysData    = _mapasDaysData[ r_jd +"jd" ];                                                        //> Look up data for the given date.
+   if( null == asDaysData ){               trace("???"); return ["*1 no data "+ r_jd +" "+ sYmd(r_jd)];}//>
+                                                                                                        //>  trace( asDaysData );
+   if(       0 == isStep ){   isStep = 1;                                                               //> The very first time only...
+    r_s    =                r_jd                                                                        //> ###0
+            +","+             asDaysData[_iDAYSdATA_sDate    ].substr(0,10)                             //> +" = "+ sYmdHms( r_jd ) DEBUG    //> Report date and ###1  //> date/time of the moon set. ###2
+            ;                                                                                           //>
+   }//if                                                                                                //>
+   if(       1 == isStep ){                                                                             //> If in first stage of algorithm...
+    if(       Std.parseFloat( asDaysData[_iDAYSdATA_Moon_dLit] ) < 2   ){                               //> Look for new moon, if seeing it, go to next stage.
+     isStep = 2;                                                                                        //>
+    }//if                                                                                               //>
+   }else{//  2 == isStep                                                                                //> In 2nd stage of algorithm, look
+    if( 50 <= Std.parseFloat( asDaysData[_iDAYSdATA_Moon_dLit] )       ){                               //> for first gibbous illumination (50%+), when
+     r_s += ","+ asDaysData[_iDAYSdATA_Moon_sDate];                                                     //> ###3   First gibbous
+  break;//for                                                                                           //> get out of this loop
+   }}//if//if                                                                                           //> .
+   r_jd++;                                                                                              //> If staying in loop, then skip ahead.
+  }//for                                                                                                //> .
+                                                                                                        //>
+  r_jd += a_nNights - 1;                                                                                //> we skip ahead to the big night.
+  asDaysData    = _mapasDaysData[ r_jd +"jd" ];                                                         //> Look up data for the given date.
+  if( null == asDaysData ){                         trace("???");         return ["*2 no data "+ r_jd];}//>
+                                                                                                        //>
+  var                                   iDate                   = 0;                                    //> Indexes
+  var                                   iDec                    = 0;                                    //> to use depending on
+  var                                   iRa                     = 0;                                    //> the scheme we are testing.
+  var                                   iLit                    = 0;                                    //>
+  switch( a_sWhenLook ){                                                                                //> Depending on the scheme we are testing....
+  case "Moon": iDate = _iDAYSdATA_Moon_sDate;  iLit = _iDAYSdATA_Moon_dLit; iDec = _iDAYSdATA_Moon_dDec; iRa = _iDAYSdATA_Moon_dRa; //> Moonset
+  case "MidN": iDate = _iDAYSdATA_MidN_sDate;  iLit = _iDAYSdATA_MidN_dLit; iDec = _iDAYSdATA_MidN_dDec; iRa = _iDAYSdATA_MidN_dRa; //> Modern midnight
+  case "Vega": iDate = _iDAYSdATA_Vega_sDate;  iLit = _iDAYSdATA_Vega_dLit; iDec = _iDAYSdATA_Vega_dDec; iRa = _iDAYSdATA_Vega_dRa; //> Vega kissing the horizon
+  }//switch                                                                                             //> ...
+  r_s += " "                                                                                            //>
+       + ","+ a_sWhenLook                                                                               //> ###4   "Moon", "MidN", or "Vega".
+       + ","+  asDaysData[iDate]                                                                        //> ###5   Date/time of "Moon", "MidN", or "Vega".
+       +" ,"+ (asDaysData[iDec ]+"       ").substr(0,6)                                                 //> ###7
+       + ","+ (asDaysData[ iRa ]+"       ").substr(0,7)                                                 //> ###8
+       ;                                                                                                //>
+  var                   d_360           :Float                  = 0;                                    //> See if full moon has crossed from Taurus to Gemini.
+  switch( a_sWhereLook ){                                                                               //> Boundary line: "Cani", "Long" or "Lon2"
+  case "Cani": d_360 = dOverLine_360( Std.parseFloat( asDaysData[iDec] )                                //> See if full moon has crossed "little dog" line or not
+                       ,              Std.parseFloat( asDaysData[iRa ] )                                //> "
+                       );                                                                               //> .
+  case "Long": d_360 =  90 - Std.parseFloat( asDaysData[iRa ] ); if( 180 < d_360 ){ d_360 -= 360; }     //> See if full moon has crossed 90 degree right ascension.
+  case "Lon2": d_360 = 120 - Std.parseFloat( asDaysData[iRa ] ); if( 180 < d_360 ){ d_360 -= 360; }     //> See if full moon has crossed 120 degree right ascension.
+  }//switch                                                                                             //>
+  r_s +=" ,"+ (d_360+"     ").substr(0,6);                                                              //> ###9   Amount over the Canis Minor line.
+return [r_s ,d_360 ,r_jd];                                                                              //>
+ }//avWinterLooks_Row_Over_Full///////////////////////////////////////////////////////////////////////////>
+
+
  function               New_MultiYearRun(//////////////////////////////////////////////////////////////////>
-                        n_jd            :Int             //= Math.floor( dJDayOfYms_jd( 1000,12,31 ) ); //> Convert Gregorian date to a Julian Day, the number of days that have passed since the Julian Date Epoch.  Gregorian Year,
- ,                      nNights_days    :Int                                                            //> Parameters to test in this pass - the count from first quarter moon to full.
- ,                      sWhenGibbous    :String                                                         //> When during night to apply the crescent/gibbous test.
- ,                      sWhereLook      :String                                                         //> How to draw the line between Taurus and Gemini.
- ,                      nMinJump_yr     :Int                                                            //> Minimum number of normal years between leap years.
- ,                      nMaxJump_yr     :Int                                                            //> Miximum number of normal years between leap years.
- ,                      nRUN_yr         :Int                                                            //> Length of the trial run.
+                        a_jd            :Int             //= Math.floor( dJDayOfYms_jd( 1000,12,31 ) ); //> Convert Gregorian date to a Julian Day, the number of days that have passed since the Julian Date Epoch.  Gregorian Year,
+ ,                      a_nNights       :Int                                                            //> Parameters to test in this pass - the count from first quarter moon to full.
+ ,                      a_sWhenGibbous  :String                                                         //> When during night to apply the crescent/gibbous test.
+ ,                      a_sWhereLook    :String                                                         //> How to draw the line between Taurus and Gemini.
+ ,                      a_nMinJump_yr   :Int                                                            //> Minimum number of normal years between leap years.
+ ,                      a_nMaxJump_yr   :Int                                                            //> Miximum number of normal years between leap years.
+ ,                      a_nRun_yr       :Int                                                            //> Length of the trial run.
  )                                      :Void {///////////////////////////////////////////////////////////>
-  var                   d               :Float                  = 0.;                                   //> Short-term utility.
-  var                   sRow            :String                 = "";                                   //> Report for one year trial.
   var                   r_s             :String                 = "";                                   //> Initialize the output text string.
   var                   av              :Array<Dynamic>         = [];                                   //>
   var                   dS0             :Float                  = 0;                                    //> STATS:
@@ -471,48 +503,58 @@ return [r_s ,d_360 ,n_jd];                                                      
   var                   nSinceLeap_yr   :Int                    = 1;                                    //>
   var                   sLeap           :String                 = "";                                   //>
   var                   dMoons_days     :Float                  = 0;                                    //> For modern math-based lunar leap month determination.
+  var                   sRow            :String                 = "";                                   //> Report for one year trial.
   var                   dOver           :Float                  = 0.;                                   //> Over-line amount (between Gemini and Taurus)
-  var                   nFullMoon_jd    :Int                    = 0;                                    //> Julian day of big night - offset from some date-of-the-Gregorian-year to prevent discontinuity of new year.
-  for( dYearRun in 0...nRUN_yr ){                                                                       //> Run observations for 100 years in a row  (hoping they converge on a winter date)...
-   if( 0 == nNights_days ){                                                                             //> If the math-based procedure is being tried, then
+  var                   nBigNight_jd    :Int                    = 0;                                    //> Julian day of big night - offset from some date-of-the-Gregorian-year to prevent discontinuity of new year.
+  var                   nAt_jd          :Int                    = a_jd;                                 //>
+  var                   nWas_jd         :Int                    = 0;                                    //>
+  for( dYearRun in 0...a_nRun_yr ){                                                                     //> Run observations for 100 years in a row  (hoping they converge on a winter date)...
+   if( 0 == a_nNights ){                                                                                //> If the math-based procedure is being tried, then...
     dMoons_days += 12*_dMONTH_days - _dYEAR_days;                                                       //>
     if( dMoons_days < 0 ){ dOver =  1; dMoons_days += _dMONTH_days; }                                   //>
     else                 { dOver = -1;                              }                                   //>
-    nFullMoon_jd  =  0;                                                                                 //> From Nov 24?
-   }else{                                                                                               //> For any observational procedure...
-                    av = avWinterLooks_Row_Over_Full( n_jd ,nNights_days ,sWhenGibbous ,sWhereLook );   //> Run the "Hey Diddle Diddle algorithm" from one starting date. Add a row to the results.  The next date to start observations is given in the last cell of the row.
-    sRow          = av[0];  if( "*" == sRow.substr(0,1) ){ trace("what????????? "+ n_jd +" "+ sRow); }  //> Reported text row.
-    dOver         = av[1];                                                                              //> Over-the-finish-line amount.
-    nFullMoon_jd  = av[2];                                                                              //> Julian day of big night.
-   }//if nNights_days                                                                                   //>
-   n_jd           = nFullMoon_jd + 354 - 17;                                                            //>
-                                                                                                        //>
-   if( 0 < dOver ){                                                                                     //> If a leap year is suggested...
-                    if( nSinceLeap_yr < nMinJump_yr  ){ nSinceLeap_yr++  ;             sLeap = " "; }   //> No leap until we are past minimum normal years between leaps.
-                    else                              { nSinceLeap_yr = 0; n_jd += 29; sLeap = "*"; }   //> Otherwise, follow suggestion of a leap year, and restart count between leap years.
+    nBigNight_jd  =  0;                                                                                 //> From Nov 24?
+   }else{                                                                                               //> But if not math-based, then for any observational procedure...
+                    av  = avWinterLooks_Row_Over_Full(nAt_jd ,a_nNights ,a_sWhenGibbous ,a_sWhereLook); //> Run the "Hey Diddle Diddle algorithm" from one starting date. Add a row to the results.  The next date to start observations is given in the last cell of the row.
+    sRow          = av[0];   if( "*" == sRow.substr(0,1) ){ trace("what??????? "+ nAt_jd +" "+ sRow); } //> Reported text row. ###0..9
+    dOver         = av[1];                                                                              //> Over-the-finish-line amount, +ve = no leap year, -ve = leap year needed.
+    nBigNight_jd  = av[2];                                                                              //> Julian day of big night.
+   }//if a_nNights                                                                                      //>
+   nAt_jd         = nBigNight_jd + 354 - 17;                                                            //> Next day to check is a sufficient runup before 12 lunar months .
+   if( dOver < 0 ){                                                                                     //> If a leap year is suggested by observation...
+                  if( nSinceLeap_yr < a_nMinJump_yr ){ nSinceLeap_yr++  ; sLeap= "- "+ nSinceLeap_yr; } //> If we haven't held steady the minimum number, then hold steady now.
+                  else                               { nSinceLeap_yr = 0; sLeap= "-T ";  nAt_jd +=29; } //> Otherwise, follow suggestion of a leap year, and restart count between leap years.
    }else{                                                                                               //> If leap year is not suggested...
-                    if( nSinceLeap_yr < nMaxJump_yr  ){ nSinceLeap_yr++  ;             sLeap = " "; }   //> follow suggestion of no leap year if less than maximum allowed.
-                    else                              { nSinceLeap_yr = 0; n_jd += 29; sLeap = "*"; }   //> But if at maximum, use a leap year anyway.
+                  if( nSinceLeap_yr < a_nMaxJump_yr ){ nSinceLeap_yr++  ; sLeap= "+ "+ nSinceLeap_yr; } //> If less than maximum allowed, follow suggestion of no leap year.
+                  else                               { nSinceLeap_yr = 0; sLeap= "+x ";  nAt_jd +=29; } //> But if at maximum number of holding steady, use a leap year anyway.
+                                                                                                        //>
    }//if                                                                                                //>
-   if( 10 <= dYearRun ){                                                                                //> Ignoring the first decade when things are getting into long-term sync...
-    if( 0 == nNights_days ){                                                                            //> If the math-based procedure is being tried, then
-     d = dMoons_days + 113;                                                                             //> Get fractional part of year, in days. Add an offest to adjust average date to winter solstice.
-    }else{                                                                                              //>
-     d = (nFullMoon_jd + 100)/_dYEAR_days;   d = d - Math.floor(d);   d *= _dYEAR_days;                 //> Get fractional part of year, in days. Add an offest to avoid discontinuity at Nov 24.
-    }//if                                                                                               //>
-    dS0           += 1;                                                                                 //> Stats
-    dS1           += d;                                                                                 //>
-    dS2           += d*d;                                                                               //>
+   var                  d               :Float                  = 0.;                                   //> Short-term utility.
+   if( 0 == a_nNights ){                                                                                //> If the math-based procedure is being tried, then
+    d = dMoons_days + 113;                                                                              //> Get fractional part of year, in days. Add an offest to adjust average date to winter solstice.
+   }else{                                                                                               //>
+    d = (nBigNight_jd + 100)/_dYEAR_days;   d = d - Math.floor(d);   d *= _dYEAR_days;                  //> Get fractional part of year, in days. Add an offest to avoid discontinuity at Nov 24.
+   }//if                                                                                                //>
+   if( 38 == dYearRun ){ r_s += "\n"; }                                                                 //>
+   if( 38 <= dYearRun ){                                                                                //>
+    dS0 += 1;   dS1 += d;   dS2 += d*d;                                                                 //> Stats
     if(    d < dMin ){ dMin = d; }                                                                      //>
     if( dMax < d    ){ dMax = d; }                                                                      //>
-    sPattern      += sLeap;                                                                             //>
-    r_s           += "\n"+ sRow.substr(0,150) +" day:"+ (d+"      ").substr(0,6);                       //>
-  }}//if//for dYearRun                                                                                  //>
-
-  trace(                                                                                                //>
-   "Run done for: "+ nNights_days +" when:"+ sWhenGibbous +" look:"+ sWhereLook                         //>
-                                        +" min:"+ nMinJump_yr +" max:"+ nMaxJump_yr +" years:"+ nRUN_yr //> Show pattern in a 19-year grid:
-  +(   !_bYEARLY  ?"" :( "\n"+ r_s )   )                                                                //>
+   }//if                                                                                                //>
+   sPattern      += sLeap.substr(1,1);                                                                  //>
+   r_s           += "\n"+ (   0.==nWas_jd   ?"   "   :( ""+(nBigNight_jd - nWas_jd) )   )               //>
+                   +" ,"+ sRow.substr(0,150) +","+ sLeap +" ,"+ (d+"      ").substr(0,6);               //> ###10 big nights distance from some solar date - for statistical analysis of variance of big night date.
+   nWas_jd = nBigNight_jd;                                                                              //> Remember for next time around.
+  }//for dYearRun                                                                                       //>
+  //                               ###3   First gibbous      ###5 Date/time of observation                    ###10 big nights distance from some solar date - for statistical analysis of variance of big night date.
+  //                                                    ###4="Moon", "MidN", or "Vega".                              //>
+  //            ###0   ,###1      ,###3                ,###4,###5                ,###7  ,###8    ,###9       ,###10  //> ,###6   
+  r_s = "\nLen ,JDay   ,LastMonth ,GibbousMoonsetLMST  ,What,WhenBigNight        ,Declin,RtAscen ,OverL ,L   ,stats" //> ,illumin
+       + r_s;                                                                                   //>
+  trace(""                                                                                            //>
+  +"\n\n\nRun for: "+ a_nNights +" when:"+ a_sWhenGibbous +" look:"+ a_sWhereLook                             //>
+                                  +" min:"+ a_nMinJump_yr +" max:"+ a_nMaxJump_yr +" years:"+ a_nRun_yr //> Show pattern in a 19-year grid:
+  +(   !_bYEARLY  ?"" :r_s    )                                                                         //>
   +(   !_bPATTERN ?"" :( "\n |"+ sPattern.substr(    0 ,19) +"|"                                        //>
                         +"\n |"+ sPattern.substr(   19 ,19) +"|"                                        //>
                         +"\n |"+ sPattern.substr(2 *19 ,19) +"|"                                        //>
@@ -522,16 +564,16 @@ return [r_s ,d_360 ,n_jd];                                                      
                         +"\n |"+ sPattern.substr(6 *19 ,19) +"|"                                        //>
                        )                                                                                //>
    )                                                                                                    //>
-  +(   !_bSTATS   ?"" :(                                                                                //>
-                        ",  Max-min," + ( (dMax - dMin)+"               " ).substr(0,16)                //> Max range.
-                        +" ,N,"       + dS0                                                             //>
-                        +" ,Ave,"     + sYmdHms(dS1/dS0 - 100)                                          //> Average date is corrected for the offset added earlier.
-                        +" ,StDev,"   + (                                                               //>
+  +(   !_bSTATS   ?"" :( "\nRange: "  + ( (dMax - dMin)+"               " ).substr(0,16)                //> Max range.
+                        +"\nCount: "  + dS0                                                             //>
+                        +"\nAverage: "+ sYmdHms(dS1/dS0 - 100).substr(6)                                //> Average date is corrected for the offset added earlier.
+                        +"\nStdDev: "+ (                                                                //>
                                           Math.sqrt(   (dS0*dS2 - dS1*dS1)                              //>
                                                        /( dS0*(dS0 - 1) )                               //>
                                           )            +"               "                               //>
-                                        ).substr(0,16)                                                  //>
-                      )                                                                                 //>
+                                       ).substr(0,16)                                                   //>
+                        +"\n\n"                                                                         //>
+                       )                                                                                //>
    )                                                                                                    //>
   );                                                                                                    //>
  }//New_MultiYearRun//////////////////////////////////////////////////////////////////////////////////////>
@@ -539,35 +581,39 @@ return [r_s ,d_360 ,n_jd];                                                      
 
  function               new(//////////////////////////////////////////////////////////////////////////////> Construct a new object of this class (and run appropriate processing).
  )                                      :Void {///////////////////////////////////////////////////////////>
-  //var                    sCommandLine :String        = ( Sys.args() )[0];                             //> Get operation from command line.
-  //if(     "TOpROJECT" == sCommandLine ){          trace( sCommandLine +" <-----" );     }             //> If command line is specifying...
+  if( 0 != Go_TESTs() ){                                                                        return;}//>
+
+//.  8 Moon Long min:-99999 max:99999 years:132,  Max-min,59.26    ,Ave,12-05 14:24:27 ,StDev, 13.52       //> Results of various trials (TODO - RERUN)
+//.  8 MidN Lon2 min:-99999 max:99999 years:132,  Max-min,61.32    ,Ave,01-08 21:41:10 ,StDev, 13.38       //>
+//.  8 Vega Lon2 min:-99999 max:99999 years:132,  Max-min,61.78    ,Ave,01-17 14:00:50 ,StDev, 13.34       //>
+//.  8 Moon Lon2 min:-99999 max:99999 years:132,  Max-min,66.77    ,Ave,01-04 02:00:50 ,StDev, 13.24       //>
+//.  8 MidN Long min:-99999 max:99999 years:132,  Max-min,59.65    ,Ave,12-07 13:01:49 ,StDev, 13.15       //>
+//.  7 Moon Lon2 min:-99999 max:99999 years:132,  Max-min,62.78    ,Ave,01-18 00:50:01 ,StDev, 12.73       //>
+//.  8 Vega Long min:-99999 max:99999 years:132,  Max-min,55.74    ,Ave,12-17 16:57:53 ,StDev, 12.54       //>
+//.  7 MidN Long min:-99999 max:99999 years:132,  Max-min,58.19    ,Ave,12-19 15:11:40 ,StDev, 11.95       //>
+//.  7 MidN Lon2 min:-99999 max:99999 years:132,  Max-min,55.74    ,Ave,01-22 03:47:04 ,StDev, 11.90       //>
+//.  7 Vega Lon2 min:-99999 max:99999 years:132,  Max-min,56.13    ,Ave,01-29 21:52:58 ,StDev, 11.85       //>
+//.  7 Moon Long min:-99999 max:99999 years:132,  Max-min,51.54    ,Ave,12-18 15:47:04 ,StDev, 11.83       //>
+//.  7 Vega Long min:-99999 max:99999 years:132,  Max-min,52.14    ,Ave,12-30 00:02:48 ,StDev, 11.81       //>
+                                                                                                           //>
+//.  8 MidN Cani min:-99999 max:99999 years:132,  Max-min,65.91    ,Ave,12-14 13:37:14 ,StDev, 14.16       //>
+//.  8 Moon Cani min:-99999 max:99999 years:132,  Max-min,63.85    ,Ave,12-12 20:53:57 ,StDev, 14.15       //>
+//.  8 Vega Cani min:-99999 max:99999 years:132,  Max-min,62.78    ,Ave,12-24 00:26:25 ,StDev, 13.35       //>
+//.  7 Moon Cani min:-99999 max:99999 years:132,  Max-min,59.65    ,Ave,12-24 11:27:24 ,StDev, 13.25       //>
+//.  7 Vega Cani min:-99999 max:99999 years:132,  Max-min,63.99    ,Ave,01-05 01:25:26 ,StDev, 12.97       //>
+//.  7 MidN Cani min:-99999 max:99999 years:132,  Max-min,59.65    ,Ave,12-24 23:03:47 ,StDev, 12.96       //>
+                                                                                                           //>
+//.  7 Vega Cani min:     1 max:99999 years:132,  Max-min,57.74    ,Ave,01-01 15:35:16 ,StDev, 11.17       //>
+//.  7 Vega Cani min:     1 max:    2 years:132,  Max-min,45.43    ,Ave,01-11 02:00:50 ,StDev, 10.09       //> <-- Use this one!
+//.  0 Math      min:-99999 max:99999 years:132,  Max-min,28.46    ,Ave,12-21 22:18:43 ,StDev,  8.54       //>
                                                                                                         //> Main execution starts here.
   New_ReadData();                                                                                       //> READING DATA:
                                                                                                         //> RUNNING TRIALS:
-  New_MultiYearRun( Math.floor( dJDayOfYms_jd(1800,12,31) )  ,7 ,"Vega" ,"Cani" ,     1 ,    2  ,250 ); //>
-//.  8 Moon Long min:-99999 max:99999 years:132,  Max-min,59.26 ,Ave,12-05 14:24:27 ,StDev, 13.52       //>
-//.  8 MidN Lon2 min:-99999 max:99999 years:132,  Max-min,61.32 ,Ave,01-08 21:41:10 ,StDev, 13.38       //>
-//.  8 Vega Lon2 min:-99999 max:99999 years:132,  Max-min,61.78 ,Ave,01-17 14:00:50 ,StDev, 13.34       //>
-//.  8 Moon Lon2 min:-99999 max:99999 years:132,  Max-min,66.77 ,Ave,01-04 02:00:50 ,StDev, 13.24       //>
-//.  8 MidN Long min:-99999 max:99999 years:132,  Max-min,59.65 ,Ave,12-07 13:01:49 ,StDev, 13.15       //>
-//.  7 Moon Lon2 min:-99999 max:99999 years:132,  Max-min,62.78 ,Ave,01-18 00:50:01 ,StDev, 12.73       //>
-//.  8 Vega Long min:-99999 max:99999 years:132,  Max-min,55.74 ,Ave,12-17 16:57:53 ,StDev, 12.54       //>
-//.  7 MidN Long min:-99999 max:99999 years:132,  Max-min,58.19 ,Ave,12-19 15:11:40 ,StDev, 11.95       //>
-//.  7 MidN Lon2 min:-99999 max:99999 years:132,  Max-min,55.74 ,Ave,01-22 03:47:04 ,StDev, 11.90       //>
-//.  7 Vega Lon2 min:-99999 max:99999 years:132,  Max-min,56.13 ,Ave,01-29 21:52:58 ,StDev, 11.85       //>
-//.  7 Moon Long min:-99999 max:99999 years:132,  Max-min,51.54 ,Ave,12-18 15:47:04 ,StDev, 11.83       //>
-//.  7 Vega Long min:-99999 max:99999 years:132,  Max-min,52.14 ,Ave,12-30 00:02:48 ,StDev, 11.81       //>
-                                                                                                        //>
-//.  8 MidN Cani min:-99999 max:99999 years:132,  Max-min,65.91 ,Ave,12-14 13:37:14 ,StDev, 14.16       //>
-//.  8 Moon Cani min:-99999 max:99999 years:132,  Max-min,63.85 ,Ave,12-12 20:53:57 ,StDev, 14.15       //>
-//.  8 Vega Cani min:-99999 max:99999 years:132,  Max-min,62.78 ,Ave,12-24 00:26:25 ,StDev, 13.35       //>
-//.  7 Moon Cani min:-99999 max:99999 years:132,  Max-min,59.65 ,Ave,12-24 11:27:24 ,StDev, 13.25       //>
-//.  7 Vega Cani min:-99999 max:99999 years:132,  Max-min,63.99 ,Ave,01-05 01:25:26 ,StDev, 12.97       //>
-//.  7 MidN Cani min:-99999 max:99999 years:132,  Max-min,59.65 ,Ave,12-24 23:03:47 ,StDev, 12.96       //>
-                                                                                                        //>
-//.  7 Vega Cani min:     1 max:99999 years:132,  Max-min,57.74 ,Ave,01-01 15:35:16 ,StDev, 11.17       //>
-//.  7 Vega Cani min:     1 max:    2 years:132,  Max-min,45.43 ,Ave,01-11 02:00:50 ,StDev, 10.09       //> <-- Use this one!
-//.  0 Math      min:-99999 max:99999 years:132,  Max-min,28.46 ,Ave,12-21 22:18:43 ,StDev,  8.54       //>
+
+  //                startWatch                               ,days ,a_sWhenGibbous ,a_sWhereLook ,Min_yr,nMax_yr ,a_nRun_yr
+  New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,7    ,"Vega"       ,"Cani"     ,1     ,2       ,150     );
+  New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,8    ,"Vega"       ,"Cani"     ,1     ,2       ,150     );
+
   trace("Done");                                                                                        //>
  }//new///////////////////////////////////////////////////////////////////////////////////////////////////>
 

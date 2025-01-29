@@ -1,4 +1,4 @@
-// ToolChain_MakeScreenShots.hx - Haxe language BODGE code to create/copy Stellarium script (currently just copies it to a directory).
+// ToolChain_MakeScreenShots.hx - Bodge code to create/copy Stellarium script for generating sky disc views.
 // (c)2024 David C. Walley
 
 // THE FOLLOWING IS NOT SOURCE CODE. THESE ARE MY NOTES!

@@ -63,8 +63,8 @@ Other code generates graphics files from Stellarium, of stars and constellations
 | NebraDiscAlignment_svg.hx    | Bodge code to create SVG file for showing Nebra Sky Disc alignments.                                  |
 | Notepad.session              |                                                                                                       |
 | TestProcedures.hx            | Try various procedures for syncing lunar calendar, reading pre-calculated data files.                 |
-| ToolChain_MakeDataFiles.hx   | Bodge code to create/copy Stellarium script (currently just copies it to a directory).  |
-| ToolChain_MakeScreenShots.hx | Bodge code to create/copy Stellarium script (currently just copies it to a directory).  |
+| ToolChain_MakeDataFiles.hx   | Bodge code to create/copy Stellarium script for generating daily data tables, AND possibly star data file. |
+| ToolChain_MakeScreenShots.hx | Bodge code to create/copy Stellarium script for generating sky disc views.                             |
 | TryMultiYearRuns.hx          | Try various procedures for syncing lunar calendar, reading pre-calculated data files.                 |
 
 ## License

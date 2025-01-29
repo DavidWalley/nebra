@@ -1,4 +1,4 @@
-// ToolChain_MakeDataFiles.hx - Haxe language BODGE code to create/copy Stellarium script (currently just copies it to a directory).
+// ToolChain_MakeDataFiles.hx - Bodge code to create/copy Stellarium script for generating daily data tables, AND possibly star data file. v016
 // (c)2024 David C. Walley
 
 // THE FOLLOWING IS NOT SOURCE CODE. THESE ARE MY NOTES!
