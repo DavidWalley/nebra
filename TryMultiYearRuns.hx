@@ -4,10 +4,9 @@
 // This code file is pre-processed and run using the following, in a UBUNTU terminal (ctrl+alt+T) (some hard-coding follows):
 // cd ~/Desktop/AAA/NEBRA/code/nebra                                                                    # Where I keep this file.
 // timedatectl set-timezone Africa/Abidjan && haxe --neko TEMP_neko.n --main TryMultiYearRuns && neko TEMP_neko.n && timedatectl set-timezone America/Chicago
-// timedatectl set-timezone Africa/Abidjan && haxe --neko TEMP_neko.n --main TryMultiYearRuns > RESULTS.csv && neko TEMP_neko.n && timedatectl set-timezone America/Chicago
 // Output is to stdout (trace()).
 
-class TryMultiYearRuns ///////////////////////////////////////////////////////////////////////////////////> For a stellarium script:
+class TryMultiYearRuns ///////////////////////////////////////////////////////////////////////////////////>
 {/////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
   var           _bYEARLY                :Bool                   = true ;                                //> What to display as output: year-by-year details,
@@ -412,14 +411,13 @@ class TryMultiYearRuns /////////////////////////////////////////////////////////
   for( y in  800... 900 ){   New_ReadMapasDataOfFile(      '0800/table017_'+ y +'.csv' );   }           //> For a century... Get data from each file, put in global table.
   for( y in  900...1000 ){   New_ReadMapasDataOfFile(      '0900/table017_'+ y +'.csv' );   }           //> For a century... Get data from each file, put in global table.
   for( y in 1000...1020 ){   New_ReadMapasDataOfFile(      '1000/table017_'+ y +'.csv' );   }           //> For a century... Get data from each file, put in global table.
-
 //for( y in 1000...1100 ){   New_ReadMapasDataOfFile( '1000_1099/table012_'+ y +'.csv' );   }            //> For a century... Get data from each file, put in global table.
 //for( y in 1100...1200 ){   New_ReadMapasDataOfFile( '1100_1199/table012_'+ y +'.csv' );   }            //> "
 //for( y in 1200...1300 ){   New_ReadMapasDataOfFile( '1200_1299/table012_'+ y +'.csv' );   }            //> "
 //for( y in 1300...1379 ){   New_ReadMapasDataOfFile( '1300_1399/table012_'+ y +'.csv' );   }            //> "
 //for( y in 1379...1400 ){   New_ReadMapasDataOfFile( '1300_1399/table013_'+ y +'.csv' );   }            //> " Format change?
-  for( y in 1400...1500 ){   New_ReadMapasDataOfFile(      '1400/table017_'+ y +'.csv' );   }                //>
-  for( y in 1500...1558 ){   New_ReadMapasDataOfFile(      '1500/table017_'+ y +'.csv' );   }                //>
+  for( y in 1400...1500 ){   New_ReadMapasDataOfFile( '1400/table017_'+ y +'.csv' );   }                //>
+  for( y in 1500...1558 ){   New_ReadMapasDataOfFile( '1500/table017_'+ y +'.csv' );   }                //>
 //for( y in 1800...1900 ){   New_ReadMapasDataOfFile(      '1800/table015_'+ y +'.csv' );   }            //>
 //for( y in 1900...2000 ){   New_ReadMapasDataOfFile(      '1900/table015_'+ y +'.csv' );   }            //>
 //for( y in 2000...2100 ){   New_ReadMapasDataOfFile(      '2000/table015_'+ y +'.csv' );   }            //>
@@ -492,17 +490,6 @@ return [r_s ,d_360 ,r_jd];                                                      
  }//avWinterLooks_Row_Over_Full///////////////////////////////////////////////////////////////////////////>
 
 
-// public function        WriteToFile(///////////////////////////
-//                        fileName        :String
-// ,                      message         :String
-// )                                      :Void {///////////////////////////////
-//  var                   output          :FileOutput             = sys.io.File.write(fileName ,false);
-//  output.writeString( message );
-//  output.close();
-// }//WriteToFile//////////////////////////////////////////////////////////////
-
-
-
  function               New_MultiYearRun(/////////////////////////////////////////////////////////////////>
                         a_jd            :Int             //= Math.floor( dJDayOfYms_jd( 1000,12,31 ) ); //> Convert Gregorian date to a Julian Day, the number of days that have passed since the Julian Date Epoch.  Gregorian Year,
  ,                      a_nNights       :Int                                                            //> Parameters to test in this pass - the count from first quarter moon to full.
@@ -569,23 +556,22 @@ return [r_s ,d_360 ,r_jd];                                                      
   //                               ###3   First gibbous      ###5 Date/time of observation                    ###10 big nights distance from some solar date - for statistical analysis of variance of big night date.
   //                                                    ###4="Moon", "MidN", or "Vega".                              //>
   //            ###0   ,###1      ,###3                ,###4,###5                ,###7  ,###8    ,###9       ,###10  //> ,###6   
-  r_s = "\nLen ,JDay   ,LastMonth ,GibbousMoonsetLMST  ,What,WhenBigNightGREGOR  ,Declin,RtAscen ,OverL ,L   ,stats" //> ,illumin
+  r_s = "\nLen ,JDay   ,LastMonth ,GibbousMoonsetLMST  ,What,WhenBigNight        ,Declin,RtAscen ,OverL ,L   ,stats" //> ,illumin
        + r_s;                                                                                           //>
-//trace(""                                                                                              //>
-//sys.io.File.write("path"                                                                                              //>
-  sys.io.File.saveContent(_sPATHoUT +"MultiYearRun.csv" ,
-   "Run for: "+ a_nNights +" when:"+ a_sWhenGibbous +" look:"+ a_sWhereLook                       //>
+//trace("\n\n\n"+
+  sys.io.File.saveContent( _sPATHoUT + "TestRun.csv"
+  ,"Run for: "+ a_nNights +" when:"+ a_sWhenGibbous +" look:"+ a_sWhereLook                             //>
                                   +" min:"+ a_nMinJump_yr +" max:"+ a_nMaxJump_yr +" years:"+ a_nRun_yr //> Show pattern in a 19-year grid:
   +(   !_bYEARLY  ?"" :r_s    )                                                                         //>
-//+(   !_bPATTERN ?"" :( "\n |"+ sPattern.substr(    0 ,19) +"|"                                        //>
-//                      +"\n |"+ sPattern.substr(   19 ,19) +"|"                                        //>
-//                      +"\n |"+ sPattern.substr(2 *19 ,19) +"|"                                        //>
-//                      +"\n |"+ sPattern.substr(3 *19 ,19) +"|"                                        //>
-//                      +"\n |"+ sPattern.substr(4 *19 ,19) +"|"                                        //>
-//                      +"\n |"+ sPattern.substr(5 *19 ,19) +"|"                                        //>
-//                      +"\n |"+ sPattern.substr(6 *19 ,19) +"|"                                        //>
-//                     )                                                                                //>
-// )                                                                                                    //>
+//  +(   !_bPATTERN ?"" :( "\n |"+ sPattern.substr(    0 ,19) +"|"                                        //>
+//                        +"\n |"+ sPattern.substr(   19 ,19) +"|"                                        //>
+//                        +"\n |"+ sPattern.substr(2 *19 ,19) +"|"                                        //>
+//                        +"\n |"+ sPattern.substr(3 *19 ,19) +"|"                                        //>
+//                        +"\n |"+ sPattern.substr(4 *19 ,19) +"|"                                        //>
+//                        +"\n |"+ sPattern.substr(5 *19 ,19) +"|"                                        //>
+//                        +"\n |"+ sPattern.substr(6 *19 ,19) +"|"                                        //>
+//                       )                                                                                //>
+//   )                                                                                                    //>
   +(   !_bSTATS   ?"" :( "\nRange: "  + ( (dMax - dMin)+"               " ).substr(0,16)                //> Max range.
                         +"\nCount: "  + dS0                                                             //>
                         +"\nAverage: "+ sYmdHms(dS1/dS0 - 100).substr(6)                                //> Average date is corrected for the offset added earlier.
@@ -607,10 +593,9 @@ return [r_s ,d_360 ,r_jd];                                                      
                                                                                                         //> Main execution starts here.
   New_ReadData();                                                                                       //> READING DATA:
                                                                                                         //> RUNNING TRIALS:
-  New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,7 ,"Vega" ,"Cani" ,1 ,2 ,150 );            //>
-  New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,8 ,"Vega" ,"Cani" ,1 ,2 ,150 );            //>
-                                                                                                        //>
-//New_MultiYearRun( Math.floor( dJDayOfYms_jd( 400,12,1) )  ,7 ,"Vega" ,"Cani" ,1 ,2 ,600 );            //>
+  New_MultiYearRun( Math.floor( dJDayOfYms_jd( 400,12,1) )  ,7 ,"Vega" ,"Cani" ,1 ,2 ,610 );            //>
+//New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,7 ,"Vega" ,"Cani" ,1 ,2 ,150 );            //>
+//New_MultiYearRun( Math.floor( dJDayOfYms_jd(1400,12,1) )  ,8 ,"Vega" ,"Cani" ,1 ,2 ,150 );            //>
   trace("Done");                                                                                        //>
  }//new///////////////////////////////////////////////////////////////////////////////////////////////////>
 

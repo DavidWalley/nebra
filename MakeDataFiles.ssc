@@ -1,15 +1,13 @@
-// MakeDataFiles.ssc - Stellarium script for generating daily data tables, AND possibly star data file. v016
+// NEBRA/code/nebra/MakeDataFiles.ssc - Stellarium script for generating daily data tables, AND possibly star data file.
 // Name: Lunascope
 // License: (c)2024 David C. Walley
 // Author: David C. Walley
 // Version: 0.1
 // Description: In Stellarium, pre-calculate daily info about the Moon and important stars, because it takes all day because of the many pauses inserted to avoid race conditions in Stellarium.
 
-// Start stellarium
-// In a UBUNTU terminal (ctrl+alt+T):
-//  cd ~/Desktop/AAA/NEBRA/code/nebra && haxe --neko TEMP_neko.n --main ToolChain_MakeDataFiles && neko TEMP_neko.n && sleep 1 && wmctrl -a 'Stellarium 24.3' # Run this file and switch to open STELLARIUM window.
-//x cd ~/Desktop/AAA/NEBRA/lunascope  && for i in scr_*.png; do convert "$i"  -fuzz 25% -transparent black trans_$i; done # TRANSPARENT
-//x cd ~/Desktop/AAA/NEBRA/lunascope  && haxe --neko TEMP_neko.n --main Lunascope_svg && neko TEMP_neko.n DUMMYdATA && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
+// (c)2025 David C. Walley
+// Preprocess and run using .../NEBRA/code/nebra/ToolChain_MakeScreenShots.hx   See more documentation there.
+
 
 const                  g_sPATHfILEoUT = "/home/dave/Desktop/AAA/NEBRA/code/nebra/daily_data/table017_"; //> Path and file name template, to output root directory.
 
@@ -398,7 +396,7 @@ function                                Go(/////////////////////////////////////
 // Just do the time-consuming stuff in this Stellarium code, generating CSV files for use by other code...
 //for( let iYear = 1392; iYear < 1400; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
 //for( let iYear = 1400; iYear < 2100; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
-  for( let iYear =  400; iYear < 1400; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
+  for( let iYear = 1022; iYear < 1400; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
   for( let iYear = 1700; iYear < 2100; iYear += 1 ){ Go_DataTables_OneYear( iYear ,g_sPATHfILEoUT ); }  //>
 }//Go(){}/////////////////////////////////////////////////////////////////////////////////////////////////>
 

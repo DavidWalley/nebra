@@ -191,15 +191,15 @@ class NebraDiscAlignment_svg ///////////////////////////////////////////////////
 //sSvg += '<g id="layer'+ iId() +'" inkscape:label="scr_'+ a_sPass +'" inkscape:groupmode="layer"'      //>
 //       +' style="'                    +'display:none' +';opacity:0.5"'                                //>
 //       +'>';                                                                                          //>
-  var                   dX              :Float                  = 0.;
-  var                   dY              :Float                  = 0.;
+  var                   dX              :Float                  = 0.;                                   //>
+  var                   dY              :Float                  = 0.;                                   //>
   for( iPass in 0...4 ){                                                                                //>
-   switch( iPass ){
-   case 0: dX = 0. ; dY = 0. ;
-   case 1: dX = 0. ; dY = 0.2;
-   case 2: dX = 0.2; dY = 0. ;
-   case 3: dX = 0.2; dY = 0.2;
-   }//switch
+   switch( iPass ){                                                                                     //>
+   case 0: dX = 0. ; dY = 0. ;                                                                          //>
+   case 1: dX = 0. ; dY = 0.2;                                                                          //>
+   case 2: dX = 0.2; dY = 0. ;                                                                          //>
+   case 3: dX = 0.2; dY = 0.2;                                                                          //>
+   }//switch                                                                                            //>
    sSvg +=  '<image id="image'+ iId() +'"'                                                              //>
           + ' '+ a_sAttribute                                                                           //> 'style="filter:url(#'+ "filterWhiteLines" +')"'
           + ' xlink:href="'   +'./'+ a_sFile   +'"';                                                    //> Same directory as SVG output file, i.e. _sPATHsVGoUT
