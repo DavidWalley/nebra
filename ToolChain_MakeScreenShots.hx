@@ -1,14 +1,14 @@
 // ToolChain_MakeScreenShots.hx - Bodge code to create/copy Stellarium script for generating sky disc views.
 // (c)2024 David C. Walley
 
-// THE FOLLOWING IS NOT SOURCE CODE. THESE ARE MY NOTES!                        
+// THE FOLLOWING IS NOT SOURCE CODE. THESE ARE MY NOTES!
 
 
 class ToolChain_MakeScreenShots //////////////////////////////////////////////////////////////////////////> For a stellarium script:
 {/////////////////////////////////////////////////////////////////////////////////////////////////////////>
 
-  var                   _sPathMoney       :String     ="/home/dave/Desktop/AAA/NEBRA/code/nebra/";      //> Money code directory.
-  var                   _sPathStellarium  :String     ="/home/dave/Desktop/";                           //> Generated "source code" directory ( by Stellarium).
+  var                   _sPathMoney       :String               = "/home/dave/Desktop/CODE/nebra/";     //> Money code directory.
+  var                   _sPathStellarium  :String               = "/home/dave/Desktop/";                //> Generated "source code" directory (by Stellarium).
 
 
  function               new(//ToolChain_MakeScreenShots///////////////////////////////////////////////////> Main procedure of this class.

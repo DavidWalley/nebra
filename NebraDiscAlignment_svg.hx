@@ -3,11 +3,11 @@
 
 // CREATE THE SVG FILE OF ALIGNMENTS:
 // In UBUNTU terminal (ctrl+alt+T): This code file (in this path) is pre-processed and run using the following, (some hard-coding follows):
-// cd ~/Desktop/AAA/NEBRA/code/nebra      && haxe --neko TEMP_neko.n --main NebraDiscAlignment_svg && neko TEMP_neko.n && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
+// cd ~/Desktop/CODE/nebra      && haxe --neko TEMP_neko.n --main NebraDiscAlignment_svg && neko TEMP_neko.n && sleep 1 && wmctrl -a 'lunascope.svg' # CREATE SVG
 
 
-final                   _sPATHsVGoUT    :String = "/home/dave/Desktop/AAA/NEBRA/code/nebra/alignment/"; //> ???Hard-coded? Directory with images, BUT ALSO the output directory.
-final                   _sSVGoUT        :String = "lunascope_align.svg";                                //> File name of result.
+final                   _sPATHsVGoUT    :String           = "/home/dave/Desktop/CODE/nebra/alignment/"; //> ???Hard-coded? Directory with images, BUT ALSO the output directory.
+final                   _sSVGoUT        :String           = "lunascope_align.svg";                      //> File name of result.
 
 
 class NebraDiscAlignment_svg /////////////////////////////////////////////////////////////////////////////> For a stellarium script:
