@@ -9,7 +9,7 @@
 // Preprocess and run using .../NEBRA/code/nebra/ToolChain_MakeScreenShots.hx   See more documentation there.
 
 
-const                  g_sPATHfILEoUT = "/home/dave/Desktop/AAA/NEBRA/code/nebra/daily_data/table017_"; //> Path and file name template, to output root directory.
+const                            g_sPATHfILEoUT = "/home/dave/Desktop/CODE/nebra/daily_data/table017_"; //> Path and file name template, to output root directory.
 
 
 function                                NAP(){ core.wait(0.01); }                                       //> Short pause. Delay to allow for asynchronous updates in Stellarium.

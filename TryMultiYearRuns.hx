@@ -2,7 +2,7 @@
 // (c)2024 David C. Walley
 
 // This code file is pre-processed and run using the following, in a UBUNTU terminal (ctrl+alt+T) (some hard-coding follows):
-// cd ~/Desktop/AAA/NEBRA/code/nebra                                                                    # Where I keep this file.
+// cd ~/Desktop/CODE/nebra                                                                    # Where I keep this file.
 // timedatectl set-timezone Africa/Abidjan && haxe --neko TEMP_neko.n --main TryMultiYearRuns && neko TEMP_neko.n && timedatectl set-timezone America/Chicago
 // Output is to stdout (trace()).
 
@@ -13,8 +13,8 @@ class TryMultiYearRuns /////////////////////////////////////////////////////////
   var           _bPATTERN               :Bool                   = true ;                                //> Graphic for leap-year pattern.
   var           _bSTATS                 :Bool                   = true ;                                //>
 
-  var                   _sPATHdATA     :String = "/home/dave/Desktop/AAA/NEBRA/code/nebra/daily_data/"; //> ???Hard-coded? Pre-calculated data files.
-  var                   _sPATHoUT      :String = "/home/dave/Desktop/AAA/NEBRA/code/nebra/daily_data/"; //> ???Hard-coded? Results output to here.
+  var                   _sPATHdATA     :String           = "/home/dave/Desktop/CODE/nebra/daily_data/"; //> ???Hard-coded? Pre-calculated data files.
+  var                   _sPATHoUT      :String           = "/home/dave/Desktop/CODE/nebra/daily_data/"; //> ???Hard-coded? Results output to here.
 
   var                   _dYEAR_days      :Float                 = 365.242189;                           //> Mean tropical year (Laskar's expression)
   var                   _dMONTH_days     :Float                 = 29 + 12/24 + 44/60/24 + 2.9/60/60/24; //> Synodic month.
