@@ -762,7 +762,6 @@ function                                Reset(//////////////////////////////////
    var                                  dSink                   = -2.;                                  //>
    for( j = 0; j < a2dRise.length; j++ ){                                                               //> East Arc
     MarkerMgr.markerHorizon( a2dRise[j][0]                      + g_dOBSERVERlONG                       //> Create a marker with horizontal coordinates (plus fudge factor?)
-//  ,                        a2dRise[j][1] + dSink                                                      //> below the horizon, and sinking so we can see it turn
     ,                        dSink                                                                      //> below the horizon, and sinking so we can see it turn
     ,                        true,"disk","#ffff00" ,4 ,false,0                                          //> 
     );                                                                                                  //> .
@@ -771,7 +770,6 @@ function                                Reset(//////////////////////////////////
    dSink = -2.;                                                                                         //>
    for( j = 0; j < a2dSet.length ; j++ ){                                                               //> West Arc:
     MarkerMgr.markerHorizon( a2dSet[ j][0]                      + g_dOBSERVERlONG                       //> Create a marker with horizontal coordinates (plus fudge factor?)
-//  ,                        a2dSet[ j][1] + dSink                                                      //> below the horizon, and sinking so we can see it turn
     ,                        dSink                                                                      //> below the horizon, and sinking so we can see it turn
     ,                        true,"disk","#0000ff" ,6 ,false,0                                          //>
     );                                                                                                  //> .
