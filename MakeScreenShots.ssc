@@ -14,6 +14,12 @@ const                                   g_sPATHsHOTS  = // "/home/dave/Desktop/C
                                                         // "/home/dave/Desktop/CODE/nebra/animation/";  //>
                                                         // "/media/dave/Blk7/AAA/stellarium_tonight/";  //> External drive.
                                                            "/media/dave/big_vol/data/";
+const                                   g_isVERSION  =   "€VERSION";                                    //> Macro replaced with "ALIGNMENTS" "FRAMES". In UBUNTU terminal - setxkbmap "us(euro)" # Right Alt+5 should give "€".
+const                                   g_sPATHsHOTS = //"/home/dave/Desktop/CODE/lunascope/frames/";   //>
+                                                       //"/home/dave/Desktop/CODE/nebra/animation/";    //>
+                                                       //"/media/dave/Blk7/AAA/stellarium_tonight/";    //> External drive.
+                                                       //"/media/dave/big_vol/data/";                   //>
+                                                         "/home/dave/Desktop/CODE/lunascope/TEMP_out/"; //>
 // import bitmap.*;                                                                                     //> https://lib.haxe.org/p/bitmap/
 // import bitmap.transformation.Convolution;
 // let                     bitmap = PNGBitmap.create(IOUtil.readFile("imgs/input.png"));
@@ -187,6 +193,7 @@ return 23.43929167 - e; // + nutatObl(greenwichDay, greenwichMonth, greenwichYea
 
 
 //. function                                dRaHDecToEclipticLong_360(///////////////////////////////> Convert Equatorial to Ecliptic Longitude.
+//. function                                dRaHDecToEclipticLong_360(////////////////////////////////////> Convert Equatorial to Ecliptic Longitude.
 //.                                         RaH                                                         //> RA    rah, ram, ras  
 //. ,                                       Dec                                                         //> Dec   dd, dm, ds     
 //. ,                                       a_jd                                                        //> when  gd, gm, gy     
@@ -300,6 +307,7 @@ function                                Mark(///////////////////////////////////
 ,                                       a_sRgb                                                          //> color  e.g. "#ffffff"
 ,                                       a_dSize                                                         //> e.g. 12
 ,                                       dNow_jd
+,                                       dNow_jd                                                         //>
 ){                                      //////////////////////////////////////////////////////////////////>
   let                                   m                       = mapSelect(a_sStarId);          NAP(); //>
   if( dRaHDecToAlt_360( m.raJ2000 - dGmst_360(dNow_jd)                                                  //>
@@ -476,10 +484,13 @@ function                                Reset(//////////////////////////////////
            || "P" ==av[g_iDOTS_sView] ){ Mark( av[g_iDOTS_sId ] ,"circle" ,"#00FFFF" ,12 );             //. Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#00FFFF" ,30 ); //> Blue circle (and number).
     }else if( "g" ==av[g_iDOTS_sView] ){ Mark( av[g_iDOTS_sId ] ,"circle" ,"#00FF00" , 6 );             //. Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#00FF00" ,15 ); //> Green circle (and number).
     }else                              { Mark( av[g_iDOTS_sId ] ,"circle" ,"#FF0000" ,12 );             //. Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#FF0000" ,30 ); //> Otherwise a red circle (and number).
+    }else if( "g" ==av[g_iDOTS_sView] ){ Mark( av[g_iDOTS_sId ] ,"circle" ,"#00FF00" , 6 );             //> Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#00FF00" ,15 ); //> Green circle (and number).
+    }else                              { Mark( av[g_iDOTS_sId ] ,"circle" ,"#FF0000" ,12 );             //> Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#FF0000" ,30 ); //> Otherwise a red circle (and number).
   }}}//if//if//for i                                                                                    //>
                                                                 core.wait(2); Snap('scr_dots_'+ sView); //>
   MarkerMgr      .deleteAllMarkers();                                                                   //> https://stellarium.org/doc/23.0/classMarkerMgr.html
   ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );
+  ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );                            //>
                                                                 core.wait(2); Snap('scr_art_'+  sView); //>
                                                                                                         //>
   ConstellationMgr.setFlagArt(false); ConstellationMgr.setArtIntensity( 0 );                            //>
@@ -555,19 +566,19 @@ function                                Reset(//////////////////////////////////
   StelSkyDrawer    .setFlagTwinkle(                                        false );                     //> No star twinkle.   https://stellarium.org/doc/23.0/classStelSkyDrawer.html
   StelSkyDrawer    .setFlagLuminanceAdaptation(                            false );                     //> Set the value of the eye adaptation flag.
   StelSkyDrawer    .setFlagDrawBigStarHalo(                                false );                     //> Set flag for drawing a halo around bright stars.
-//MilkyWay         .setFlagShow(                                           false );                     //> Show Milky Way.   https://stellarium.org/doc/24.0/classMilkyWay.html#ac365cf02f2019b6485337a6c48cec5cb   core.setMilkyWayVisible( false );                                                                     //>
   MilkyWay         .setFlagShow(                                            true );                     //> Show Milky Way.   https://stellarium.org/doc/24.0/classMilkyWay.html#ac365cf02f2019b6485337a6c48cec5cb   core.setMilkyWayVisible( false );                                                                     //>
   LandscapeMgr     .setFlagAtmosphere(                                      true );                     //> No atmosphere effects.   https://stellarium.org/doc/23.0/classLandscapeMgr.html
-  LandscapeMgr     .setFlagCardinalPoints(                                  true );                     //>
+  LandscapeMgr     .setFlagCardinalPoints(                                  true );                     //> Set flag for displaying cardinal points (4-wind compass rose directions)
+  LandscapeMgr     .setFlagOrdinalPoints(                                  false );                     //> Set flag for displaying intercardinal (or ordinal) points (8-wind compass rose directions).
+  LandscapeMgr     .setFlagOrdinal16WRPoints(                              false );                     //> Set flag for displaying intercardinal (or ordinal) points (16-wind compass rose directions).
+  LandscapeMgr     .setFlagOrdinal32WRPoints(                              false );                     //> Set flag for displaying intercardinal (or ordinal) points (32-wind compass rose directions).
+  LandscapeMgr     .setColorCardinalPoints(            core.vec3f(1.0 ,0.0 ,0.0) );                     //> Set Cardinals Points color.
   LandscapeMgr     .setFlagFog(                                            false );                     //>
   LandscapeMgr     .setFlagLandscape(                                       true );                     //> Turn on Landscape,
   LandscapeMgr     .setFlagLandscapeUseTransparency(                        true );                     //> Determine if a transparency should be used.
   LandscapeMgr     .setLandscapeTransparency(                                0.0 );                     //> Value of transparency, 1 = fully transparent
   LandscapeMgr     .setCurrentLandscapeName(                  "Stonehenge7" ,0.0 );                     //>
   LabelMgr         .deleteAllLabels(                                             );                     //> Delete text boxes. LabelMgr.labelScreen - adds text to the scene.   https://stellarium.org/doc/0.20/classLabelMgr.html
-//SolarSystem      .setFlagMoonScale(                                      false );                     //> Determines if Earth's moon is scaled or not.
-//SolarSystem      .setMoonScale(                                             1  );                     //> Set the display scaling factor for Earth's moon.
-//SolarSystem      .setFlagDrawMoonHalo(                                    true );                     //> Glare around moon.
   SolarSystem      .setFlagPlanets(                                        false );                     //>
   SolarSystem      .setFlagPlanets(                                         true );                     //>
 //SolarSystem      .setFlagPlanetScale(                                     true );                     //>
@@ -589,6 +600,7 @@ function                                Reset(//////////////////////////////////
 //ConstellationMgr .setFlagArt(false);                                                                  //>
 //ConstellationMgr .setFlagIsolateSelected(false);                                                      //> turn off constellation
 //ConstellationMgr .setFlagLines(false);                                                                //>
+//ConstellationMgr .setLinesColor( core.vec3f(1.0 ,0.0 ,0.0) );                                // Set red color for constellation lines
 //ConstellationMgr .setArtIntensity(                                         0.6 );                     //>
   ConstellationMgr .setFlagArt(                                            false );                     //>   https://stellarium.org/doc/23.0/classConstellationMgr.html
   ConstellationMgr .setArtFadeDuration(                                      0.1 );                     //>
@@ -597,7 +609,6 @@ function                                Reset(//////////////////////////////////
   ConstellationMgr .setFlagLabels(                                         false );                     //> Constellation names will not be displayed.
   ConstellationMgr .setFlagLines(                                           true );                     //> Constellation lines.
   ConstellationMgr .deselectConstellations(                                      );                     //> !!!NOT RELIABLE!
-//core.setGuiVisible( false );
 //LabelMgr.deleteAllLabels(); LabelMgr.labelScreen( 10 + mapSun["altitude"] ,400 ,200 ,true ,20 ,"#ff0000"); //> DEBUG
   MarkerMgr        .deleteAllMarkers(                                            );                     //> https://stellarium.org/doc/23.0/classMarkerMgr.html
 //StelSkyLayerMgr.setFlagShow( true ); //                                                  size  rotate
@@ -605,12 +616,15 @@ function                                Reset(//////////////////////////////////
 //core.removeSkyImage("imgDisc2"); core.loadSkyImage("imgDisc2","disc_11.png",48.   ,27.,2*2250.0,  0  ,2.5,-14,true,"EqJ2000"); //> pinned to celestial sphere.   Distortion bug.
 //core.removeSkyImage("imgDisc3"); core.loadSkyImage("imgDisc3","disc_11.png",48.+60,27.,2*2250.0,  0  ,2.5,-14,true,"EqJ2000"); //> pinned to celestial sphere.   Distortion bug.
 //core.removeSkyImage("imgDisc4"); core.loadSkyImage("imgDisc4","disc_11.png",48.+70,27.,2*2250.0,  0  ,2.5,-14,true,"EqJ2000"); //> pinned to celestial sphere.   Distortion bug.
+//core.setGuiVisible( false );
  }//Go_Frames_Setup///////////////////////////////////////////////////////////////////////////////////////>
 
 
  function                               MarkMajorStars(///////////////////////////////////////////////////>
                                         iFrame
  ,                                      dNow_jd
+                                        iFrame                                                          //>
+ ,                                      dNow_jd                                                         //>
  ){                                     //////////////////////////////////////////////////////////////////>
   Twinkle( iFrame ,"Vega"      ,"#ffff00" ,6 ,dNow_jd );  //> Lyra
   Twinkle( iFrame ,"Dubhe"     ,"#ffff00" ,4 ,dNow_jd );  //> Mark("Dubhe"  ,"disk" ,"#ffff00" ,3); //> Big Dipper
@@ -672,7 +686,25 @@ function                                Reset(//////////////////////////////////
   Mark( "Mars"    ,"cross" ,"#ff0000" ,13 ,dNow_jd );                                                 //>
   Mark( "Jupiter" ,"cross" ,"#00ffff" ,13 ,dNow_jd );                                                 //>
   Mark( "Saturn"  ,"cross" ,"#0000ff" ,13 ,dNow_jd );                                                 //>
+  Twinkle( iFrame ,"Asellus Borealis" ,"circle" ,"#ff0000" , 6 );                                       //> Mark("Asellus Borealis" ,"disk" ,"#ffff00" ,3);   //> Cancer
+  // TODO Check for above horizon or not for all the planets:                                           //>
+  Mark( "Mercury" ,"cross" ,"#ff8800" ,13 ,dNow_jd );                                                   //>
+  Mark( "Venus"   ,"cross" ,"#ff00ff" ,13 ,dNow_jd );                                                   //>
+  Mark( "Mars"    ,"cross" ,"#ff0000" ,13 ,dNow_jd );                                                   //>
+  Mark( "Jupiter" ,"cross" ,"#00ffff" ,13 ,dNow_jd );                                                   //>
+  Mark( "Saturn"  ,"cross" ,"#0000ff" ,13 ,dNow_jd );                                                   //>
  }//MarkMajorStars////////////////////////////////////////////////////////////////////////////////////////>
+
+
+// var                                  s_sOutput               = "";                                   //>
+ function                               REPORT(///////////////////////////////////////////////////////////>
+                                        a_s                                                             //>
+ ){                                     //////////////////////////////////////////////////////////////////>
+//s_sOutput += a_s +"\n";                                                                               //>
+//core.output(s_sOutput);                                                                               //>
+  core.output(a_s);                                                                                     //>
+  core.saveOutputAs( g_sPATHsHOTS + "REPORT.txt" );                                                     //> Write results to file system, same directory as the screen shots.
+ }//REPORT////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
  function                               Go_Frames(////////////////////////////////////////////////////////> Create animation frames.
@@ -695,6 +727,9 @@ function                                Reset(//////////////////////////////////
   for( iFrame  = 0; iFrame  < 1440; iFrame++ ){                                                         //> 60 SECOND CLIP at 24 fps, for sunset to sunrise.
    core.setJDay( dNow_jd );  
    dNow_jd = d0_js + dOneFrame_day*iFrame;                                                                //> Convert one frame to a fraction of a (Julian) day.
+   dNow_jd = d0_js + dOneFrame_day*iFrame;                                                              //> Convert one frame to a fraction of a (Julian) day.
+   core.setJDay( dNow_jd );                                                                             //>
+   REPORT( iFrame +","+ dNow_jd );                                                                      //> Record output to disk file.
                                                                                                         //>
    ConstellationMgr.deselectConstellations();                                                           //> Clear constellations
    ConstellationMgr.setFlagIsolateSelected(false);                                                      //> turn off constellation
@@ -711,6 +746,10 @@ function                                Reset(//////////////////////////////////
      a2dArc[a2dArc.length] = [mapVega.azimuth ,mapVega.altitude];  
 
     }//if                                                                                                 //> Astronomical night + ??? (fudged to match disk. How can this be determined without a watch?)
+    if( mapSun["altitude"] < -24.0 ){                                                                   //>
+     a2dArc[a2dArc.length] = [mapVega.azimuth ,mapVega.altitude];                                       //>
+                                                                                                        //>
+    }//if                                                                                               //> Astronomical night + ??? (fudged to match disk. How can this be determined without a watch?)
     MarkMajorStars( iFrame ,dNow_jd );                                                                  //>
     let                                 dAlt                    = 0;                                    //> Used for above (or below) horizon.
     let                                 dAz                     = 0;                                    //> Used for above (or below) horizon.
@@ -799,7 +838,6 @@ function                                Reset(//////////////////////////////////
    core.wait(1);                                                                                        //> Plenty of extra time to let everything settle (what a pain).
    Snap(   "S"+( ""+(100000 + iFrame) ).substr(-4)   );                                                 //> Take screen-shot. 24*60 = 1440
   }//for iFrame                                                                                         //>
-//core.output("Frames 518"     );                                                                       //>
  }//Go_Frames/////////////////////////////////////////////////////////////////////////////////////////////>
 
 
@@ -812,17 +850,15 @@ function                                Reset(//////////////////////////////////
   core.setTimezone("LMST" ,1);                                                                          //> "LMST" = Local Mean Solar Time    https://stellarium.org/doc/23.0/classStelMainScriptAPI.html#abc7e6a709ec2670b6581ce4b51db3185
   core.setDate( "2026-12-21T00:00:00" ,"LMST" );                                                NAP();  //> Winter solstice, midnight.
   let                                   nDay                    = Math.floor( core.getJDay() );         //> Get the count of days, the noon before midnight.
-                                                                                                        //>
-  if(      "ALIGNMENTS" == g_isVERSION ){ core.output("-----> Alignments" );  Go_NebraAlignments();   } //> Generate PNGs suitable for alignment analysis in InkScape, for example.
-  else if( "FRAMES"     == g_isVERSION ){ core.output("-----> Frames"     );  Go_Frames();            } //> Generate PNGs suitable for animation, using ffmpeg to convert to a video format.
-  else if( "TESTS"      == g_isVERSION ){ core.output("-----> TESTS"      );  Go_TESTS();             } //> Generate PNGs suitable for animation, using ffmpeg to convert to a video format.
-                                                                                                        //>
-  core.output("Th-th-that's all folks." );                                                              //>
+  if(      "ALIGNMENTS" == g_isVERSION ){   REPORT("Alignments");   Go_NebraAlignments();   }      //> Generate PNGs suitable for alignment analysis in InkScape, for example.
+  else if( "FRAMES"     == g_isVERSION ){   REPORT("Frames"    );   Go_Frames();            }      //> Generate PNGs suitable for animation, using ffmpeg to convert to a video format.
+  else if( "TESTS"      == g_isVERSION ){   REPORT("TESTS"     );   Go_TESTS();             }      //> Run code tests.
   core.saveOutputAs( g_sPATHsHOTS + "output.txt" );                                                     //> Write results to file system, same directory as the screen shots.
 }//Go(){}/////////////////////////////////////////////////////////////////////////////////////////////////>
+ }//Go(){}////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
-Go();
+Go();                                                                                                   //>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////>
@@ -837,12 +873,16 @@ function                                TEST_dRaHDecToAlt_360(//////////////////
   let dDec = 0;                                                                                         //>
   core.output(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                     //>
   core.output(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                     //>
+  REPORT(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                     //>
+  REPORT(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                     //>
 return "*";                                                                                             //>
 }//TEST_dRaHDecToAlt_360//////////////////////////////////////////////////////////////////////////////////>
 function                                TEST_dEquRahDecToAlt_360(/////////////////////////////////////////> Convert Equatorial Coordinates to Visible Altitude
 ){                                      //////////////////////////////////////////////////////////////////>
   core.output(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                   //>
   core.output(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                   //>
+  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                   //>
+  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                   //>
 return "*";                                                                                             //>
 }//TEST_dEquRahDecToAlt_360///////////////////////////////////////////////////////////////////////////////>
 
@@ -854,6 +894,10 @@ function                                Go_TESTS(///////////////////////////////
  s = TEST_dRaHDecToAlt_360(   ); if( "" != s  ){ core.output("TEST_dRaHDecToAlt_360  FAILURE: "  + s); return s;}//>
  s = TEST_dEquRahDecToAlt_360(); if( "" != s  ){ core.output("TEST_dEquRahDecToAlt_360 FAILURE: "+ s); return s;}//>
  core.output("OK Go_TESTS");                                                                            //>
+ s = TEST_dEclipticsRA_360(   ); if( "" != s  ){ REPORT("What? "+ s);                             return s;}//>
+ s = TEST_dRaHDecToAlt_360(   ); if( "" != s  ){ REPORT("TEST_dRaHDecToAlt_360  FAILURE: "  + s); return s;}//>
+ s = TEST_dEquRahDecToAlt_360(); if( "" != s  ){ REPORT("TEST_dEquRahDecToAlt_360 FAILURE: "+ s); return s;}//>
+ REPORT("OK Go_TESTS");                                                                            //>
 return s;                                                                                               //>
 }//Go_TESTS///////////////////////////////////////////////////////////////////////////////////////////////>
 
@@ -871,12 +915,16 @@ function                                TEST_dRaHDecToAlt_360(//////////////////
   let dDec = 0;                                                                                         //>
   core.output(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                     //>
   core.output(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                     //>
+  REPORT(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                     //>
+  REPORT(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                     //>
 return "*";                                                                                             //>
 }//TEST_dRaHDecToAlt_360//////////////////////////////////////////////////////////////////////////////////>
 function                                TEST_dEquRahDecToAlt_360(/////////////////////////////////////////> Convert Equatorial Coordinates to Visible Altitude
 ){                                      //////////////////////////////////////////////////////////////////>
   core.output(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                   //>
   core.output(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                   //>
+  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                   //>
+  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                   //>
 return "*";                                                                                             //>
 }//TEST_dEquRahDecToAlt_360///////////////////////////////////////////////////////////////////////////////>
 
@@ -888,6 +936,10 @@ function                                Go_TESTS(///////////////////////////////
  s = TEST_dRaHDecToAlt_360(   ); if( "" != s  ){ core.output("TEST_dRaHDecToAlt_360  FAILURE: "  + s); return s;}//>
  s = TEST_dEquRahDecToAlt_360(); if( "" != s  ){ core.output("TEST_dEquRahDecToAlt_360 FAILURE: "+ s); return s;}//>
  core.output("OK Go_TESTS");                                                                            //>
+ s = TEST_dEclipticsRA_360(   ); if( "" != s  ){ REPORT("What? "+ s);                             return s;}//>
+ s = TEST_dRaHDecToAlt_360(   ); if( "" != s  ){ REPORT("TEST_dRaHDecToAlt_360  FAILURE: "  + s); return s;}//>
+ s = TEST_dEquRahDecToAlt_360(); if( "" != s  ){ REPORT("TEST_dEquRahDecToAlt_360 FAILURE: "+ s); return s;}//>
+ REPORT("OK Go_TESTS");                                                                            //>
 return s;                                                                                               //>
 }//Go_TESTS///////////////////////////////////////////////////////////////////////////////////////////////>
 
