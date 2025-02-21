@@ -10,10 +10,6 @@
 // 2) Run using .../NEBRA/code/nebra/ToolChain_MakeScreenShots.hx   See more documentation there.
 
 const                                   g_isVERSION   =    "€VERSION";                                  //> Macro replaced with "ALIGNMENTS" "FRAMES". In UBUNTU terminal - setxkbmap "us(euro)" # Right Alt+5 should give "€".
-const                                   g_sPATHsHOTS  = // "/home/dave/Desktop/CODE/lunascope/frames/"; //>
-                                                        // "/home/dave/Desktop/CODE/nebra/animation/";  //>
-                                                        // "/media/dave/Blk7/AAA/stellarium_tonight/";  //> External drive.
-                                                           "/media/dave/big_vol/data/";
 const                                   g_isVERSION  =   "€VERSION";                                    //> Macro replaced with "ALIGNMENTS" "FRAMES". In UBUNTU terminal - setxkbmap "us(euro)" # Right Alt+5 should give "€".
 const                                   g_sPATHsHOTS = //"/home/dave/Desktop/CODE/lunascope/frames/";   //>
                                                        //"/home/dave/Desktop/CODE/nebra/animation/";    //>
@@ -491,6 +487,7 @@ function                                Reset(//////////////////////////////////
   MarkerMgr      .deleteAllMarkers();                                                                   //> https://stellarium.org/doc/23.0/classMarkerMgr.html
   ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );
   ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );                            //>
+  ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );                            //>
                                                                 core.wait(2); Snap('scr_art_'+  sView); //>
                                                                                                         //>
   ConstellationMgr.setFlagArt(false); ConstellationMgr.setArtIntensity( 0 );                            //>
@@ -601,6 +598,7 @@ function                                Reset(//////////////////////////////////
 //ConstellationMgr .setFlagIsolateSelected(false);                                                      //> turn off constellation
 //ConstellationMgr .setFlagLines(false);                                                                //>
 //ConstellationMgr .setLinesColor( core.vec3f(1.0 ,0.0 ,0.0) );                                // Set red color for constellation lines
+//ConstellationMgr .setLinesColor( core.vec3f(1.0 ,0.0 ,0.0) );                                         //> Set red color for constellation lines
 //ConstellationMgr .setArtIntensity(                                         0.6 );                     //>
   ConstellationMgr .setFlagArt(                                            false );                     //>   https://stellarium.org/doc/23.0/classConstellationMgr.html
   ConstellationMgr .setArtFadeDuration(                                      0.1 );                     //>
@@ -679,13 +677,6 @@ function                                Reset(//////////////////////////////////
   //> ,[30 ,-999     ,-999     ,""                   ,"HR 1990" , "g" ,"Tau" ,"130 Tau"          ,"HIP 27338" ,-5.67742169 ,86.99949122 ,17.72921298 ,86.865201882 ,5.45] //> 37
   //> ,[32 ,171.1209 ,60.48165 ,""                   ,""        ,""                                                                                                     ] //> 32
   //> ,[33 ,173.9899 ,93.61537 ,""                   ,""        ,""                                                                                                     ] //> 33
-  Twinkle( iFrame ,"Asellus Borealis" ,"circle" ,"#ff0000" , 6 );                                     //> Mark("Asellus Borealis" ,"disk" ,"#ffff00" ,3);   //> Cancer
-  // TODO Check for above horizon or not for all the planets:                                         //>
-  Mark( "Mercury" ,"cross" ,"#ff8800" ,13 ,dNow_jd );                                                 //>
-  Mark( "Venus"   ,"cross" ,"#ff00ff" ,13 ,dNow_jd );                                                 //>
-  Mark( "Mars"    ,"cross" ,"#ff0000" ,13 ,dNow_jd );                                                 //>
-  Mark( "Jupiter" ,"cross" ,"#00ffff" ,13 ,dNow_jd );                                                 //>
-  Mark( "Saturn"  ,"cross" ,"#0000ff" ,13 ,dNow_jd );                                                 //>
   Twinkle( iFrame ,"Asellus Borealis" ,"circle" ,"#ff0000" , 6 );                                       //> Mark("Asellus Borealis" ,"disk" ,"#ffff00" ,3);   //> Cancer
   // TODO Check for above horizon or not for all the planets:                                           //>
   Mark( "Mercury" ,"cross" ,"#ff8800" ,13 ,dNow_jd );                                                   //>
@@ -725,7 +716,6 @@ function                                Reset(//////////////////////////////////
   let                                   iFrame0                 = mapMoon["azimuth"];                   //> Orient view so the Moon is initially at the bottom of the view.
   let                                   dOneFrame_day         = (24 + dSunRise_h - dSunSet_h)/24./1440; //> Real-time between frames.
   for( iFrame  = 0; iFrame  < 1440; iFrame++ ){                                                         //> 60 SECOND CLIP at 24 fps, for sunset to sunrise.
-   core.setJDay( dNow_jd );  
    dNow_jd = d0_js + dOneFrame_day*iFrame;                                                                //> Convert one frame to a fraction of a (Julian) day.
    dNow_jd = d0_js + dOneFrame_day*iFrame;                                                              //> Convert one frame to a fraction of a (Julian) day.
    core.setJDay( dNow_jd );                                                                             //>
@@ -742,10 +732,6 @@ function                                Reset(//////////////////////////////////
                                                                                                         //>
    if(  mapSun["altitude"] <  -6.0 ){                                                                   //> Civil Night...
     let                                 mapVega                 = mapSelect("Vega");                    //>
-    if( mapSun["altitude"] < -24.0 ){ 
-     a2dArc[a2dArc.length] = [mapVega.azimuth ,mapVega.altitude];  
-
-    }//if                                                                                                 //> Astronomical night + ??? (fudged to match disk. How can this be determined without a watch?)
     if( mapSun["altitude"] < -24.0 ){                                                                   //>
      a2dArc[a2dArc.length] = [mapVega.azimuth ,mapVega.altitude];                                       //>
                                                                                                         //>
@@ -850,11 +836,10 @@ function                                Reset(//////////////////////////////////
   core.setTimezone("LMST" ,1);                                                                          //> "LMST" = Local Mean Solar Time    https://stellarium.org/doc/23.0/classStelMainScriptAPI.html#abc7e6a709ec2670b6581ce4b51db3185
   core.setDate( "2026-12-21T00:00:00" ,"LMST" );                                                NAP();  //> Winter solstice, midnight.
   let                                   nDay                    = Math.floor( core.getJDay() );         //> Get the count of days, the noon before midnight.
-  if(      "ALIGNMENTS" == g_isVERSION ){   REPORT("Alignments");   Go_NebraAlignments();   }      //> Generate PNGs suitable for alignment analysis in InkScape, for example.
-  else if( "FRAMES"     == g_isVERSION ){   REPORT("Frames"    );   Go_Frames();            }      //> Generate PNGs suitable for animation, using ffmpeg to convert to a video format.
-  else if( "TESTS"      == g_isVERSION ){   REPORT("TESTS"     );   Go_TESTS();             }      //> Run code tests.
+  if(      "ALIGNMENTS" == g_isVERSION ){   REPORT("Alignments");   Go_NebraAlignments();   }           //> Generate PNGs suitable for alignment analysis in InkScape, for example.
+  else if( "FRAMES"     == g_isVERSION ){   REPORT("Frames"    );   Go_Frames();            }           //> Generate PNGs suitable for animation, using ffmpeg to convert to a video format.
+  else if( "TESTS"      == g_isVERSION ){   REPORT("TESTS"     );   Go_TESTS();             }           //> Run code tests.
   core.saveOutputAs( g_sPATHsHOTS + "output.txt" );                                                     //> Write results to file system, same directory as the screen shots.
-}//Go(){}/////////////////////////////////////////////////////////////////////////////////////////////////>
  }//Go(){}////////////////////////////////////////////////////////////////////////////////////////////////>
 
 
@@ -871,18 +856,14 @@ function                                TEST_dRaHDecToAlt_360(//////////////////
 ){                                      //////////////////////////////////////////////////////////////////>
   let dRa  = 0;                                                                                         //>
   let dDec = 0;                                                                                         //>
-  core.output(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                     //>
-  core.output(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                     //>
-  REPORT(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                     //>
-  REPORT(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                     //>
+  REPORT(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                          //>
+  REPORT(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                          //>
 return "*";                                                                                             //>
 }//TEST_dRaHDecToAlt_360//////////////////////////////////////////////////////////////////////////////////>
 function                                TEST_dEquRahDecToAlt_360(/////////////////////////////////////////> Convert Equatorial Coordinates to Visible Altitude
 ){                                      //////////////////////////////////////////////////////////////////>
-  core.output(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                   //>
-  core.output(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                   //>
-  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                   //>
-  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                   //>
+  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                        //>
+  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                        //>
 return "*";                                                                                             //>
 }//TEST_dEquRahDecToAlt_360///////////////////////////////////////////////////////////////////////////////>
 
@@ -890,14 +871,10 @@ return "*";                                                                     
 function                                Go_TESTS(/////////////////////////////////////////////////////////>
 ){                                      //////////////////////////////////////////////////////////////////>
  let                                    s                       = "";                                   //>
- s = TEST_dEclipticsRA_360(   ); if( "" != s  ){ core.output("What? "+ s);                             return s;}//>
- s = TEST_dRaHDecToAlt_360(   ); if( "" != s  ){ core.output("TEST_dRaHDecToAlt_360  FAILURE: "  + s); return s;}//>
- s = TEST_dEquRahDecToAlt_360(); if( "" != s  ){ core.output("TEST_dEquRahDecToAlt_360 FAILURE: "+ s); return s;}//>
- core.output("OK Go_TESTS");                                                                            //>
  s = TEST_dEclipticsRA_360(   ); if( "" != s  ){ REPORT("What? "+ s);                             return s;}//>
  s = TEST_dRaHDecToAlt_360(   ); if( "" != s  ){ REPORT("TEST_dRaHDecToAlt_360  FAILURE: "  + s); return s;}//>
  s = TEST_dEquRahDecToAlt_360(); if( "" != s  ){ REPORT("TEST_dEquRahDecToAlt_360 FAILURE: "+ s); return s;}//>
- REPORT("OK Go_TESTS");                                                                            //>
+ REPORT("OK Go_TESTS");                                                                                 //>
 return s;                                                                                               //>
 }//Go_TESTS///////////////////////////////////////////////////////////////////////////////////////////////>
 
@@ -913,18 +890,14 @@ function                                TEST_dRaHDecToAlt_360(//////////////////
 ){                                      //////////////////////////////////////////////////////////////////>
   let dRa  = 0;                                                                                         //>
   let dDec = 0;                                                                                         //>
-  core.output(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                     //>
-  core.output(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                     //>
-  REPORT(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                     //>
-  REPORT(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                     //>
+  REPORT(   "RaDecToAz "+ dRaHDecToAz_360(  90 ,0 ,51.2 )   );                                          //>
+  REPORT(   "RaDecToAz "+ dRaHDecToAz_360( 105 ,0 ,51.2 )   );                                          //>
 return "*";                                                                                             //>
 }//TEST_dRaHDecToAlt_360//////////////////////////////////////////////////////////////////////////////////>
 function                                TEST_dEquRahDecToAlt_360(/////////////////////////////////////////> Convert Equatorial Coordinates to Visible Altitude
 ){                                      //////////////////////////////////////////////////////////////////>
-  core.output(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                   //>
-  core.output(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                   //>
-  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                   //>
-  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                   //>
+  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360(  90 ,0 ,51.2 )   );                                        //>
+  REPORT(   "RaDecToAlt "+ dRaHDecToAlt_360( 105 ,0 ,51.2 )   );                                        //>
 return "*";                                                                                             //>
 }//TEST_dEquRahDecToAlt_360///////////////////////////////////////////////////////////////////////////////>
 
@@ -932,14 +905,10 @@ return "*";                                                                     
 function                                Go_TESTS(/////////////////////////////////////////////////////////>
 ){                                      //////////////////////////////////////////////////////////////////>
  let                                    s                       = "";                                   //>
- s = TEST_dEclipticsRA_360(   ); if( "" != s  ){ core.output("What? "+ s);                             return s;}//>
- s = TEST_dRaHDecToAlt_360(   ); if( "" != s  ){ core.output("TEST_dRaHDecToAlt_360  FAILURE: "  + s); return s;}//>
- s = TEST_dEquRahDecToAlt_360(); if( "" != s  ){ core.output("TEST_dEquRahDecToAlt_360 FAILURE: "+ s); return s;}//>
- core.output("OK Go_TESTS");                                                                            //>
  s = TEST_dEclipticsRA_360(   ); if( "" != s  ){ REPORT("What? "+ s);                             return s;}//>
  s = TEST_dRaHDecToAlt_360(   ); if( "" != s  ){ REPORT("TEST_dRaHDecToAlt_360  FAILURE: "  + s); return s;}//>
  s = TEST_dEquRahDecToAlt_360(); if( "" != s  ){ REPORT("TEST_dEquRahDecToAlt_360 FAILURE: "+ s); return s;}//>
- REPORT("OK Go_TESTS");                                                                            //>
+ REPORT("OK Go_TESTS");                                                                                 //>
 return s;                                                                                               //>
 }//Go_TESTS///////////////////////////////////////////////////////////////////////////////////////////////>
 
