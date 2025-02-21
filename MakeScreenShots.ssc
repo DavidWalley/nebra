@@ -9,7 +9,6 @@
 // 1) Edit hard-coded stuff in this file.
 // 2) Run using .../NEBRA/code/nebra/ToolChain_MakeScreenShots.hx   See more documentation there.
 
-const                                   g_isVERSION   =    "€VERSION";                                  //> Macro replaced with "ALIGNMENTS" "FRAMES". In UBUNTU terminal - setxkbmap "us(euro)" # Right Alt+5 should give "€".
 const                                   g_isVERSION  =   "€VERSION";                                    //> Macro replaced with "ALIGNMENTS" "FRAMES". In UBUNTU terminal - setxkbmap "us(euro)" # Right Alt+5 should give "€".
 const                                   g_sPATHsHOTS = //"/home/dave/Desktop/CODE/lunascope/frames/";   //>
                                                        //"/home/dave/Desktop/CODE/nebra/animation/";    //>
@@ -302,7 +301,6 @@ function                                Mark(///////////////////////////////////
 ,                                       a_sMarker                                                       //> Marker e.g. "cross"
 ,                                       a_sRgb                                                          //> color  e.g. "#ffffff"
 ,                                       a_dSize                                                         //> e.g. 12
-,                                       dNow_jd
 ,                                       dNow_jd                                                         //>
 ){                                      //////////////////////////////////////////////////////////////////>
   let                                   m                       = mapSelect(a_sStarId);          NAP(); //>
@@ -478,14 +476,11 @@ function                                Reset(//////////////////////////////////
    if(  ""  != av[g_iDOTS_sId] ){                                                                       //>
     if(       "p" ==av[g_iDOTS_sView]                                                                   //>
            || "P" ==av[g_iDOTS_sView] ){ Mark( av[g_iDOTS_sId ] ,"circle" ,"#00FFFF" ,12 );             //. Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#00FFFF" ,30 ); //> Blue circle (and number).
-    }else if( "g" ==av[g_iDOTS_sView] ){ Mark( av[g_iDOTS_sId ] ,"circle" ,"#00FF00" , 6 );             //. Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#00FF00" ,15 ); //> Green circle (and number).
-    }else                              { Mark( av[g_iDOTS_sId ] ,"circle" ,"#FF0000" ,12 );             //. Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#FF0000" ,30 ); //> Otherwise a red circle (and number).
     }else if( "g" ==av[g_iDOTS_sView] ){ Mark( av[g_iDOTS_sId ] ,"circle" ,"#00FF00" , 6 );             //> Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#00FF00" ,15 ); //> Green circle (and number).
     }else                              { Mark( av[g_iDOTS_sId ] ,"circle" ,"#FF0000" ,12 );             //> Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#FF0000" ,30 ); //> Otherwise a red circle (and number).
   }}}//if//if//for i                                                                                    //>
                                                                 core.wait(2); Snap('scr_dots_'+ sView); //>
   MarkerMgr      .deleteAllMarkers();                                                                   //> https://stellarium.org/doc/23.0/classMarkerMgr.html
-  ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );
   ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );                            //>
   ConstellationMgr.setFlagArt(true ); ConstellationMgr.setArtIntensity( 1 );                            //>
                                                                 core.wait(2); Snap('scr_art_'+  sView); //>
@@ -597,7 +592,6 @@ function                                Reset(//////////////////////////////////
 //ConstellationMgr .setFlagArt(false);                                                                  //>
 //ConstellationMgr .setFlagIsolateSelected(false);                                                      //> turn off constellation
 //ConstellationMgr .setFlagLines(false);                                                                //>
-//ConstellationMgr .setLinesColor( core.vec3f(1.0 ,0.0 ,0.0) );                                // Set red color for constellation lines
 //ConstellationMgr .setLinesColor( core.vec3f(1.0 ,0.0 ,0.0) );                                         //> Set red color for constellation lines
 //ConstellationMgr .setArtIntensity(                                         0.6 );                     //>
   ConstellationMgr .setFlagArt(                                            false );                     //>   https://stellarium.org/doc/23.0/classConstellationMgr.html
@@ -619,8 +613,6 @@ function                                Reset(//////////////////////////////////
 
 
  function                               MarkMajorStars(///////////////////////////////////////////////////>
-                                        iFrame
- ,                                      dNow_jd
                                         iFrame                                                          //>
  ,                                      dNow_jd                                                         //>
  ){                                     //////////////////////////////////////////////////////////////////>
@@ -716,7 +708,6 @@ function                                Reset(//////////////////////////////////
   let                                   iFrame0                 = mapMoon["azimuth"];                   //> Orient view so the Moon is initially at the bottom of the view.
   let                                   dOneFrame_day         = (24 + dSunRise_h - dSunSet_h)/24./1440; //> Real-time between frames.
   for( iFrame  = 0; iFrame  < 1440; iFrame++ ){                                                         //> 60 SECOND CLIP at 24 fps, for sunset to sunrise.
-   dNow_jd = d0_js + dOneFrame_day*iFrame;                                                                //> Convert one frame to a fraction of a (Julian) day.
    dNow_jd = d0_js + dOneFrame_day*iFrame;                                                              //> Convert one frame to a fraction of a (Julian) day.
    core.setJDay( dNow_jd );                                                                             //>
    REPORT( iFrame +","+ dNow_jd );                                                                      //> Record output to disk file.
