@@ -40,6 +40,7 @@ class ToolChain_MakeScreenShots ////////////////////////////////////////////////
   var                   _sPathStellarium  :String               = "/home/dave/Desktop/";                //> Generated "source code" directory (by Stellarium).
 
 
+
  function               new(//ToolChain_MakeScreenShots///////////////////////////////////////////////////> Main procedure of this class.
  )                                :Void {/////////////////////////////////////////////////////////////////> Report nothing.
   var                   sContent  :String = sys.io.File.getContent(_sPathMoney +'MakeScreenShots.ssc'); //> Copy from money source directory
@@ -52,6 +53,31 @@ class ToolChain_MakeScreenShots ////////////////////////////////////////////////
    trace(e.message);                                                                                    //> report it
    trace(e.stack);                                                                                      //> "
   }//try                                                                                                //> .
+
+//Sys.command("cd ~/Desktop/CODE/nebra \n &&  haxe --neko TEMP_neko.n --main ToolChain_MakeScreenShots &&  neko TEMP_neko.n FRAMES "); //# Make frames in Stellarium. ###frames1, output to USB
+  Sys.command(                           "wmctrl -a 'Stellarium 24.4'"                               ); //>
+  Sys.command( "xdotool search --onlyvisible --name 'Stellarium 24.4' windowsize 1336 1400 windowmove 0 0" );//. &&  sleep 1 && 
+  Sys.command( "sleep 1"); Sys.command("xdotool key Escape");                                           //>
+  Sys.command( "sleep 1"); Sys.command("xdotool key Escape");                                           //>
+  Sys.command( "sleep 1"); Sys.command("xdotool key Escape");                                           //>
+  Sys.command( "sleep 1"); Sys.command("xdotool key F12");                                              //>
+  Sys.command( "sleep 1"); Sys.command("xdotool mousemove "+                   (1366 +  20) +" 80");    //>
+  Sys.command( "sleep 1"); Sys.command("xdotool click 1");                                              //>
+  Sys.command( "sleep 1"); Sys.command("xdotool key Return");                                           //>
+  var                   s               :String             = "/home/dave/Desktop/MakeScreenShots.ssc"; //>
+  var                   n               :Int                = s.length;                                 //>
+  Sys.command("sleep 1");
+  for( i in 0...n ){                                                                                    //>
+   trace( s.charAt(i) );                                                                                //>
+   switch( s.charAt(i) ){                                                                               //>
+   case "/":     Sys.command("sleep 0.04"); Sys.command("xdotool key slash"                       );    //>
+   case ".":     Sys.command("sleep 0.04"); Sys.command("xdotool key period"                      );    //>
+   default :     Sys.command("sleep 0.04"); Sys.command("xdotool key " + s.charAt(i)              );    //>
+  }}//switch//for i                                                                                     //>
+  trace( "47" ); Sys.command("sleep 1"   ); Sys.command("xdotool key Return"                      );    //>
+  trace( "48" ); Sys.command("sleep 1"   ); Sys.command("xdotool mousemove "+  (1366 + 510) +" 80");    //>
+  trace( "49" ); Sys.command("sleep 1"   ); Sys.command("xdotool click 1"                         );    //>
+  trace( "50" ); Sys.command("sleep 1"   );                                                             //>
   trace("That should be it.");                                                                          //>
  }//new ToolChain_MakeScreenShots/////////////////////////////////////////////////////////////////////////>
 

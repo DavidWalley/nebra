@@ -17,7 +17,6 @@ const                                   g_sPATHsHOTS = //"/home/dave/Desktop/COD
                                                          "/home/dave/Desktop/CODE/lunascope/TEMP_out/"; //>
 // import bitmap.*;                                                                                     //> https://lib.haxe.org/p/bitmap/
 // import bitmap.transformation.Convolution;
-// let                     bitmap = PNGBitmap.create(IOUtil.readFile("imgs/input.png"));
 // bitmap.draw.rectangle(  {x: 10 ,y: 20   ,width: 40 ,height: 22
 //                         ,c: Color.create(12, 144, 0, 131)
 //                         ,fill: false
@@ -49,21 +48,18 @@ const                   g_dOBSERVERlAT                          = 51.17886594;
 //.                         - Near winter solstice, this voyage is from Pisces to Taurus or Gemini.
 
 
-  let                   g_iDOTS_dot                             = 0 ;                                   //>
-  let                   g_iDOTS_x                               = 1 ;                                   //>
-  let                   g_iDOTS_y                               = 2 ;                                   //>
-  let                   g_iDOTS_sName                           = 3 ;                                   //>
-  let                   g_iDOTS_sId                             = 4 ;                                   //>
-  let                   g_iDOTS_sView                           = 5 ;                                   //>
-  let                   g_iDOTS_sConst                          = 6 ;                                   //>
-  let                   g_iDOTS_sName2                          = 7 ;                                   //>
-  let                   g_iDOTS_sId2                            = 8 ;                                   //>
-  let                   g_iDOTS_dElat                           = 9 ;                                   //>
-  let                   g_iDOTS_dElong                          = 10;                                   //>
-  let                   g_iDOTS_dDec                            = 11;                                   //>
-  let                   g_iDOTS_dRa                             = 12;                                   //>
-  let                   g_iDOTS_dMag                            = 13;                                   //>
-  const                 g_a2vDOTS                               =                                       //> COPIED FROM lunascope.ssc:
+var                     g_iDOTS_x                               = 1 ;                                   //>
+var                     g_iDOTS_sName                           = 3 ;                                   //>
+var                     g_iDOTS_sId                             = 4 ;                                   //>
+var                     g_iDOTS_sConst                          = 6 ;                                   //>
+var                     g_iDOTS_sName2                          = 7 ;                                   //>
+var                     g_iDOTS_sId2                            = 8 ;                                   //>
+var                     g_iDOTS_dElat                           = 9 ;                                   //>
+var                     g_iDOTS_dElong                          = 10;                                   //>
+var                     g_iDOTS_dDec                            = 11;                                   //>
+var                     g_iDOTS_dRa                             = 12;                                   //>
+var                     g_iDOTS_dMag                            = 13;                                   //>
+const                   g_a2vDOTS                               =                                       //> COPIED FROM lunascope.ssc:
  //  0      1        2                     3          4       5      6      7                   8             9           10          11           12            13    //> COPIED TO Lunascope_svg.hx
  //  DOT (x,y) of dots       star name             desig      view  const   name2               id1         elat         elong        dec          RA            Mag   //> Table of Nebra Sky Disc dots and associated stars:
    [[1  ,108.1498 ,18.1577  ,""                   ,"HR 1656" ,"p"  ,"Tau" ,"m Tau"            ,"HIP 23835" ,-4.22757736 ,77.53867299 ,18.64563797 ,76.872793943 ,4.90] //> 0  m Tau
@@ -155,9 +151,9 @@ return ( a%m + m )%m;                                                           
 function                                sDMS(/////////////////////////////////////////////////////////////> Convert number to text degrees-minutes-seconds. Used in LabelMgr.labelEquatorial
                                         a_dDecimalDegrees                                               //>
 ){                                      //////////////////////////////////////////////////////////////////>
-  let                                   d                       = +a_dDecimalDegrees;                   //>
-  let                                   dD                      = Math.floor(d);                        //> Get whole number of degrees.
-  let                                   r_s                     = dD +"D";                              //> Start
+  var                                   d                       = +a_dDecimalDegrees;                   //>
+  var                                   dD                      = Math.floor(d);                        //> Get whole number of degrees.
+  var                                   r_s                     = dD +"D";                              //> Start
   d = d - dD; d *= 60; dD = Math.floor(d); r_s += ( ""+(1000 +dD) ).slice(2  ) +"'";                    //>
   d = d - dD; d *= 60;                     r_s += ( ""+(1000 + d) ).slice(2,9) +'"';                    //>
 return r_s;                                                                                             //>
@@ -167,10 +163,6 @@ return r_s;                                                                     
 function                                dObliquity_360(///////////////////////////////////////////////////> https://github.com/jfcarr/practical-astronomy-javascript/blob/main/src/pa-macros.js
                                         a_jd                                                            //>
 ){                                      //////////////////////////////////////////////////////////////////>
- let                                    b              = a_jd - 2415020;                                //>
- let                                    c              = b/36525 - 1;                                   //>
- let                                    d              = c*(   46.815 + c*( 0.0006 - (c*0.00181) )   ); //>
- let                                    e              = d/3600;                                        //>
 return 23.43929167 - e; // + nutatObl(greenwichDay, greenwichMonth, greenwichYear);                     //> Degrees tilt of Earth
 }//dObliquity_360/////////////////////////////////////////////////////////////////////////////////////////>
 
@@ -193,8 +185,6 @@ return 23.43929167 - e; // + nutatObl(greenwichDay, greenwichMonth, greenwichYea
 //. ,                                       Dec                                                         //> Dec   dd, dm, ds     
 //. ,                                       a_jd                                                        //> when  gd, gm, gy     
 //. ){                                      //////////////////////////////////////////////////////////////>
-//.  let                                    d_360   = dObliquity_360(a_jd);                             //>
-//.  let                                    f       = 180./Math.PI*Math.atan2( SinD(RaH*15)*CosD(d_360) //>
 //.                                                                           +TanD(Dec)*SinD(d_360)    //>
 //.                                                                ,           CosD(RaH*15)             //>
 //.                                                                );                                   //>
@@ -205,7 +195,6 @@ return 23.43929167 - e; // + nutatObl(greenwichDay, greenwichMonth, greenwichYea
 //. ,                                       Dec                                                         //> Degrees?
 //. ,                                       a_jd                                                        //> Greenwich Date
 //. ){                                      //////////////////////////////////////////////////////////////>
-//.  let                                    d_360                   = dObliquity_360(a_jd);             //>
 //. return 180/Math.PI*Math.asin(  SinD(Dec)*CosD(d_360)                                                //>
 //.                              - CosD(Dec)*SinD(d_360)*SinD(RaH*15)                                   //>
 //.                    );                                                                               //>
@@ -217,8 +206,6 @@ function                                dEclipticLongLatToRa_360(///////////////
 ,                                       Lat                                                             //> lat (degrees)
 ,                                       a_jd                                                            //> when (julian day, for long-term obliquity drift)
 ){                                      //////////////////////////////////////////////////////////////////>
- let                                    d_360            = dObliquity_360(a_jd);                        //>
- let                                    f                = Math.atan2( SinD(Long )*CosD(d_360)          //>
                                                                       -TanD(Lat  )*SinD(d_360)          //>
                                                            ,           CosD(Long )                      //>
                                                            )*180./Math.PI;                              //>
@@ -230,7 +217,6 @@ function                                dEclipticLongLatToDec_360(//////////////
 ,                                       Lat                                                             //> lat (degrees)
 ,                                       a_jd                                                            //> when (julian day)
 ){                                      //////////////////////////////////////////////////////////////////>
- let                                    d_360            = dObliquity_360(a_jd);                        //>
 return                                                     Math.asin(  SinD(Lat)*CosD(d_360)            //>
                                                                      + CosD(Lat)*SinD(d_360)*SinD(Long) //>
                                                            )*180/Math.PI;                               //> Convert to degrees.
@@ -242,7 +228,6 @@ function                                dRaHDecToAz_360(////////////////////////
 ,                                       Dec                                                             //> Declination OR altitude (degrees)
 ,                                       G                                                               //> Geographic latitude     (degrees)
 ){                                      //////////////////////////////////////////////////////////////////>
-  let                                   H                = Math.atan2(         -SinD(RaH)               //>
                                                            ,            SinD(G)*CosD(RaH)               //>
                                                                       - CosD(G)          *TanD(Dec)     //>
                                                            )*180./Math.PI;                              //>
@@ -278,8 +263,6 @@ function                                Look(///////////////////////////////////
 function                                mapSelect(////////////////////////////////////////////////////////# Select a celestial object and report a map of info about it.
                                         a_sStarId                                                       //> Object e.g. "Moon"
 ){                                      //////////////////////////////////////////////////////////////////>
-  core.selectObjectByName(a_sStarId ,false);                                                     NAP(); //>
-  let                                   map                     = core.getSelectedObjectInfo();         //> https://stellarium.org/doc/0.15/classStelMainScriptAPI.html#a2dc0768e3a57abf27cddaebe0b52dc97
 return map;                                                                                             //>
 }//mapSelect//////////////////////////////////////////////////////////////////////////////////////////////>
 
@@ -287,8 +270,6 @@ return map;                                                                     
  function                               dGmst_360(////////////////////////////////////////////////////////>
                                         dNow_jd                                                         //>
  ){                                     //////////////////////////////////////////////////////////////////>
-  let                                   dNow_mjd                = dNow_jd - 2451544.;                   //> Convert to modern Julian Day.
-  let                                   c                       = dNow_mjd/36525.0;                     //> julian centuries since J2000.0
  return 280.46061837                                                                                    //> Greenwich Mean Sidereal Time (GMST) in degrees
       + 360.98564736629*dNow_mjd                                                                        //>
       + (0.000387933 - c/38710000)*c*c                                                                  //>
@@ -303,14 +284,13 @@ function                                Mark(///////////////////////////////////
 ,                                       a_dSize                                                         //> e.g. 12
 ,                                       dNow_jd                                                         //>
 ){                                      //////////////////////////////////////////////////////////////////>
-  let                                   m                       = mapSelect(a_sStarId);          NAP(); //>
   if( dRaHDecToAlt_360( m.raJ2000 - dGmst_360(dNow_jd)                                                  //>
+
       ,                 m.decJ2000                                                                      //>
       ,                 g_dOBSERVERlAT                                                                  //>
       ) < 0                                                                                             //>
   ){                                                                                            return;}//> Convert Ra and Dec to Alt. Quit if below horizon.
                                                                                                         //>
-  let                                   s                       = ""+ a_sMarker;                        //>
   switch( s ){                                                                                          //>
   case "cross" : case "circle": case "disk": case "circled-cross": case "gear":                         //> Type of marker - as expected.
   case "square":                                                                                        //> rounded unfilled square
@@ -388,7 +368,7 @@ function                                Reset(//////////////////////////////////
                                         // "ProjectionMiller"                                           //>
                         );                                                                              //>
   core                  .setTimeRate(                           0   );                                  //> Paused.
-  core                  .setTimezone(                    "UTC-00:00");                                  //>   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
+//  core                  .setTimezone(                    "UTC-00:00");                                  //>   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
   ConstellationMgr      .setArtIntensity(                       0.6 );                                  //>
   ConstellationMgr      .setFlagArt(                           true );                                  //>   https://stellarium.org/doc/23.0/classConstellationMgr.html
   ConstellationMgr      .setArtFadeDuration(                    0.0 );                                  //>
@@ -460,8 +440,8 @@ function                                Reset(//////////////////////////////////
   const                                 cosE                    = CosD( 23. + 27./60. );                //> Convert ecliptic coords to equatorial.
   const                                 sinE                    = SinD( 23. + 27./60. );                //> tanL = ( sinAcosE + TanDsinE )/cosA       https://en.wikipedia.org/wiki/Astronomical_coordinate_systems#Equatorial_.E2.86.90.E2.86.92_ecliptic
                                                                                                         //>
-  let                                   sinL                    = 0;                                    //> sinB = SinDcosE  - CosDsinEsinA
-  let                                   cosL                    = 0;                                    //> A = Right Ascention
+  var                                   sinL                    = 0;                                    //> sinB = SinDcosE  - CosDsinEsinA
+  var                                   cosL                    = 0;                                    //> A = Right Ascention
                                                                                                         //>
   MarkerMgr       .deleteAllMarkers();                                                                  //> https://stellarium.org/doc/23.0/classMarkerMgr.html
   StelSkyDrawer   .setCustomStarMagnitudeLimit( 5. );                                                   //> Turn off dim stars.
@@ -471,8 +451,8 @@ function                                Reset(//////////////////////////////////
   ShowConstellations();                                                                                 //> Show lines for constellations of interest.
   core.setSelectedObjectInfo('None');                           core.wait(2); Snap('scr_lines_'+sView); //> Turn off display of info. Take a screen snapshot.
   ConstellationMgr.setFlagArt(false); ConstellationMgr.setFlagLines(false);                             //>
-  for( let i = 0; i < g_a2vDOTS.length; i++ ){                                                          //>
-   let                                av                      = g_a2vDOTS[i];                           //>
+  for( var i = 0; i < g_a2vDOTS.length; i++ ){                                                          //>
+   var                                av                      = g_a2vDOTS[i];                           //>
    if(  ""  != av[g_iDOTS_sId] ){                                                                       //>
     if(       "p" ==av[g_iDOTS_sView]                                                                   //>
            || "P" ==av[g_iDOTS_sView] ){ Mark( av[g_iDOTS_sId ] ,"circle" ,"#00FFFF" ,12 );             //. Mark( av[g_iDOTS_sId ] ,""+(i+1) ,"#00FFFF" ,30 ); //> Blue circle (and number).
@@ -487,10 +467,10 @@ function                                Reset(//////////////////////////////////
                                                                                                         //>
   ConstellationMgr.setFlagArt(false); ConstellationMgr.setArtIntensity( 0 );                            //>
   for( iPass = -1; iPass <= 1; iPass++ ){                                                               //> D = Declination
-   let                                  B                       = iPass*(5 + 9/60);                     //> E = obliquity of the ecliptic (about 23.4°) // 23 + 27/60.;    Moon's orbital inclination: 5 +  9/60 Moon's ecliptic.
-   let                                  cosB                    = CosD( B );                            //> B = ecliptic latitude, L = ecliptic longitude
-   let                                  sinB                    = SinD( B );                            //> D = declination      , A = Right Ascention
-   let                                  tanB                    = TanD( B );                            //>
+   var                                  B                       = iPass*(5 + 9/60);                     //> E = obliquity of the ecliptic (about 23.4°) // 23 + 27/60.;    Moon's orbital inclination: 5 +  9/60 Moon's ecliptic.
+   var                                  cosB                    = CosD( B );                            //> B = ecliptic latitude, L = ecliptic longitude
+   var                                  sinB                    = SinD( B );                            //> D = declination      , A = Right Ascention
+   var                                  tanB                    = TanD( B );                            //>
    for( L = 0; L < 360; L++ ){                                                                          //> Draw circle of?
     sinL = SinD( L );   cosL = CosD( L );                                                               //>
     A = Math.atan2(   sinL*cosE - tanB*sinE   ,cosL   )*180/Math.PI;                                    //>
@@ -518,7 +498,7 @@ function                                Reset(//////////////////////////////////
   Look( 90 - g_dOBSERVERlAT + 23.43602467002239   ,180 ,100 ,3 );                                       //> Look South, up to ecliptic.
   Go_NebraScreenSnaps_View("south"   );                                                                 //>
                                                                                                         //>
-  let                                   map                     = mapSelect("HR 1165");                 //> Alcyone - Brightest of 7 sisters.
+  var                                   map                     = mapSelect("HR 1165");                 //> Alcyone - Brightest of 7 sisters.
   Look( map["altitude"] ,map["azimuth"]   ,100 ,3 );                                                    //> Look at Seven Sisters, sky view, slow.
   Go_NebraScreenSnaps_View("pleiades");                                                                 //>
  }//Go_NebraAlignments////////////////////////////////////////////////////////////////////////////////////>
@@ -527,9 +507,9 @@ function                                Reset(//////////////////////////////////
  function                               nHash(////////////////////////////////////////////////////////////>
                                         str                                                             //>
  ){                                     //////////////////////////////////////////////////////////////////>
-  let                                   r_n                     = 0;                                    //>
-  for( let i = 0; i < str.length; i++ ){                                                                //>
-   let                                  chr                     = str.charCodeAt(i);                    //>
+  var                                   r_n                     = 0;                                    //>
+  for( var i = 0; i < str.length; i++ ){                                                                //>
+   var                                  chr                     = str.charCodeAt(i);                    //>
    r_n = (r_n << 5) - r_n + chr;                                                                        //>
    r_n |= 0;                                                                                            //> Convert to 32bit integer.
   }//for i                                                                                              //>
@@ -542,7 +522,7 @@ function                                Reset(//////////////////////////////////
   core             .clear(                                              "natural");                     //> Clear the display options. natural: azimuthal mount, atmosphere, landscape, no lines, labels or markers.   "starchart"   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
   core             .setProjectionMode(                  "ProjectionStereographic");                     //> https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
   core             .setTimeRate(                                               0 );                     //> Paused.
-  core             .setTimezone(                                      "UTC-00:00");                     //>   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
+//core             .setTimezone(                                      "UTC-00:00");                     //>   https://stellarium.org/doc/23.0/classStelMainScriptAPI.html
   GridLinesMgr     .setFlagAzimuthalGrid(                                  false );                     //> Shows or hides the grid for the horizontal coordinate system.   https://stellarium.org/doc/23.0/classGridLinesMgr.html
   GridLinesMgr     .setFlagEclipticJ2000Grid(                              false );                     //> Display Ecliptic Grid of J2000.0.
   GridLinesMgr     .setFlagEclipticGrid(                                   false );                     //> Display Ecliptic Grid of Date.
@@ -616,7 +596,7 @@ function                                Reset(//////////////////////////////////
                                         iFrame                                                          //>
  ,                                      dNow_jd                                                         //>
  ){                                     //////////////////////////////////////////////////////////////////>
-  Twinkle( iFrame ,"Vega"      ,"#ffff00" ,6 ,dNow_jd );  //> Lyra
+  Twinkle( iFrame ,"Vega"      ,"#ffff00" ,6 ,dNow_jd );  //> Lyra, Vega
   Twinkle( iFrame ,"Dubhe"     ,"#ffff00" ,4 ,dNow_jd );  //> Mark("Dubhe"  ,"disk" ,"#ffff00" ,3); //> Big Dipper
   Twinkle( iFrame ,"Merak"     ,"#ffff00" ,4 ,dNow_jd );  //> Mark("Merak"  ,"disk" ,"#ffff00" ,3); //> Big Dipper
   Twinkle( iFrame ,"Phecda"    ,"#ffff00" ,4 ,dNow_jd );  //> Mark("Phecda" ,"disk" ,"#ffff00" ,3); //> Big Dipper
@@ -695,29 +675,31 @@ function                                Reset(//////////////////////////////////
   Go_Frames_Setup();                                                                                    //>
   core.setObserverLocation( g_dOBSERVERlONG ,g_dOBSERVERlAT ,0 ,0 ,"Stonehenge" ,"Earth" );             //> Stonehenge = 51.17886594 ,-1.82618827   Cool location
   core.setDate( "2025-02-14T12:00:00" ,"LMST" );                                                 NAP(); //>
-  let                                   dNow_jd                 = core.getJDay();                       //> Get current noon-time as a Julian Day number.
-  let                                   a2dArc                  = [];                                   //> List of accumulating coordinates of Vega's path.
-  let                                   a2dRise                 = [];                                   //> List of accumulating coordinates of ecliptic rising.
-  let                                   a2dSet                  = [];                                   //> List of accumulating coordinates of ecliptic setting.
-  let                                   dWas_jd                 = 0;                                    //> Previous frame's time of day
-  let                                   mapSun                  = mapSelect("Sun" );             NAP(); //> Find the Sun...
-  let                                   dSunSet_h               = mapSun[ "set-dhr" ] - 0.5;            //> Half hour before sunset.
-  let                                   dSunRise_h              = mapSun[ "rise-dhr"] + 0.5;            //> Half hour after sunrise.
-  let                                   mapMoon                 = mapSelect("Moon");             NAP(); //> Find the Moon...
-  let                                   d0_js                   = dNow_jd + (dSunSet_h - 12)/24;        //>
-  let                                   iFrame0                 = mapMoon["azimuth"];                   //> Orient view so the Moon is initially at the bottom of the view.
-  let                                   dOneFrame_day         = (24 + dSunRise_h - dSunSet_h)/24./1440; //> Real-time between frames.
+  var                                   dNow_jd                 = core.getJDay();                       //> Get current noon-time as a Julian Day number.
+  var                                   a2dArc                  = [];                                   //> List of accumulating coordinates of Vega's path.
+  var                                   a2dRise                 = [];                                   //> List of accumulating coordinates of ecliptic rising.
+  var                                   a2dSet                  = [];                                   //> List of accumulating coordinates of ecliptic setting.
+  var                                   dWas_jd                 = 0;                                    //> Previous frame's time of day
+  var                                   mapSun                  = mapSelect("Sun" );             NAP(); //> Find the Sun...
+  var                                   dSunSet_h               = mapSun[ "set-dhr" ] - 1.;             //> Hour before sunset.
+  var                                   dSunRise_h              = mapSun[ "rise-dhr"] + 1.;             //> Hour after sunrise (of previous night, but shouldn't matter much).
+  var                                   dNightTime_day          = (24 + dSunRise_h - dSunSet_h)/24.;    //>
+  var                                   d0_js                   = dNow_jd + (dSunSet_h - 12)/24;        //>
+  var                                   dOneFrame_day           = dNightTime_day/1440;                  //> Real-time between frames.
+  core.setJDay( d0_js );                                                                         NAP(); //>
+  var                                   mapMoon                 = mapSelect("Moon");             NAP(); //> Find the Moon...
+  var                                   iFrame0                 = mapMoon["azimuth"];                   //> Orient view so the Moon is initially at the bottom of the view.
   for( iFrame  = 0; iFrame  < 1440; iFrame++ ){                                                         //> 60 SECOND CLIP at 24 fps, for sunset to sunrise.
    dNow_jd = d0_js + dOneFrame_day*iFrame;                                                              //> Convert one frame to a fraction of a (Julian) day.
    core.setJDay( dNow_jd );                                                                             //>
    REPORT( iFrame +","+ dNow_jd );                                                                      //> Record output to disk file.
                                                                                                         //>
-   ConstellationMgr.deselectConstellations();                                                           //> Clear constellations
+   ConstellationMgr.deselectConstellations(     );                                                      //> Clear constellations
    ConstellationMgr.setFlagIsolateSelected(false);                                                      //> turn off constellation
    ConstellationMgr.setFlagArt(            false);                                                      //>
    ConstellationMgr.setFlagLines(          false);                                                      //>
    core.selectObjectByName("Pluto", true);      core.selectObjectByName("", true);                      //> appear to need this to force the deselection of all the other previously selected objects
-   let                                  mapSun                  = mapSelect("Sun" );                    //> Find the Moon...
+   var                                  mapSun                  = mapSelect("Sun" );                    //> Find the Moon...
    MarkerMgr.deleteAllMarkers();                                                                        //>
    LabelMgr .deleteAllLabels();                                                                         //>
                                                                                                         //>
@@ -728,16 +710,16 @@ function                                Reset(//////////////////////////////////
                                                                                                         //>
     }//if                                                                                               //> Astronomical night + ??? (fudged to match disk. How can this be determined without a watch?)
     MarkMajorStars( iFrame ,dNow_jd );                                                                  //>
-    let                                 dAlt                    = 0;                                    //> Used for above (or below) horizon.
-    let                                 dAz                     = 0;                                    //> Used for above (or below) horizon.
-    let                                 dGmstNow_360            = dGmst_360(dNow_jd);                   //>
+    var                                 dAlt                    = 0;                                    //> Used for above (or below) horizon.
+    var                                 dAz                     = 0;                                    //> Used for above (or below) horizon.
+    var                                 dGmstNow_360            = dGmst_360(dNow_jd);                   //>
     dGmstNow_360 = dMod( dGmstNow_360 + g_dOBSERVERlONG ,360. );                                        //> LabelMgr.deleteAllLabels(); LabelMgr.labelScreen( jd +"      "+ dGmstNow_360 ,400 ,200 ,true ,20 ,"#ff0000"); //> DEBUG
-    let                                 isWasAbove              = 0;                                    //> Initially unknown.
+    var                                 isWasAbove              = 0;                                    //> Initially unknown.
     for( i_360 = 0; i_360 < 360; i_360++ ){                                                             //>
      dAlt =                        dRaHDecToAlt_360(  i_360 - dGmstNow_360 ,0        ,g_dOBSERVERlAT ); //> EQUATOR: Convert Equatorial Coordinates to Altitude
      if( 0 < dAlt ){ MarkerMgr.markerEquatorial(i_360 ,0 ,true,true ,"disk","#111111",3); }             //> Line made of series of dots, if above the horizon.
-     let                                dRa_360      = dEclipticLongLatToRa_360(  i_360 ,0 ,dNow_jd  ); //> ECLIPTIC: Convert the ecliptic's coords to Equatorial Right Ascension
-     let                                dDec_360     = dEclipticLongLatToDec_360( i_360 ,0 ,dNow_jd  ); //> Convert the ecliptic's coords to Equatorial Declination
+     var                                dRa_360      = dEclipticLongLatToRa_360(  i_360 ,0 ,dNow_jd  ); //> ECLIPTIC: Convert the ecliptic's coords to Equatorial Right Ascension
+     var                                dDec_360     = dEclipticLongLatToDec_360( i_360 ,0 ,dNow_jd  ); //> Convert the ecliptic's coords to Equatorial Declination
      dAlt =                        dRaHDecToAlt_360(dRa_360 - dGmstNow_360 ,dDec_360 ,g_dOBSERVERlAT ); //> Convert Equatorial Coordinates to Altitude
      if( 0 < dAlt ){                                                                                    //> If not below the horizon:
       MarkerMgr.markerEquatorial(  dRa_360 ,dDec_360                                                    //> Dots marking the ecliptic.
@@ -767,8 +749,8 @@ function                                Reset(//////////////////////////////////
                                  , 0                                                                    //>
                                  ];                                                                     //>
    }}}}//if//if//for i_360//if                                                                          //>
-   let                                  j                       = 0;                                    //>
-   let                                  dSum_day                = 0;                                    //>
+   var                                  j                       = 0;                                    //>
+   var                                  dSum_day                = 0;                                    //>
    for( j = 0; j < a2dArc.length ; j++ ){                                                               //> Vega Arc:
     MarkerMgr .markerHorizon( a2dArc[ j][0] ,a2dArc[j][1]      ,true,"disk","#ffff00" ,2 ,false,0) ;    //> Create a marker with horizontal coordinates.
     dSum_day += dOneFrame_day;                                                                          //>
@@ -783,7 +765,7 @@ function                                Reset(//////////////////////////////////
     ,                        dSink                                                                      //> below the horizon, and sinking so we can see it turn
     ,                        true,"disk","#ffff00" ,4 ,false,0                                          //> 
     );                                                                                                  //> .
-    dSink -= (  90 - a2dRise[j][0] )*(  90 - a2dRise[j][0] )*0.000017;                                  //>
+    dSink -= (  90 - a2dRise[j][0] )*(  90 - a2dRise[j][0] )*0.0000017;                                 //>
    }//for j                                                                                             //>
    dSink = -2.;                                                                                         //>
    for( j = 0; j < a2dSet.length ; j++ ){                                                               //> West Arc:
@@ -791,7 +773,7 @@ function                                Reset(//////////////////////////////////
     ,                        dSink                                                                      //> below the horizon, and sinking so we can see it turn
     ,                        true,"disk","#0000ff" ,6 ,false,0                                          //>
     );                                                                                                  //> .
-    dSink -= ( 270 - a2dSet[ j][0] )*( 270 - a2dSet[ j][0] )*0.000017;                                  //>
+    dSink -= ( 270 - a2dSet[ j][0] )*( 270 - a2dSet[ j][0] )*0.0000017;                                 //>
    }//for j                                                                                             //>
                                                                                                         //>
 //. if( mapSun["altitude"] < -6.0 ){                                                                    //> Look at Seven Sisters, sky view, slow.
@@ -806,13 +788,15 @@ function                                Reset(//////////////////////////////////
 //. //  mapSelect("Regulus"  ); // Leo                                                                  //>
 //. //  mapSelect("Vega"     );                                                                         //>
 //. }//if                                                                                               //>
-//*    let                                  mapMoon                 = mapSelect("Moon");                //> Find the Moon...
+//*    var                                  mapMoon                 = mapSelect("Moon");                //> Find the Moon...
 //*    core.wait(0.1);                                                                                  //>
 //*    core.selectObjectByName("" ,false);                                                              //> Deselect current selected sky object (to get rid of info display).
 //* // Look( 90 ,mapMoon["azimuth"]   ,200 ,0 );                                                        //> Orient view so we are looking at the Moon.
-   Look( 90 ,iFrame0 + iFrame/4   ,200 ,0 );                                                            //> Orient view so we are looking at the Moon.
+// Look( 90 ,iFrame0 + iFrame/4                   ,200 ,0 );                                            //> Orient view so we are looking at the Moon.
+   Look( 90 ,iFrame0 + iFrame/4*dNightTime_day ,200 ,0 );                                            //> Orient view so we are looking at the Moon.
+
                                                                                                         //>
-   core.wait(1);                                                                                        //> Plenty of extra time to let everything settle (what a pain).
+   core.wait(1);                                                                                        //> Plenty of extra time to var everything settle (what a pain).
    Snap(   "S"+( ""+(100000 + iFrame) ).substr(-4)   );                                                 //> Take screen-shot. 24*60 = 1440
   }//for iFrame                                                                                         //>
  }//Go_Frames/////////////////////////////////////////////////////////////////////////////////////////////>
