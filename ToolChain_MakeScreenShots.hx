@@ -61,7 +61,8 @@ class ToolChain_MakeScreenShots ////////////////////////////////////////////////
   Sys.command( "sleep 1"); Sys.command("xdotool key Escape");                                           //>
   Sys.command( "sleep 1"); Sys.command("xdotool key Escape");                                           //>
   Sys.command( "sleep 1"); Sys.command("xdotool key F12");                                              //>
-  Sys.command( "sleep 1"); Sys.command("xdotool mousemove "+                   (1366 +  20) +" 80");    //>
+//Sys.command( "sleep 1"); Sys.command("xdotool mousemove "+                   (1366 +  20) +" 80");    //>
+  Sys.command( "sleep 1"); Sys.command("xdotool mousemove "+                            20  +" 88");    //>
   Sys.command( "sleep 1"); Sys.command("xdotool click 1");                                              //>
   Sys.command( "sleep 1"); Sys.command("xdotool key Return");                                           //>
   var                   s               :String             = "/home/dave/Desktop/MakeScreenShots.ssc"; //>
@@ -75,7 +76,8 @@ class ToolChain_MakeScreenShots ////////////////////////////////////////////////
    default :     Sys.command("sleep 0.04"); Sys.command("xdotool key " + s.charAt(i)              );    //>
   }}//switch//for i                                                                                     //>
   trace( "47" ); Sys.command("sleep 1"   ); Sys.command("xdotool key Return"                      );    //>
-  trace( "48" ); Sys.command("sleep 1"   ); Sys.command("xdotool mousemove "+  (1366 + 510) +" 80");    //>
+//trace( "48" ); Sys.command("sleep 1"   ); Sys.command("xdotool mousemove "+  (1366 + 510) +" 80");    //>
+  trace( "48" ); Sys.command("sleep 1"   ); Sys.command("xdotool mousemove "+          600  +" 88");    //>
   trace( "49" ); Sys.command("sleep 1"   ); Sys.command("xdotool click 1"                         );    //>
   trace( "50" ); Sys.command("sleep 1"   );                                                             //>
   trace("That should be it.");                                                                          //>
